@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /signup
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /verify
+
+Sitemap: https://wasteinstitute.org/sitemap.xml
