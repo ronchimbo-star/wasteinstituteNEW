@@ -32,93 +32,6 @@ const state = {
 const MODULE_ICONS = ["⚖️", "🏥", "♻️", "📋", "🔍"];
 const MODULE_EMOJIS = ["⚖️", "📘", "♻️", "📋", "🔍"];
 
-// ---- Define and expose functions EARLY for inline onclick handlers ----
-
-function toggleModule(mi) {
-  console.log("toggleModule called:", mi);
-  if (state.expandedModules.has(mi)) {
-    state.expandedModules.delete(mi);
-  } else {
-    state.expandedModules.add(mi);
-  }
-  navigateTo("module", mi);
-}
-window.toggleModule = toggleModule;
-
-function navigateTo(view, modIdx, lesIdx) {
-  console.log("navigateTo called:", view, modIdx, lesIdx);
-  if (state.assessmentTimerInterval && view !== "assessment") {
-    clearInterval(state.assessmentTimerInterval);
-    state.assessmentTimerInterval = null;
-  }
-
-  state.currentView = view;
-  if (modIdx !== undefined) {
-    state.currentModule = modIdx;
-    state.expandedModules.add(modIdx);
-  }
-  if (lesIdx !== undefined) state.currentLesson = lesIdx;
-
-  renderView();
-  renderSidebar();
-
-  if (state.sidebarOpen) closeSidebar();
-
-  setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
-}
-window.navigateTo = navigateTo;
-
-function toggleLessonComplete(mi, li) {
-  const key = `${mi}-${li}`;
-  if (state.completedLessons.has(key)) {
-    state.completedLessons.delete(key);
-  } else {
-    state.completedLessons.add(key);
-  }
-  renderSidebar();
-  renderView();
-}
-window.toggleLessonComplete = toggleLessonComplete;
-
-// Forward declaration - implementation below after helper functions are defined
-window.submitQuiz = function(mi) {
-  submitQuizDetailed(mi);
-};
-
-function nextAssessmentQuestion() {
-  if (state.assessmentCurrentQ < state.assessmentQuestions.length - 1) {
-    state.assessmentCurrentQ++;
-    renderView();
-  }
-}
-window.nextAssessmentQuestion = nextAssessmentQuestion;
-
-function prevAssessmentQuestion() {
-  if (state.assessmentCurrentQ > 0) {
-    state.assessmentCurrentQ--;
-    renderView();
-  }
-}
-window.prevAssessmentQuestion = prevAssessmentQuestion;
-
-function submitAssessment() {
-  clearInterval(state.assessmentTimerInterval);
-  state.assessmentTimerInterval = null;
-  let score = 0;
-  state.assessmentQuestions.forEach((q, i) => {
-    const userAns = state.assessmentAnswers[i];
-    if (userAns !== undefined && userAns === q.correct) {
-      score++;
-    }
-  });
-  const percent = Math.round((score / state.assessmentQuestions.length) * 100);
-  state.finalScore = percent;
-  state.finalPassed = percent >= 70;
-  renderView();
-  renderSidebar();
-}
-window.submitAssessment = submitAssessment;
-
 // ---- Initialize ----
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM Content Loaded - Starting course initialization");
@@ -219,7 +132,37 @@ function updateProgress() {
 }
 
 // ---- Navigation ----
-// (navigateTo is already defined above)
+function toggleModule(mi) {
+  console.log("toggleModule called:", mi);
+  if (state.expandedModules.has(mi)) {
+    state.expandedModules.delete(mi);
+  } else {
+    state.expandedModules.add(mi);
+  }
+  navigateTo("module", mi);
+}
+
+function navigateTo(view, modIdx, lesIdx) {
+  console.log("navigateTo called:", view, modIdx, lesIdx);
+  if (state.assessmentTimerInterval && view !== "assessment") {
+    clearInterval(state.assessmentTimerInterval);
+    state.assessmentTimerInterval = null;
+  }
+
+  state.currentView = view;
+  if (modIdx !== undefined) {
+    state.currentModule = modIdx;
+    state.expandedModules.add(modIdx);
+  }
+  if (lesIdx !== undefined) state.currentLesson = lesIdx;
+
+  renderView();
+  renderSidebar();
+
+  if (state.sidebarOpen) closeSidebar();
+
+  setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
+}
 
 function renderView() {
   const area = document.getElementById("content-area");
@@ -593,7 +536,17 @@ function getWIWatermarkSVG(color) {
   </svg>`;
 }
 
-// (toggleLessonComplete is already defined above)
+function toggleLessonComplete(mi, li) {
+  console.log("toggleLessonComplete called:", mi, li);
+  const key = `${mi}-${li}`;
+  if (state.completedLessons.has(key)) {
+    state.completedLessons.delete(key);
+  } else {
+    state.completedLessons.add(key);
+  }
+  renderView();
+  renderSidebar();
+}
 
 // Legacy formatLessonContent removed — rich HTML now injected directly from course-content.json
 
@@ -798,9 +751,7 @@ function selectQuizOption(qi, oi) {
   });
 }
 
-// (submitQuiz is already defined above - keeping this implementation as it's more complete)
-
-function submitQuizDetailed(mi) {
+function submitQuiz(mi) {
   console.log("submitQuiz called:", mi);
   const d = state.courseData;
   const quiz = d.modules[mi].quiz;
@@ -969,7 +920,39 @@ function selectAssessmentOption(oi) {
   });
 }
 
-// (nextAssessmentQuestion, prevAssessmentQuestion, submitAssessment are already defined above)
+function nextAssessmentQuestion() {
+  console.log("nextAssessmentQuestion called");
+  state.assessmentCurrentQ++;
+  renderView();
+}
+
+function prevAssessmentQuestion() {
+  console.log("prevAssessmentQuestion called");
+  state.assessmentCurrentQ--;
+  renderView();
+}
+
+function submitAssessment() {
+  console.log("submitAssessment called");
+  if (state.assessmentTimerInterval) {
+    clearInterval(state.assessmentTimerInterval);
+    state.assessmentTimerInterval = null;
+  }
+
+  let correct = 0;
+  state.assessmentQuestions.forEach((q, i) => {
+    if (state.assessmentAnswers[i] === q.correct) correct++;
+  });
+
+  const score = Math.round((correct / state.assessmentQuestions.length) * 100);
+  state.finalScore = score;
+  state.finalPassed = score >= 75;
+
+  if (state.finalPassed) triggerConfetti();
+
+  renderAssessmentResults(document.getElementById("content-area"));
+  renderSidebar();
+}
 
 function renderAssessmentResults(area) {
   const passed = state.finalPassed;
@@ -1186,3 +1169,24 @@ function triggerConfetti() {
   }
   animate();
 }
+
+// ---- Expose all functions to window for inline onclick handlers ----
+window.toggleModule = toggleModule;
+window.navigateTo = navigateTo;
+window.toggleLessonComplete = toggleLessonComplete;
+window.submitQuiz = submitQuiz;
+window.retryQuiz = retryQuiz;
+window.selectQuizOption = selectQuizOption;
+window.nextAssessmentQuestion = nextAssessmentQuestion;
+window.prevAssessmentQuestion = prevAssessmentQuestion;
+window.submitAssessment = submitAssessment;
+window.selectAssessmentOption = selectAssessmentOption;
+window.retakeAssessment = retakeAssessment;
+window.updateCertName = updateCertName;
+window.downloadCertificate = downloadCertificate;
+window.openSidebar = openSidebar;
+window.closeSidebar = closeSidebar;
+
+console.log("====================================");
+console.log("ALL FUNCTIONS EXPOSED TO WINDOW");
+console.log("====================================");
