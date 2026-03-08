@@ -28,23 +28,43 @@ const state = {
 const MODULE_ICONS = ["⚖️", "🏥", "♻️", "📋", "🔍"];
 const MODULE_EMOJIS = ["⚖️", "📘", "♻️", "📋", "🔍"];
 
+// Expose functions to window for inline onclick handlers
+window.navigateTo = null; // Will be set after definition
+window.toggleModule = null;
+window.toggleLessonComplete = null;
+window.submitQuiz = null;
+window.nextAssessmentQuestion = null;
+window.prevAssessmentQuestion = null;
+window.submitAssessment = null;
+
 // ---- Initialize ----
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM Content Loaded - Starting course initialization");
   fetchCourseData();
 });
 
 function fetchCourseData() {
+  console.log("Fetching course data...");
   fetch("./course-content.json")
-    .then(r => r.json())
+    .then(r => {
+      console.log("Course data fetch response received");
+      return r.json();
+    })
     .then(data => {
+      console.log("Course data parsed successfully", data);
       state.courseData = data;
       renderSidebar();
       renderView();
       initScrollToTop();
       initSidebarToggle();
+      console.log("Course initialization complete");
     })
-    .catch(() => {
-      document.getElementById("app").innerHTML = "<p style='padding:48px;color:red;'>Failed to load course data.</p>";
+    .catch((error) => {
+      console.error("Failed to load course data:", error);
+      const contentArea = document.getElementById("content-area");
+      if (contentArea) {
+        contentArea.innerHTML = "<p style='padding:48px;color:red;'>Failed to load course data. Please refresh the page.</p>";
+      }
     });
 }
 
@@ -97,6 +117,7 @@ function renderSidebar() {
 }
 
 function toggleModule(mi) {
+  console.log("toggleModule called:", mi);
   if (state.expandedModules.has(mi)) {
     state.expandedModules.delete(mi);
   } else {
@@ -105,6 +126,9 @@ function toggleModule(mi) {
   // Also navigate to module intro
   navigateTo("module", mi);
 }
+
+// Expose to window
+window.toggleModule = toggleModule;
 
 function updateProgress() {
   const d = state.courseData;
@@ -128,6 +152,7 @@ function updateProgress() {
 
 // ---- Navigation ----
 function navigateTo(view, modIdx, lesIdx) {
+  console.log("navigateTo called:", view, modIdx, lesIdx);
   // Clear assessment timer if leaving
   if (state.assessmentTimerInterval && view !== "assessment") {
     clearInterval(state.assessmentTimerInterval);
@@ -152,6 +177,9 @@ function navigateTo(view, modIdx, lesIdx) {
   if (contentArea) contentArea.scrollIntoView({ behavior: "smooth", block: "start" });
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
+
+// Expose to window
+window.navigateTo = navigateTo;
 
 function renderView() {
   const area = document.getElementById("content-area");
@@ -526,6 +554,7 @@ function getWIWatermarkSVG(color) {
 }
 
 function toggleLessonComplete(mi, li) {
+  console.log("toggleLessonComplete called:", mi, li);
   const key = `${mi}-${li}`;
   if (state.completedLessons.has(key)) {
     state.completedLessons.delete(key);
@@ -535,6 +564,9 @@ function toggleLessonComplete(mi, li) {
   renderView();
   renderSidebar();
 }
+
+// Expose to window
+window.toggleLessonComplete = toggleLessonComplete;
 
 // Legacy formatLessonContent removed — rich HTML now injected directly from course-content.json
 
@@ -740,6 +772,7 @@ function selectQuizOption(qi, oi) {
 }
 
 function submitQuiz(mi) {
+  console.log("submitQuiz called:", mi);
   const d = state.courseData;
   const quiz = d.modules[mi].quiz;
   let correct = 0;
@@ -801,7 +834,11 @@ function submitQuiz(mi) {
   renderSidebar();
 }
 
+// Expose to window
+window.submitQuiz = submitQuiz;
+
 function retryQuiz(mi) {
+  console.log("retryQuiz called:", mi);
   // Clear selections for this module
   const d = state.courseData;
   d.modules[mi].quiz.forEach((_, qi) => {
@@ -809,6 +846,9 @@ function retryQuiz(mi) {
   });
   renderView();
 }
+
+// Expose to window
+window.retryQuiz = retryQuiz;
 
 // ---- Final Assessment ----
 function renderAssessment(area) {
@@ -904,11 +944,25 @@ function selectAssessmentOption(oi) {
 }
 
 function nextAssessmentQuestion() {
+  console.log("nextAssessmentQuestion called");
   state.assessmentCurrentQ++;
   renderView();
 }
 
+// Expose to window
+window.nextAssessmentQuestion = nextAssessmentQuestion;
+
+function prevAssessmentQuestion() {
+  console.log("prevAssessmentQuestion called");
+  state.assessmentCurrentQ--;
+  renderView();
+}
+
+// Expose to window
+window.prevAssessmentQuestion = prevAssessmentQuestion;
+
 function submitAssessment() {
+  console.log("submitAssessment called");
   if (state.assessmentTimerInterval) {
     clearInterval(state.assessmentTimerInterval);
     state.assessmentTimerInterval = null;
@@ -928,6 +982,9 @@ function submitAssessment() {
   renderAssessmentResults(document.getElementById("content-area"));
   renderSidebar();
 }
+
+// Expose to window
+window.submitAssessment = submitAssessment;
 
 function renderAssessmentResults(area) {
   const passed = state.finalPassed;
@@ -955,6 +1012,7 @@ function renderAssessmentResults(area) {
 }
 
 function retakeAssessment() {
+  console.log("retakeAssessment called");
   state.assessmentQuestions = [];
   state.assessmentAnswers = {};
   state.assessmentCurrentQ = 0;
@@ -963,6 +1021,9 @@ function retakeAssessment() {
   state.finalScore = null;
   navigateTo("assessment");
 }
+
+// Expose to window
+window.retakeAssessment = retakeAssessment;
 
 // ---- Certificate Page ----
 function renderCertificate(area) {
@@ -1058,6 +1119,15 @@ function initSidebarToggle() {
     }
   });
   document.getElementById("sidebar-overlay").addEventListener("click", closeSidebar);
+
+  // Header logo click
+  const headerLogo = document.getElementById("header-logo-link");
+  if (headerLogo) {
+    headerLogo.addEventListener("click", (e) => {
+      e.preventDefault();
+      navigateTo('landing');
+    });
+  }
 }
 
 function openSidebar() {
