@@ -305,13 +305,13 @@ function renderLanding(area) {
     <!-- Instructor -->
     <div class="landing-section-alt">
       <div class="landing-section-inner">
-        <div class="section-label">Your Instructors</div>
+        <div class="section-label">Your Instructor</div>
         <h2 class="section-title">Expert-Led Content</h2>
         <div class="instructor-card">
-          <div class="instructor-avatar">🎓</div>
+          <img src="./assets/profile.png" alt="Ron Chimbo" class="instructor-avatar" style="width:80px;height:80px;border-radius:50%;object-fit:cover;background:#f5f5f5;">
           <div class="instructor-info">
-            <h3>WasteInstitute Expert Team</h3>
-            <p>Course developed by WasteInstitute's team of environmental compliance professionals with over 50 years of combined experience in healthcare waste management, regulatory compliance, and sustainability strategy. Our team includes former Environment Agency officers, NHS waste managers, and CIWM-certified professionals.</p>
+            <h3>Ron Chimbo</h3>
+            <p>A seasoned waste management professional with over 20 years of experience across multiple sectors in waste management, regulatory compliance, sustainability strategy, and circular economy. Ron has consulted extensively within the NHS, Banking, Logistics, and Transportation sectors, bringing practical insights from diverse industry applications. He has worked on various innovative start-ups including MediWaste, ToolServe, and SaniLady, and has been instrumental in the development of the Waste Institute. His comprehensive expertise ensures this course delivers real-world knowledge grounded in regulatory excellence and operational best practices.</p>
           </div>
         </div>
       </div>
@@ -955,15 +955,11 @@ function renderFooter() {
     <footer class="site-footer">
       <div class="footer-content">
         <div class="footer-left">
-          <img src="./assets/logo.jpg" alt="WasteInstitute" class="footer-logo">
-          <span class="footer-text">© 2026 WasteInstitute (Circular Horizons International Ltd). All rights reserved.</span>
+          <img src="./assets/logo-white.png" alt="WasteInstitute" class="footer-logo">
+          <span class="footer-text">Copyright © 2026 WasteInstitute.org. All rights reserved.</span>
         </div>
         <div class="footer-links">
           <a href="https://wasteinstitute.org" target="_blank" rel="noopener noreferrer">wasteinstitute.org</a>
-          <span class="footer-sep">|</span>
-          <a href="https://mediwaste.co.uk" target="_blank" rel="noopener noreferrer">mediwaste.co.uk</a>
-          <span class="footer-sep">|</span>
-          <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
         </div>
       </div>
     </footer>
