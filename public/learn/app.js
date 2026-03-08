@@ -233,7 +233,7 @@ function renderLanding(area) {
         </div>
       </div>
       <div class="course-badge-container">
-        <img src="./assets/logo-white.png?v=20260308174900" alt="WasteInstitute" style="max-width:200px;height:auto;">
+        <img src="./assets/white-iyo.png?v=20260308180000" alt="WasteInstitute" style="max-width:200px;height:auto;">
       </div>
     </div>
 
@@ -955,7 +955,7 @@ function renderFooter() {
     <footer class="site-footer">
       <div class="footer-content">
         <div class="footer-left">
-          <img src="./assets/logo-white.png?v=20260308174900" alt="WasteInstitute" class="footer-logo">
+          <img src="./assets/logo.png?v=20260308180000" alt="WasteInstitute" class="footer-logo">
           <span class="footer-text">Copyright © 2026 WasteInstitute.org. All rights reserved.</span>
         </div>
         <div class="footer-links">
