@@ -415,7 +415,7 @@ function renderLesson(area) {
   area.innerHTML = `
     <div class="lesson-header">
       <div class="lesson-header-logo">
-        <img src="./assets/logo.jpg" alt="WasteInstitute" class="lesson-logo-img">
+        <img src="./assets/logo.png?v=20260308180000" alt="WasteInstitute" class="lesson-logo-img">
       </div>
       <h1 class="lesson-title">${les.title}</h1>
       <div class="lesson-meta">
@@ -911,7 +911,7 @@ function renderCertificate(area) {
         <input type="text" id="cert-name" placeholder="Your Full Name" oninput="updateCertName(this.value)">
       </div>
       <div class="certificate" id="certificate-print-area">
-        <img src="./assets/logo.jpg" alt="WasteInstitute" class="certificate-logo">
+        <img src="./assets/logo.png?v=20260308180000" alt="WasteInstitute" class="certificate-logo">
         <div class="certificate-heading">Certificate of Completion</div>
         <div class="certificate-presented">THIS IS TO CERTIFY THAT</div>
         <div class="certificate-name" id="cert-display-name">[Your Name]</div>
