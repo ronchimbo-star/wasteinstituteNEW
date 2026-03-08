@@ -1632,20 +1632,21 @@ ul, ol { list-style: none; }
 }
 
 .footer-logo {
-  height: 24px;
+  height: 36px;
 }
 
 .footer-text {
-  font-size: 12.5px;
-  color: var(--muted);
+  font-size: 14px;
+  color: var(--text);
   line-height: 1.6;
+  font-weight: 500;
 }
 
 .footer-links {
   display: flex;
   align-items: center;
   gap: 16px;
-  font-size: 12.5px;
+  font-size: 14px;
 }
 
 .footer-links a {

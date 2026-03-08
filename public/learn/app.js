@@ -233,7 +233,7 @@ function renderLanding(area) {
         </div>
       </div>
       <div class="course-badge-container">
-        ${renderCourseBadge()}
+        <img src="./assets/logo-white.png" alt="WasteInstitute" style="max-width:200px;height:auto;">
       </div>
     </div>
 
