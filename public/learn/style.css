@@ -2449,6 +2449,8 @@ ul, ol { list-style: none; }
 }
 
 /* === Responsive === */
+/* DISABLED - Force desktop layout on all screen sizes */
+/*
 @media (max-width: 1024px) {
   .sidebar {
     transform: translateX(-100%);
@@ -2506,7 +2508,10 @@ ul, ol { list-style: none; }
 
   .site-footer { padding: 32px 24px; }
 }
+*/
 
+/* DISABLED - Force desktop layout on all screen sizes */
+/*
 @media (max-width: 640px) {
   /* Touch-friendly buttons */
   .btn-primary,
@@ -2591,3 +2596,4 @@ ul, ol { list-style: none; }
   .rich-content h2 { font-size: 20px; margin-top: 32px; }
   .rich-content h3 { font-size: 17px; }
 }
+*/
