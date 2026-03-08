@@ -73,6 +73,7 @@
           <div style="text-align:center;">
             <div style="font-size:40px;margin-bottom:16px;">📚</div>
             <div style="font-size:16px;color:#6B7280;">Loading course content...</div>
+            <div id="debug-info" style="margin-top:20px;padding:16px;background:#f3f4f6;border-radius:8px;font-family:monospace;font-size:12px;text-align:left;max-width:600px;"></div>
           </div>
         </div>
       </div>
@@ -89,6 +90,43 @@
   <!-- Confetti Canvas -->
   <canvas id="confetti-canvas"></canvas>
 
-  <script src="./app.js?v=20260308180000"></script>
+  <!-- Inline test to verify script loading -->
+  <script>
+    console.log("=== INLINE SCRIPT LOADED ===");
+    console.log("Testing JavaScript execution...");
+    console.log("Window location:", window.location.href);
+    console.log("Attempting to load app.js...");
+
+    // Visual debug info
+    const debugInfo = [];
+    debugInfo.push("✓ Inline JS executing");
+    debugInfo.push("Location: " + window.location.pathname);
+
+    // Capture errors
+    window.addEventListener('error', function(e) {
+      console.error("ERROR CAUGHT:", e.message, e.filename, e.lineno);
+      debugInfo.push("❌ ERROR: " + e.message);
+      debugInfo.push("File: " + e.filename + ":" + e.lineno);
+      const el = document.getElementById('debug-info');
+      if (el) el.innerHTML = debugInfo.join('<br>');
+    });
+
+    setTimeout(() => {
+      debugInfo.push("navigateTo: " + (typeof window.navigateTo));
+      debugInfo.push("Ready: " + document.readyState);
+      const el = document.getElementById('debug-info');
+      if (el) el.innerHTML = debugInfo.join('<br>');
+    }, 500);
+  </script>
+
+  <script src="./app.js?v=20260308190000"></script>
+
+  <script>
+    console.log("=== AFTER APP.JS SCRIPT TAG ===");
+    setTimeout(() => {
+      console.log("Window.navigateTo exists?", typeof window.navigateTo);
+      console.log("Document ready state:", document.readyState);
+    }, 100);
+  </script>
 </body>
 </html>

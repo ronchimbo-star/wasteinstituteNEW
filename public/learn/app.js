@@ -4,6 +4,10 @@
 
 /* eslint-disable no-unused-vars */
 
+console.log("====================================");
+console.log("APP.JS IS LOADING - START");
+console.log("====================================");
+
 // ---- State (in-memory only) ----
 const state = {
   currentView: "landing",
