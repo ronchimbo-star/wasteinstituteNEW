@@ -364,17 +364,46 @@ function renderModuleIntro(area) {
         ${mod.lessons.map((les, li) => {
     const isComplete = state.completedLessons.has(`${state.currentModule}-${li}`);
     const readMin = estimateReadTime(les);
-    return `<div style="display:flex;align-items:center;gap:12px;padding:14px 18px;background:${isComplete ? "var(--light-green)" : "var(--surface)"};border-radius:var(--radius-md);cursor:pointer;border:1px solid ${isComplete ? "var(--green-border)" : "var(--border-light)"};" onclick="navigateTo('lesson', ${state.currentModule}, ${li})">
+    return `<div class="module-lesson-link" style="display:flex;align-items:center;gap:12px;padding:14px 18px;background:${isComplete ? "var(--light-green)" : "var(--surface)"};border-radius:var(--radius-md);cursor:pointer;border:1px solid ${isComplete ? "var(--green-border)" : "var(--border-light)"};" data-nav-action="go-to-lesson" data-mi="${state.currentModule}" data-li="${li}">
             <span style="color:${isComplete ? "var(--green)" : "var(--muted)"};font-size:14px;font-weight:600;min-width:24px;">${li + 1}.</span>
             <span style="flex:1;font-size:14px;font-weight:500;">${les.title}</span>
             ${isComplete ? '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="9" fill="#00B300"/><path d="M5 9l2.5 2.5L13 6.5" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>' : `<span style="font-size:12px;color:var(--muted);">~${readMin} min</span>`}
           </div>`;
   }).join("")}
       </div>
-      <button class="btn-primary" onclick="navigateTo('lesson', ${state.currentModule}, 0)">Begin Module →</button>
+      <button class="btn-primary" data-nav-action="begin-module" data-mi="${state.currentModule}">Begin Module →</button>
     </div>
     ${renderFooter()}
   `;
+
+  // Attach event listeners
+  attachModuleIntroListeners();
+}
+
+// ---- Attach Module Intro Listeners ----
+function attachModuleIntroListeners() {
+  const navButtons = document.querySelectorAll('[data-nav-action]');
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const action = this.getAttribute('data-nav-action');
+      const mi = parseInt(this.getAttribute('data-mi'));
+      const li = this.getAttribute('data-li') ? parseInt(this.getAttribute('data-li')) : null;
+
+      console.log('Module intro button clicked:', action, 'Module:', mi, 'Lesson:', li);
+
+      switch(action) {
+        case 'go-to-lesson':
+          navigateTo('lesson', mi, li);
+          break;
+        case 'begin-module':
+          navigateTo('lesson', mi, 0);
+          break;
+      }
+    });
+  });
 }
 
 function estimateReadTime(contentOrLesson) {
@@ -431,19 +460,57 @@ function renderLesson(area) {
     </div>
     <div class="lesson-nav">
       ${li > 0
-    ? `<button class="lesson-nav-btn" onclick="navigateTo('lesson', ${mi}, ${li - 1})">← Previous Lesson</button>`
-    : `<button class="lesson-nav-btn" onclick="navigateTo('module', ${mi})" style="opacity:0.5;">← Module Intro</button>`
+    ? `<button class="lesson-nav-btn" data-nav-action="prev-lesson" data-mi="${mi}" data-li="${li - 1}">← Previous Lesson</button>`
+    : `<button class="lesson-nav-btn" data-nav-action="module-intro" data-mi="${mi}" style="opacity:0.5;">← Module Intro</button>`
 }
-      <button class="mark-complete-btn ${isComplete ? "completed" : ""}" onclick="toggleLessonComplete(${mi}, ${li})">
+      <button class="mark-complete-btn ${isComplete ? "completed" : ""}" data-nav-action="toggle-complete" data-mi="${mi}" data-li="${li}">
         ${isComplete ? "✓ Completed" : "Mark as Complete"}
       </button>
       ${li < mod.lessons.length - 1
-    ? `<button class="lesson-nav-btn" onclick="navigateTo('lesson', ${mi}, ${li + 1})">Next Lesson →</button>`
-    : `<button class="lesson-nav-btn" onclick="navigateTo('quiz', ${mi})" style="background:var(--green);color:white;border-color:var(--green);">Take Module Quiz →</button>`
+    ? `<button class="lesson-nav-btn" data-nav-action="next-lesson" data-mi="${mi}" data-li="${li + 1}">Next Lesson →</button>`
+    : `<button class="lesson-nav-btn" data-nav-action="module-quiz" data-mi="${mi}" style="background:var(--green);color:white;border-color:var(--green);">Take Module Quiz →</button>`
 }
     </div>
     ${renderFooter()}
   `;
+
+  // Add event listeners for navigation buttons
+  attachLessonNavListeners();
+}
+
+// ---- Attach Lesson Navigation Listeners ----
+function attachLessonNavListeners() {
+  const navButtons = document.querySelectorAll('[data-nav-action]');
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const action = this.getAttribute('data-nav-action');
+      const mi = parseInt(this.getAttribute('data-mi'));
+      const li = this.getAttribute('data-li') ? parseInt(this.getAttribute('data-li')) : null;
+
+      console.log('Button clicked:', action, 'Module:', mi, 'Lesson:', li);
+
+      switch(action) {
+        case 'prev-lesson':
+          navigateTo('lesson', mi, li);
+          break;
+        case 'next-lesson':
+          navigateTo('lesson', mi, li);
+          break;
+        case 'module-intro':
+          navigateTo('module', mi);
+          break;
+        case 'module-quiz':
+          navigateTo('quiz', mi);
+          break;
+        case 'toggle-complete':
+          toggleLessonComplete(mi, li);
+          break;
+      }
+    });
+  });
 }
 
 // ---- WI Watermark SVG ----
