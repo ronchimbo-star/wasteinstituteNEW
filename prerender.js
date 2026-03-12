@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync, cpSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -132,6 +132,21 @@ ${urlEntries}
   console.log('Sitemap generated successfully');
 }
 
+// Copy learn directory to dist
+function copyLearnFiles() {
+  const learnSource = join(__dirname, 'public', 'learn');
+  const learnDest = join(__dirname, 'dist', 'learn');
+
+  try {
+    if (existsSync(learnSource)) {
+      cpSync(learnSource, learnDest, { recursive: true });
+      console.log('Learn files copied to dist/');
+    }
+  } catch (error) {
+    console.warn('Warning: Could not copy learn files:', error.message);
+  }
+}
+
 // Main prerender function
 async function prerender() {
   console.log('Starting prerender process...');
@@ -144,6 +159,9 @@ async function prerender() {
   // Save routes list for edge function
   const routesFile = join(__dirname, 'dist', 'prerendered-routes.json');
   writeFileSync(routesFile, JSON.stringify(routes, null, 2));
+
+  // Copy learn files
+  copyLearnFiles();
 
   console.log(`Prerender complete. ${routes.length} routes prepared.`);
   console.log('Routes list saved to dist/prerendered-routes.json');

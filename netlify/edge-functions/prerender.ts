@@ -1,9 +1,22 @@
 import type { Context } from "https://edge.netlify.com";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 
-const supabaseUrl = Deno.env.get('VITE_SUPABASE_URL')!;
-const supabaseKey = Deno.env.get('VITE_SUPABASE_ANON_KEY')!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Initialize Supabase client (will be created on first request)
+let supabase: any = null;
+
+function getSupabaseClient() {
+  if (!supabase) {
+    const supabaseUrl = Deno.env.get('VITE_SUPABASE_URL');
+    const supabaseKey = Deno.env.get('VITE_SUPABASE_ANON_KEY');
+
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Missing Supabase credentials');
+    }
+
+    supabase = createClient(supabaseUrl, supabaseKey);
+  }
+  return supabase;
+}
 
 // Detect if request is from a crawler
 function isCrawler(userAgent: string): boolean {
@@ -27,7 +40,8 @@ function isCrawler(userAgent: string): boolean {
 
 // Fetch course data from Supabase
 async function getCourseData(slug: string) {
-  const { data, error } = await supabase
+  const client = getSupabaseClient();
+  const { data, error } = await client
     .from('courses')
     .select('*')
     .eq('slug', slug)
@@ -40,7 +54,8 @@ async function getCourseData(slug: string) {
 
 // Fetch news article data from Supabase
 async function getNewsData(slug: string) {
-  const { data, error } = await supabase
+  const client = getSupabaseClient();
+  const { data, error } = await client
     .from('news')
     .select('*')
     .eq('slug', slug)
@@ -53,7 +68,8 @@ async function getNewsData(slug: string) {
 
 // Fetch membership level data from Supabase
 async function getMembershipData(slug: string) {
-  const { data, error } = await supabase
+  const client = getSupabaseClient();
+  const { data, error } = await client
     .from('membership_levels')
     .select('*')
     .eq('slug', slug)

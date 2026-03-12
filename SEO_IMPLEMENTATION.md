@@ -124,6 +124,7 @@ The build process:
 3. Fetches all dynamic content (courses, news, memberships)
 4. Generates sitemap.xml with all routes
 5. Saves routes list to prerendered-routes.json
+6. Copies learn platform files to dist/learn
 
 ## Environment Variables
 
