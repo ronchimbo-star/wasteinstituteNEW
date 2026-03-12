@@ -1,4 +1,8 @@
 [[edge_functions]]
+  function = "prerender"
+  path = "/*"
+
+[[edge_functions]]
   function = "seo-rewrite"
   path = "/*"
 
