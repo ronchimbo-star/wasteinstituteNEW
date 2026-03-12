@@ -100,22 +100,66 @@ export default function AdminCertificates() {
     setGenerating(enrollment.id);
 
     const verificationCode = generateVerificationCode();
+    const certificateId = `CERT-${Date.now()}`;
 
-    const { error } = await supabase.from('certificates').insert([
+    const { data: certData, error } = await supabase.from('certificates').insert([
       {
         verification_code: verificationCode,
         user_id: enrollment.user_id,
         course_id: enrollment.course_id,
         student_name: enrollment.user_profiles.full_name,
         enrollment_id: enrollment.id,
-        certificate_id: `CERT-${Date.now()}`,
+        certificate_id: certificateId,
       },
-    ]);
+    ]).select(`
+      *,
+      user_profiles!certificates_user_id_fkey(full_name, email),
+      courses(title)
+    `).single();
 
     if (error) {
       alert('Error generating certificate: ' + error.message);
       setGenerating(null);
       return;
+    }
+
+    if (certData) {
+      const student = certData.user_profiles as any;
+      const course = certData.courses as any;
+
+      await supabase.from('notifications').insert([
+        {
+          type: 'new_certificate',
+          title: 'New Certificate Issued',
+          message: `Certificate issued to ${student.full_name} for ${course.title}`,
+          metadata: {
+            name: student.full_name,
+            courseTitle: course.title,
+            certificateId: certificateId,
+            verificationCode: verificationCode,
+          },
+          related_id: certData.id,
+        },
+      ]);
+
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      fetch(`${supabaseUrl}/functions/v1/send-notification-email`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'new_certificate',
+          data: {
+            name: student.full_name,
+            courseTitle: course.title,
+            certificateId: certificateId,
+          },
+        }),
+      }).catch(err => console.error('Email notification error:', err));
     }
 
     setGenerating(null);

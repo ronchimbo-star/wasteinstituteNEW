@@ -81,7 +81,7 @@ export default function AdminEnrollments() {
 
     const { data: currentUser } = await supabase.auth.getUser();
 
-    const { error } = await supabase.from('course_enrollments').insert([
+    const { data: enrollmentData, error } = await supabase.from('course_enrollments').insert([
       {
         user_id: selectedStudent,
         course_id: selectedCourse,
@@ -89,7 +89,11 @@ export default function AdminEnrollments() {
         status: 'enrolled',
         progress: 0,
       },
-    ]);
+    ]).select(`
+      *,
+      user_profiles!course_enrollments_user_id_fkey(full_name, email),
+      courses(title)
+    `).single();
 
     if (error) {
       if (error.code === '23505') {
@@ -98,6 +102,44 @@ export default function AdminEnrollments() {
         alert('Error enrolling student: ' + error.message);
       }
       return;
+    }
+
+    if (enrollmentData) {
+      const student = enrollmentData.user_profiles as any;
+      const course = enrollmentData.courses as any;
+
+      await supabase.from('notifications').insert([
+        {
+          type: 'new_enrollment',
+          title: 'New Course Enrollment',
+          message: `${student.full_name} has been enrolled in ${course.title}`,
+          metadata: {
+            name: student.full_name,
+            email: student.email,
+            courseTitle: course.title,
+          },
+          related_id: enrollmentData.id,
+        },
+      ]);
+
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      fetch(`${supabaseUrl}/functions/v1/send-notification-email`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'new_enrollment',
+          data: {
+            name: student.full_name,
+            email: student.email,
+            courseTitle: course.title,
+          },
+        }),
+      }).catch(err => console.error('Email notification error:', err));
     }
 
     setShowAddModal(false);
