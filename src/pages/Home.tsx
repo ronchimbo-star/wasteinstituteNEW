@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
-import { BookOpen, Award, Users, TrendingUp, ArrowRight, Star, Quote, Sparkles, Monitor, Video, Recycle } from 'lucide-react';
+import { BookOpen, Award, Users, TrendingUp, ArrowRight, Star, Quote, Sparkles, Monitor, Video, Recycle, ChevronDown, Lightbulb } from 'lucide-react';
 
 interface Course {
   id: string;
@@ -47,6 +47,7 @@ export const HomePage = () => {
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [news, setNews] = useState<NewsArticle[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   useEffect(() => {
     loadData();
@@ -65,6 +66,78 @@ export const HomePage = () => {
     if (newsRes.data) setNews(newsRes.data);
     if (testimonialsRes.data) setTestimonials(testimonialsRes.data);
   };
+
+  const faqs = [
+    {
+      category: "Circular Economy & Strategy",
+      questions: [
+        {
+          q: "What is the circular economy and how is it different from recycling?",
+          a: "The circular economy is a systemic shift away from the traditional \"take-make-waste\" linear model. It aims to keep resources in use for as long as possible through processes like reuse, repair, remanufacturing, and recycling. While recycling is a key component, the circular economy focuses more broadly on designing out waste and pollution in the first place, rather than just managing materials at the end of their life."
+        },
+        {
+          q: "How does Extended Producer Responsibility (EPR) work?",
+          a: "Extended Producer Responsibility (EPR) is a policy approach that shifts the financial and operational responsibility for managing a product's end-of-life from municipalities to the producers who design and sell the products. This creates a strong incentive for companies to design products that are more durable, repairable, and recyclable."
+        },
+        {
+          q: "What are the main challenges in implementing a circular economy?",
+          a: "Key challenges include overcoming deeply embedded linear business models, designing products for disassembly and reuse, creating viable markets for secondary raw materials, and establishing consistent global policies to support circularity."
+        }
+      ]
+    },
+    {
+      category: "Waste-to-Energy & Technology",
+      questions: [
+        {
+          q: "What is Waste-to-Energy (WtE) and is it a good alternative to landfills?",
+          a: "Waste-to-Energy (WtE) refers to processes that convert non-recyclable waste into energy, such as electricity, heat, or fuel, through methods like combustion, gasification, or anaerobic digestion. For residual waste that cannot be recycled, WtE is generally a better alternative than landfilling because it recovers energy, reduces the volume of waste by up to 90%, and can significantly lower greenhouse gas emissions compared to methane-producing landfills."
+        },
+        {
+          q: "How clean are modern Waste-to-Energy plants?",
+          a: "Modern WtE facilities are equipped with rigorous air pollution control technologies, such as baghouse filters, scrubbers, and continuous emission monitoring systems. This ensures that emissions of pollutants like dioxins, heavy metals, and particulates are well below strict regulatory standards. The U.S. EPA has recognized that these plants produce electricity \"with less environmental impact than almost any other source of electricity\"."
+        },
+        {
+          q: "What is landfill gas and can it be used for energy?",
+          a: "Landfill gas is a natural byproduct of the decomposition of organic waste in landfills, composed primarily of methane and carbon dioxide. Yes, it is a valuable renewable energy source. Landfill gas can be captured and used to generate electricity, heat, or be upgraded into renewable natural gas (RNG) for use as a vehicle fuel. Capturing and using this gas also prevents methane, a potent greenhouse gas, from escaping into the atmosphere."
+        }
+      ]
+    },
+    {
+      category: "PFAS & Hazardous Materials",
+      questions: [
+        {
+          q: "What are PFAS and why are they a concern in waste management?",
+          a: "PFAS (per- and polyfluoroalkyl substances), often called \"forever chemicals,\" are a large group of synthetic chemicals used in countless consumer products like non-stick cookware, food packaging, and stain-resistant fabrics. They are a major concern in waste management because they are extremely persistent in the environment and do not break down easily. When products containing PFAS are thrown away, they can contaminate landfill leachate, compost, and biosolids, potentially re-entering the environment."
+        },
+        {
+          q: "Does recycling spread PFAS contamination?",
+          a: "This is a critical question. Research indicates that most biological treatment methods like composting are ineffective at removing PFAS. When materials containing PFAS are recycled (e.g., food packaging turned into new paper products), the PFAS can persist in the recycled material, potentially leading to a cycle of contamination and raising concerns about the safety of these recycled products."
+        }
+      ]
+    },
+    {
+      category: "Recycling Basics & Contamination",
+      questions: [
+        {
+          q: "What is \"wishcycling\" and why is it bad?",
+          a: "\"Wishcycling\" is the well-intentioned act of putting items in the recycling bin hoping they can be recycled, even when they can't. This is problematic because non-recyclable items like plastic bags, greasy pizza boxes, or clothing can contaminate entire loads of recycling, causing them to be sent to the landfill instead. It also increases costs and slows down operations at recycling facilities."
+        },
+        {
+          q: "How can I ensure my recycling doesn't get contaminated?",
+          a: "Follow three simple rules: 1) Empty and rinse containers to remove food residue and liquid. 2) Keep items dry and loose—never bag your recycling. 3) Know your local guidelines and only put accepted items in the bin. When in doubt, it's better to leave it out."
+        }
+      ]
+    },
+    {
+      category: "Hazardous Waste",
+      questions: [
+        {
+          q: "How should I dispose of household hazardous waste like paint or batteries?",
+          a: "Household hazardous waste (HHW) such as paint, solvents, batteries, and electronics should never be placed in your regular trash or recycling bin. Many communities offer dedicated HHW collection centers, drop-off events, or permanent facilities for safe disposal. Retailers like hardware stores or electronics shops may also accept certain items like batteries and CFL bulbs."
+        }
+      ]
+    }
+  ];
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -429,6 +502,87 @@ export const HomePage = () => {
             Get Started Today
             <ArrowRight size={20} />
           </Link>
+        </div>
+      </section>
+
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-full mb-4">
+                <Lightbulb className="text-emerald-600" size={32} />
+              </div>
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                Waste Management Expertise at Your Fingertips
+              </h2>
+              <p className="text-xl text-gray-600">
+                Common questions answered by industry experts
+              </p>
+            </div>
+
+            <div className="space-y-8">
+              {faqs.map((category, categoryIndex) => (
+                <div key={categoryIndex}>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-3">
+                    <Recycle className="text-emerald-600" size={28} />
+                    {category.category}
+                  </h3>
+                  <div className="space-y-3">
+                    {category.questions.map((faq, faqIndex) => {
+                      const globalIndex = faqs.slice(0, categoryIndex).reduce((acc, cat) => acc + cat.questions.length, 0) + faqIndex;
+                      const isOpen = openFaqIndex === globalIndex;
+
+                      return (
+                        <div
+                          key={faqIndex}
+                          className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-emerald-500 transition-all shadow-sm hover:shadow-md"
+                        >
+                          <button
+                            onClick={() => setOpenFaqIndex(isOpen ? null : globalIndex)}
+                            className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+                          >
+                            <span className="text-lg font-semibold text-gray-900 pr-4">
+                              {faq.q}
+                            </span>
+                            <ChevronDown
+                              className={`flex-shrink-0 text-emerald-600 transition-transform duration-300 ${
+                                isOpen ? 'rotate-180' : ''
+                              }`}
+                              size={24}
+                            />
+                          </button>
+                          <div
+                            className={`transition-all duration-300 ease-in-out ${
+                              isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                            } overflow-hidden`}
+                          >
+                            <div className="px-6 pb-5 pt-2">
+                              <p className="text-gray-700 leading-relaxed">
+                                {faq.a}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-12 text-center">
+              <p className="text-gray-600 mb-6">
+                Have more questions? Our expert-led courses provide in-depth answers and practical knowledge.
+              </p>
+              <Link
+                to="/courses"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-all transform hover:scale-105 shadow-md"
+              >
+                Explore Our Courses
+                <ArrowRight size={20} />
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </Layout>
