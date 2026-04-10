@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import { PoundSterling, TrendingUp, Users, CreditCard, Download, Search, Filter } from 'lucide-react';
+import { PoundSterling, TrendingUp, Users, CreditCard, Download, Search, Filter, Trash2 } from 'lucide-react';
 
 interface Payment {
   id: string;
@@ -114,6 +114,52 @@ export default function Financials() {
       .limit(50);
 
     if (data) setInvoices(data as any);
+  };
+
+  const updatePaymentStatus = async (id: string, status: string) => {
+    try {
+      const { error } = await supabase.from('payments').update({ status }).eq('id', id);
+      if (error) throw error;
+      setPayments(payments.map(p => p.id === id ? { ...p, status } : p));
+    } catch (error) {
+      console.error('Error updating payment status:', error);
+      alert('Failed to update payment status.');
+    }
+  };
+
+  const deletePayment = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this payment record?')) return;
+    try {
+      const { error } = await supabase.from('payments').delete().eq('id', id);
+      if (error) throw error;
+      setPayments(payments.filter(p => p.id !== id));
+    } catch (error) {
+      console.error('Error deleting payment:', error);
+      alert('Failed to delete payment.');
+    }
+  };
+
+  const updateInvoiceStatus = async (id: string, status: string) => {
+    try {
+      const { error } = await supabase.from('invoices').update({ status }).eq('id', id);
+      if (error) throw error;
+      setInvoices(invoices.map(i => i.id === id ? { ...i, status } : i));
+    } catch (error) {
+      console.error('Error updating invoice status:', error);
+      alert('Failed to update invoice status.');
+    }
+  };
+
+  const deleteInvoice = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this invoice?')) return;
+    try {
+      const { error } = await supabase.from('invoices').delete().eq('id', id);
+      if (error) throw error;
+      setInvoices(invoices.filter(i => i.id !== id));
+    } catch (error) {
+      console.error('Error deleting invoice:', error);
+      alert('Failed to delete invoice.');
+    }
   };
 
   const exportPayments = () => {
@@ -326,6 +372,7 @@ export default function Financials() {
                     <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Amount</th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Payment Method</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -337,29 +384,45 @@ export default function Financials() {
                       <td className="py-3 px-4">
                         <div>
                           <p className="text-sm font-medium text-gray-900">
-                            {payment.user?.user_profiles?.full_name || 'N/A'}
+                            {payment.user_profiles?.full_name || 'N/A'}
                           </p>
-                          <p className="text-xs text-gray-500">{payment.user?.email}</p>
+                          <p className="text-xs text-gray-500">{payment.user_profiles?.email}</p>
                         </div>
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-900">
                         {payment.enrollment?.course?.title || 'N/A'}
                       </td>
                       <td className="py-3 px-4 text-sm font-medium text-gray-900">
-                        ${Number(payment.amount).toFixed(2)} {payment.currency}
+                        £{Number(payment.amount).toFixed(2)} {payment.currency}
                       </td>
                       <td className="py-3 px-4">
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          payment.status === 'completed' ? 'bg-green-100 text-green-800' :
-                          payment.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                          payment.status === 'failed' ? 'bg-red-100 text-red-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {payment.status}
-                        </span>
+                        <select
+                          value={payment.status}
+                          onChange={(e) => updatePaymentStatus(payment.id, e.target.value)}
+                          className={`text-xs px-2 py-1 rounded-full border-0 font-medium cursor-pointer ${
+                            payment.status === 'completed' ? 'bg-green-100 text-green-800' :
+                            payment.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                            payment.status === 'failed' ? 'bg-red-100 text-red-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="completed">Completed</option>
+                          <option value="failed">Failed</option>
+                          <option value="refunded">Refunded</option>
+                        </select>
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-600">
                         {payment.payment_method || 'N/A'}
+                      </td>
+                      <td className="py-3 px-4">
+                        <button
+                          onClick={() => deletePayment(payment.id)}
+                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                          title="Delete payment"
+                        >
+                          <Trash2 size={14} />
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -403,22 +466,34 @@ export default function Financials() {
                         {invoice.course_title}
                       </td>
                       <td className="py-3 px-4 text-sm font-medium text-gray-900">
-                        ${Number(invoice.total_amount).toFixed(2)} {invoice.currency}
+                        £{Number(invoice.total_amount).toFixed(2)} {invoice.currency}
                       </td>
                       <td className="py-3 px-4">
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          invoice.status === 'paid' ? 'bg-green-100 text-green-800' :
-                          invoice.status === 'issued' ? 'bg-blue-100 text-blue-800' :
-                          invoice.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {invoice.status}
-                        </span>
+                        <select
+                          value={invoice.status}
+                          onChange={(e) => updateInvoiceStatus(invoice.id, e.target.value)}
+                          className={`text-xs px-2 py-1 rounded-full border-0 font-medium cursor-pointer ${
+                            invoice.status === 'paid' ? 'bg-green-100 text-green-800' :
+                            invoice.status === 'issued' ? 'bg-blue-100 text-blue-800' :
+                            invoice.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}
+                        >
+                          <option value="issued">Issued</option>
+                          <option value="paid">Paid</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
                       </td>
                       <td className="py-3 px-4">
-                        <button className="text-emerald-600 hover:text-emerald-700 text-sm font-medium">
-                          Download
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => deleteInvoice(invoice.id)}
+                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                            title="Delete invoice"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
