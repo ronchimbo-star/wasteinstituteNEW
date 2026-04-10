@@ -5,6 +5,7 @@ import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
 import { Calendar, ArrowRight, Clock, TrendingUp, Search, X } from 'lucide-react';
 import { useDebounce } from '../hooks/useDebounce';
+import { OptimizedImage } from '../components/OptimizedImage';
 
 interface NewsArticle {
   id: string;
@@ -19,7 +20,6 @@ interface NewsArticle {
 export default function News() {
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
-  const [imageLoaded, setImageLoaded] = useState<Record<string, boolean>>({});
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm);
 
@@ -49,10 +49,6 @@ export default function News() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleImageLoad = (articleId: string) => {
-    setImageLoaded(prev => ({ ...prev, [articleId]: true }));
   };
 
   const getReadingTime = (content: string) => {
@@ -119,30 +115,20 @@ export default function News() {
                   <Link to={`/news/${article.slug}`} className="block">
                     <div className="relative h-56 overflow-hidden bg-gradient-to-br from-emerald-100 to-teal-100">
                       {article.featured_image ? (
-                        <>
-                          {!imageLoaded[article.id] && (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
-                            </div>
-                          )}
-                          <img
-                            src={article.featured_image}
-                            alt={article.title}
-                            loading="lazy"
-                            width="600"
-                            height="400"
-                            onLoad={() => handleImageLoad(article.id)}
-                            className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${
-                              imageLoaded[article.id] ? 'opacity-100' : 'opacity-0'
-                            }`}
-                          />
-                        </>
+                        <OptimizedImage
+                          src={article.featured_image}
+                          alt={article.title}
+                          className="w-full h-full group-hover:scale-110 transition-transform duration-500"
+                          width={600}
+                          height={224}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
                           <Calendar className="text-emerald-600" size={64} />
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                     </div>
                     <div className="p-6">
                       <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">

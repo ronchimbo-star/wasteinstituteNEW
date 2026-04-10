@@ -4,6 +4,7 @@ import Layout from '../components/Layout';
 import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
 import { Calendar, MapPin, Clock, Users, Monitor, ArrowRight, Filter } from 'lucide-react';
+import { OptimizedImage } from '../components/OptimizedImage';
 
 interface Event {
   id: string;
@@ -222,13 +223,13 @@ export default function EventsPage() {
                   >
                     <div className="relative h-48 overflow-hidden flex-shrink-0">
                       {event.featured_image ? (
-                        <img
+                        <OptimizedImage
                           src={event.featured_image}
                           alt={event.title}
-                          width="600"
-                          height="192"
-                          loading="lazy"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full group-hover:scale-105 transition-transform duration-300"
+                          width={600}
+                          height={192}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center">

@@ -5,6 +5,7 @@ import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
 import { BookOpen, Clock, TrendingUp, Filter, X, Star, Quote, Search } from 'lucide-react';
 import { useDebounce } from '../hooks/useDebounce';
+import { OptimizedImage } from '../components/OptimizedImage';
 
 interface Course {
   id: string;
@@ -265,16 +266,14 @@ export default function Courses() {
                     className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all border border-gray-200 hover:border-emerald-500 group flex flex-col"
                   >
                     {course.featured_image ? (
-                      <div className="h-48 overflow-hidden flex-shrink-0">
-                        <img
-                          src={course.featured_image}
-                          alt={course.title}
-                          width="600"
-                          height="192"
-                          loading="lazy"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
+                      <OptimizedImage
+                        src={course.featured_image}
+                        alt={course.title}
+                        className="h-48 flex-shrink-0 group-hover:scale-105 transition-transform duration-300"
+                        width={600}
+                        height={192}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
                     ) : (
                       <div className="h-48 bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center flex-shrink-0">
                         <BookOpen className="text-white" size={64} />
@@ -346,6 +345,7 @@ export default function Courses() {
                         width="40"
                         height="40"
                         loading="lazy"
+                        decoding="async"
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     ) : (

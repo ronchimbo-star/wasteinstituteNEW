@@ -21,7 +21,7 @@ export function OptimizedImage({
 }: OptimizedImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(priority);
-  const imgRef = useRef<HTMLImageElement>(null);
+  const imgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (priority) return;
@@ -35,9 +35,7 @@ export function OptimizedImage({
           }
         });
       },
-      {
-        rootMargin: '50px',
-      }
+      { rootMargin: '200px' }
     );
 
     if (imgRef.current) {
@@ -47,38 +45,27 @@ export function OptimizedImage({
     return () => observer.disconnect();
   }, [priority]);
 
-  const getWebPSrc = (originalSrc: string) => {
-    return originalSrc.replace(/\.(jpg|jpeg|png)$/i, '.webp');
-  };
-
-  const imageSrc = isInView ? src : '';
-  const webpSrc = isInView ? getWebPSrc(src) : '';
-
   return (
-    <picture>
+    <div ref={imgRef} className={`relative overflow-hidden ${className}`} style={{ width, height }}>
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+      )}
       {isInView && (
-        <source
-          srcSet={webpSrc}
-          type="image/webp"
+        <img
+          src={src}
+          alt={alt}
+          className={`w-full h-full object-cover transition-opacity duration-400 ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          width={width}
+          height={height}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+          fetchPriority={priority ? 'high' : 'low'}
           sizes={sizes}
+          onLoad={() => setIsLoaded(true)}
         />
       )}
-      <img
-        ref={imgRef}
-        src={imageSrc}
-        alt={alt}
-        className={`${className} ${
-          isLoaded ? 'opacity-100' : 'opacity-0'
-        } transition-opacity duration-300`}
-        width={width}
-        height={height}
-        loading={priority ? 'eager' : 'lazy'}
-        decoding="async"
-        onLoad={() => setIsLoaded(true)}
-        style={{
-          backgroundColor: '#f3f4f6',
-        }}
-      />
-    </picture>
+    </div>
   );
 }

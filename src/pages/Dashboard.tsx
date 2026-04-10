@@ -5,6 +5,7 @@ import Layout from '../components/Layout';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { BookOpen, Award, CheckCircle, Clock, Download, PlayCircle } from 'lucide-react';
+import { OptimizedImage } from '../components/OptimizedImage';
 
 interface Course {
   id: string;
@@ -256,10 +257,13 @@ export default function Dashboard() {
                       <Link to={`/courses/${course.slug}`} className="block">
                         <div className="h-40 overflow-hidden bg-gradient-to-br from-emerald-400 to-emerald-600">
                           {course.featured_image ? (
-                            <img
+                            <OptimizedImage
                               src={course.featured_image}
                               alt={course.title}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full"
+                              width={600}
+                              height={160}
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">

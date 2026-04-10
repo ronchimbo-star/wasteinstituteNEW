@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FileText, Image, Video, Link as LinkIcon, Download, ExternalLink, BookMarked, Sparkles, Users, FileStack, Recycle } from 'lucide-react';
+import { OptimizedImage } from '../components/OptimizedImage';
 import Layout from '../components/Layout';
 import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
@@ -130,6 +131,11 @@ export default function Resources() {
                   src="https://hckahrhomcgnvshwkabd.supabase.co/storage/v1/object/public/media/resources/wasteinstitute-image3.jpg"
                   alt="Students studying together"
                   className="w-full h-[450px] object-cover object-[center_35%]"
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
+                  width="800"
+                  height="450"
                 />
 
                 <div className="absolute top-4 left-4 animate-bounce">
@@ -137,6 +143,10 @@ export default function Resources() {
                     src="https://hckahrhomcgnvshwkabd.supabase.co/storage/v1/object/public/media/icons/white-icon.png"
                     alt="Waste Institute"
                     className="w-12 h-12 drop-shadow-lg"
+                    loading="lazy"
+                    decoding="async"
+                    width="48"
+                    height="48"
                   />
                 </div>
 
@@ -226,13 +236,14 @@ export default function Resources() {
                       className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-emerald-500 transition-all"
                     >
                       {resource.thumbnail_url ? (
-                        <div className="h-48 overflow-hidden">
-                          <img
-                            src={resource.thumbnail_url}
-                            alt={resource.title}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
+                        <OptimizedImage
+                          src={resource.thumbnail_url}
+                          alt={resource.title}
+                          className="h-48"
+                          width={600}
+                          height={192}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
                       ) : (
                         <div className="h-48 bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
                           <Icon className="text-white" size={64} />

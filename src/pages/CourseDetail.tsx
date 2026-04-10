@@ -403,6 +403,11 @@ export default function CourseDetail() {
                   src={course.featured_image}
                   alt={course.title}
                   className="w-full rounded-xl shadow-2xl"
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
+                  width="600"
+                  height="400"
                 />
               ) : (
                 <div className="w-full aspect-video bg-white bg-opacity-10 backdrop-blur-sm rounded-xl shadow-2xl flex items-center justify-center">

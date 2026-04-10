@@ -195,6 +195,10 @@ function PromoCard({ ad }: { ad: NewsAd }) {
           src={ad.image_url}
           alt={ad.title}
           className="w-full h-48 object-cover rounded-xl mb-6"
+          loading="lazy"
+          decoding="async"
+          width="800"
+          height="192"
         />
       )}
       <h3 className="text-2xl font-bold mb-4">{ad.title}</h3>
@@ -413,6 +417,11 @@ export default function NewsDetail() {
                 src={article.featured_image}
                 alt={article.title}
                 className="w-full h-full object-cover"
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
+                width="1200"
+                height="384"
               />
             </div>
           ) : (
