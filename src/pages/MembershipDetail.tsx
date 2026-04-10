@@ -95,12 +95,24 @@ export function MembershipDetail() {
 
   const benefitsList = level.benefits.split('\n').filter(b => b.trim());
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://wasteinstitute.org/" },
+      { "@type": "ListItem", "position": 2, "name": "Membership", "item": "https://wasteinstitute.org/membership" },
+      { "@type": "ListItem", "position": 3, "name": `${level.name} Membership`, "item": `https://wasteinstitute.org/membership/${level.slug}` }
+    ]
+  };
+
   return (
     <Layout>
       <SEO
         title={level.meta_title || `${level.name} Membership | Waste Institute`}
         description={level.meta_description || level.description}
         keywords={level.meta_keywords || undefined}
+        canonical={`https://wasteinstitute.org/membership/${level.slug}`}
+        structuredData={breadcrumbSchema}
       />
 
       <div className="bg-gradient-to-br from-emerald-50 to-teal-50 py-12">

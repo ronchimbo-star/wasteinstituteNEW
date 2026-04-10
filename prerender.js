@@ -43,6 +43,7 @@ async function getDynamicRoutes() {
     '/courses',
     '/membership',
     '/news',
+    '/events',
     '/resources',
     '/contact',
     '/faq',
@@ -96,6 +97,18 @@ async function getDynamicRoutes() {
       });
     }
 
+    // Fetch published events
+    const { data: events } = await supabase
+      .from('events')
+      .select('slug')
+      .eq('published', true);
+
+    if (events) {
+      events.forEach(event => {
+        routes.push(`/events/${event.slug}`);
+      });
+    }
+
     console.log(`Generated ${routes.length} routes for prerendering`);
     return routes;
   } catch (error) {
@@ -109,22 +122,38 @@ async function generateSitemap(routes) {
   const baseUrl = 'https://www.wasteinstitute.com';
   const now = new Date().toISOString();
 
+  const heroImages = [
+    { url: `${baseUrl}/wasteinstitute-hero1.jpg`, title: 'Waste Institute Hero 1' },
+    { url: `${baseUrl}/wasteinstitute-hero2.jpg`, title: 'Waste Institute Hero 2' },
+    { url: `${baseUrl}/wasteinstitute-hero3.jpg`, title: 'Waste Institute Hero 3' },
+    { url: `${baseUrl}/wasteinstitute-hero4.jpg`, title: 'Waste Institute Hero 4' },
+  ];
+
   const urlEntries = routes.map(route => {
     const priority = route === '/' ? '1.0' :
-                     route.startsWith('/courses/') || route.startsWith('/news/') ? '0.8' : '0.6';
+                     route.startsWith('/courses/') || route.startsWith('/news/') || route.startsWith('/events/') ? '0.8' :
+                     ['/courses', '/news', '/events', '/membership', '/about'].includes(route) ? '0.7' : '0.6';
     const changefreq = route === '/' ? 'daily' :
-                       route.startsWith('/news/') ? 'weekly' : 'monthly';
+                       route.startsWith('/news/') || route.startsWith('/events/') ? 'weekly' : 'monthly';
+
+    const imageBlock = route === '/' ? heroImages.map(img =>
+      `    <image:image>
+      <image:loc>${img.url}</image:loc>
+      <image:title>${img.title}</image:title>
+    </image:image>`
+    ).join('\n') : '';
 
     return `  <url>
     <loc>${baseUrl}${route}</loc>
     <lastmod>${now}</lastmod>
     <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>
+    <priority>${priority}</priority>${imageBlock ? '\n' + imageBlock : ''}
   </url>`;
   }).join('\n');
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${urlEntries}
 </urlset>`;
 

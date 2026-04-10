@@ -210,24 +210,29 @@ function PromoCard({ ad }: { ad: NewsAd }) {
   );
 }
 
-function AccordionFAQ({ question, answer }: { question: string; answer: string }) {
+function AccordionFAQ({ question, answer, index }: { question: string; answer: string; index: number }) {
   const [isOpen, setIsOpen] = useState(false);
+  const buttonId = `article-faq-btn-${index}`;
+  const panelId = `article-faq-panel-${index}`;
 
   return (
     <div className="border-b border-gray-200 last:border-b-0">
       <button
+        id={buttonId}
         onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-controls={panelId}
         className="w-full flex items-center justify-between py-5 px-6 text-left hover:bg-gray-50 transition-colors rounded-lg"
       >
         <span className="font-semibold text-gray-900 text-lg pr-8">{question}</span>
         {isOpen ? (
-          <ChevronUp size={24} className="text-emerald-600 flex-shrink-0" />
+          <ChevronUp size={24} className="text-emerald-600 flex-shrink-0" aria-hidden="true" />
         ) : (
-          <ChevronDown size={24} className="text-emerald-600 flex-shrink-0" />
+          <ChevronDown size={24} className="text-emerald-600 flex-shrink-0" aria-hidden="true" />
         )}
       </button>
       {isOpen && (
-        <div className="px-6 pb-5">
+        <div id={panelId} role="region" aria-labelledby={buttonId} className="px-6 pb-5">
           <p className="text-gray-700 text-base leading-relaxed">{answer}</p>
         </div>
       )}
@@ -357,23 +362,34 @@ export default function NewsDetail() {
     ? article.excerpt.substring(0, 155) + '...'
     : article.excerpt;
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": article.title,
-    "description": seoDescription,
-    "keywords": article.seo_keywords,
-    "datePublished": article.published_at,
-    "author": {
-      "@type": "Organization",
-      "name": "Waste Institute"
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": article.title,
+      "description": seoDescription,
+      "keywords": article.seo_keywords,
+      "datePublished": article.published_at,
+      "author": {
+        "@type": "Organization",
+        "name": "Waste Institute"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Waste Institute"
+      },
+      "mainEntityOfPage": `https://wasteinstitute.org/news/${article.slug}`
     },
-    "publisher": {
-      "@type": "Organization",
-      "name": "Waste Institute"
-    },
-    "mainEntityOfPage": `https://wasteinstitute.org/news/${article.slug}`
-  };
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://wasteinstitute.org/" },
+        { "@type": "ListItem", "position": 2, "name": "News", "item": "https://wasteinstitute.org/news" },
+        { "@type": "ListItem", "position": 3, "name": article.title, "item": `https://wasteinstitute.org/news/${article.slug}` }
+      ]
+    }
+  ];
 
   const readingTime = Math.ceil(article.content.split(' ').length / 200);
 
@@ -501,6 +517,7 @@ export default function NewsDetail() {
                     {extractFAQs(article.content).map((faq, index) => (
                       <AccordionFAQ
                         key={index}
+                        index={index}
                         question={faq.question}
                         answer={faq.answer}
                       />

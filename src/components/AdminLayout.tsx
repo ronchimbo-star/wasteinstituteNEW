@@ -22,7 +22,9 @@ import {
   GraduationCap,
   Award,
   PoundSterling,
-  Megaphone
+  Megaphone,
+  CalendarDays,
+  Mail
 } from 'lucide-react';
 import { useState } from 'react';
 import NotificationsPanel from './NotificationsPanel';
@@ -49,6 +51,8 @@ export const AdminLayout = () => {
     { icon: Award, label: 'Membership Levels', path: '/admin/membership-levels' },
     { icon: Newspaper, label: 'News', path: '/admin/news' },
     { icon: Megaphone, label: 'News Ads', path: '/admin/news-ads' },
+    { icon: CalendarDays, label: 'Events', path: '/admin/events' },
+    { icon: Mail, label: 'Newsletter', path: '/admin/newsletter' },
     { icon: FileText, label: 'Pages', path: '/admin/pages' },
     { icon: Star, label: 'Testimonials', path: '/admin/testimonials' },
     { icon: HelpCircle, label: 'FAQs', path: '/admin/faqs' },

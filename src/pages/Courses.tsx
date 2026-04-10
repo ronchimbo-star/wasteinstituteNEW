@@ -244,6 +244,9 @@ export default function Courses() {
                         <img
                           src={course.featured_image}
                           alt={course.title}
+                          width="600"
+                          height="192"
+                          loading="lazy"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>
@@ -315,6 +318,9 @@ export default function Courses() {
                       <img
                         src={testimonial.student_image}
                         alt={testimonial.student_name}
+                        width="40"
+                        height="40"
+                        loading="lazy"
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     ) : (

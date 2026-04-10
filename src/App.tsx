@@ -28,6 +28,9 @@ const CookiesPage = lazy(() => import('./pages/Cookies'));
 const AccessibilityPage = lazy(() => import('./pages/Accessibility'));
 const NotFoundPage = lazy(() => import('./pages/NotFound'));
 
+const EventsPage = lazy(() => import('./pages/Events'));
+const EventDetailPage = lazy(() => import('./pages/EventDetail'));
+
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard').then(m => ({ default: m.AdminDashboard })));
 const AdminCourses = lazy(() => import('./pages/admin/Courses').then(m => ({ default: m.AdminCourses })));
 const AdminCourseForm = lazy(() => import('./pages/admin/CourseForm').then(m => ({ default: m.CourseForm })));
@@ -53,6 +56,9 @@ const MembershipLevels = lazy(() => import('./pages/admin/MembershipLevels').the
 const MembershipLevelForm = lazy(() => import('./pages/admin/MembershipLevelForm').then(m => ({ default: m.MembershipLevelForm })));
 const Members = lazy(() => import('./pages/admin/Members').then(m => ({ default: m.Members })));
 const NewsAds = lazy(() => import('./pages/admin/NewsAds'));
+const AdminEvents = lazy(() => import('./pages/admin/Events').then(m => ({ default: m.AdminEvents })));
+const AdminEventForm = lazy(() => import('./pages/admin/EventForm').then(m => ({ default: m.AdminEventForm })));
+const AdminNewsletter = lazy(() => import('./pages/admin/Newsletter').then(m => ({ default: m.AdminNewsletter })));
 
 const LoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -80,6 +86,8 @@ function App() {
             <Route path="/resources" element={<ResourcesPage />} />
             <Route path="/membership" element={<MembershipPage />} />
             <Route path="/membership/:slug" element={<MembershipDetail />} />
+            <Route path="/events" element={<EventsPage />} />
+            <Route path="/events/:slug" element={<EventDetailPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/terms" element={<TermsPage />} />
@@ -126,6 +134,10 @@ function App() {
             <Route path="news/new" element={<AdminNewsForm />} />
             <Route path="news/:id" element={<AdminNewsForm />} />
             <Route path="news-ads" element={<NewsAds />} />
+            <Route path="events" element={<AdminEvents />} />
+            <Route path="events/new" element={<AdminEventForm />} />
+            <Route path="events/:id" element={<AdminEventForm />} />
+            <Route path="newsletter" element={<AdminNewsletter />} />
             <Route path="pages" element={<AdminPages />} />
             <Route path="pages/new" element={<AdminPageForm />} />
             <Route path="pages/:id" element={<AdminPageForm />} />

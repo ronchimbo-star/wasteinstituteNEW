@@ -4,6 +4,7 @@ import Layout from '../components/Layout';
 import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
 import { BookOpen, Award, Users, TrendingUp, ArrowRight, Star, Quote, Sparkles, Monitor, Video, Recycle, ChevronDown, Lightbulb } from 'lucide-react';
+import NewsletterSignup from '../components/NewsletterSignup';
 
 interface Course {
   id: string;
@@ -139,14 +140,41 @@ export const HomePage = () => {
     }
   ];
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    "name": "Waste Institute",
-    "url": "https://wasteinstitute.org",
-    "description": "Professional waste management courses and certifications from industry experts. Learn waste legislation, circular economy, hazardous waste handling and more.",
-    "email": "info@wasteinstitute.org"
-  };
+  const avgRating = testimonials.length > 0
+    ? (testimonials.reduce((sum, t) => sum + (t.rating || 5), 0) / testimonials.length).toFixed(1)
+    : '5.0';
+
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "Waste Institute",
+      "url": "https://wasteinstitute.org",
+      "description": "Professional waste management courses and certifications from industry experts. Learn waste legislation, circular economy, hazardous waste handling and more.",
+      "email": "info@wasteinstitute.org",
+      "telephone": "+441322879087",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "82 James Carter Rd",
+        "addressLocality": "Mildenhall, Bury Saint Edmunds",
+        "postalCode": "IP28 7DE",
+        "addressCountry": "GB"
+      }
+    },
+    ...(testimonials.length > 0 ? [{
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Waste Institute",
+      "url": "https://wasteinstitute.org",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": avgRating,
+        "bestRating": "5",
+        "worstRating": "1",
+        "ratingCount": testimonials.length.toString()
+      }
+    }] : [])
+  ];
 
   return (
     <Layout>
@@ -582,6 +610,26 @@ export const HomePage = () => {
                 <ArrowRight size={20} />
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-700 text-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-white/20 rounded-full mb-6">
+              <BookOpen className="text-white" size={28} />
+            </div>
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+              Stay Ahead in Waste Management
+            </h2>
+            <p className="text-lg text-emerald-100 mb-8">
+              Get the latest industry insights, course updates, and expert guidance delivered to your inbox.
+            </p>
+            <NewsletterSignup variant="banner" source="homepage" />
+            <p className="text-xs text-emerald-200 mt-4">
+              No spam, ever. Unsubscribe at any time.
+            </p>
           </div>
         </div>
       </section>

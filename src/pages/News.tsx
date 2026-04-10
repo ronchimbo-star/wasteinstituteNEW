@@ -101,6 +101,8 @@ export default function News() {
                             src={article.featured_image}
                             alt={article.title}
                             loading="lazy"
+                            width="600"
+                            height="400"
                             onLoad={() => handleImageLoad(article.id)}
                             className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${
                               imageLoaded[article.id] ? 'opacity-100' : 'opacity-0'

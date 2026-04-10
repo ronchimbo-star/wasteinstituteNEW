@@ -303,19 +303,30 @@ export default function CourseDetail() {
     ? course.description.substring(0, 155) + '...'
     : course.description;
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "Course",
-    "name": course.title,
-    "description": course.description,
-    "provider": {
-      "@type": "Organization",
-      "name": "Waste Institute",
-      "url": "https://wasteinstitute.org"
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Course",
+      "name": course.title,
+      "description": course.description,
+      "provider": {
+        "@type": "Organization",
+        "name": "Waste Institute",
+        "url": "https://wasteinstitute.org"
+      },
+      "courseMode": "online",
+      "url": `https://wasteinstitute.org/courses/${course.slug}`
     },
-    "courseMode": "online",
-    "url": `https://wasteinstitute.org/courses/${course.slug}`
-  };
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://wasteinstitute.org/" },
+        { "@type": "ListItem", "position": 2, "name": "Courses", "item": "https://wasteinstitute.org/courses" },
+        { "@type": "ListItem", "position": 3, "name": course.title, "item": `https://wasteinstitute.org/courses/${course.slug}` }
+      ]
+    }
+  ];
 
   return (
     <Layout>

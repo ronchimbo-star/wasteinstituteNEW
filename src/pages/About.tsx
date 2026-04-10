@@ -3,16 +3,34 @@ import SEO from '../components/SEO';
 import { Award, Users, Target, TrendingUp, Globe, BookOpen, CheckCircle, Star } from 'lucide-react';
 
 export default function About() {
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    "name": "Waste Institute",
-    "url": "https://wasteinstitute.org",
-    "description": "Leading provider of professional waste management education and certifications, connecting students with industry experts worldwide.",
-    "email": "info@wasteinstitute.org",
-    "areaServed": "Worldwide",
-    "knowsAbout": ["Waste Management", "Circular Economy", "Environmental Compliance", "Hazardous Waste", "Recycling"]
-  };
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "Waste Institute",
+      "url": "https://wasteinstitute.org",
+      "description": "Leading provider of professional waste management education and certifications, connecting students with industry experts worldwide.",
+      "email": "info@wasteinstitute.org",
+      "areaServed": "Worldwide",
+      "knowsAbout": ["Waste Management", "Circular Economy", "Environmental Compliance", "Hazardous Waste", "Recycling"]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Waste Institute",
+      "url": "https://wasteinstitute.org",
+      "email": "info@wasteinstitute.org",
+      "telephone": "+441322879087",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "82 James Carter Rd",
+        "addressLocality": "Mildenhall, Bury Saint Edmunds",
+        "postalCode": "IP28 7DE",
+        "addressCountry": "GB"
+      },
+      "sameAs": ["https://www.linkedin.com/company/wasteinstitute"]
+    }
+  ];
 
   return (
     <Layout>

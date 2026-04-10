@@ -1,8 +1,20 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import logo from '../assets/waste-institute-logo-new-paths.svg';
+
+const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+  `transition-colors font-medium ${
+    isActive
+      ? 'text-emerald-600 border-b-2 border-emerald-600 pb-0.5'
+      : 'text-gray-700 hover:text-emerald-600'
+  }`;
+
+const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+  `transition-colors font-medium ${
+    isActive ? 'text-emerald-600 font-semibold' : 'text-gray-700 hover:text-emerald-600'
+  }`;
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -29,49 +41,14 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link
-              to="/"
-              className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
-            >
-              Home
-            </Link>
-            <Link
-              to="/courses"
-              className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
-            >
-              Courses
-            </Link>
-            <Link
-              to="/news"
-              className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
-            >
-              News
-            </Link>
-            <Link
-              to="/resources"
-              className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
-            >
-              Resources
-            </Link>
-            <Link
-              to="/faq"
-              className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
-            >
-              FAQ
-            </Link>
-            <Link
-              to="/about"
-              className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
-            >
-              About
-            </Link>
-            <Link
-              to="/contact"
-              className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
-            >
-              Contact
-            </Link>
+          <nav className="hidden md:flex items-center space-x-8" aria-label="Main navigation">
+            <NavLink to="/" end className={navLinkClass}>Home</NavLink>
+            <NavLink to="/courses" className={navLinkClass}>Courses</NavLink>
+            <NavLink to="/news" className={navLinkClass}>News</NavLink>
+            <NavLink to="/events" className={navLinkClass}>Events</NavLink>
+            <NavLink to="/resources" className={navLinkClass}>Resources</NavLink>
+            <NavLink to="/about" className={navLinkClass}>About</NavLink>
+            <NavLink to="/contact" className={navLinkClass}>Contact</NavLink>
           </nav>
 
           {/* Desktop Auth Buttons */}
@@ -128,56 +105,14 @@ export default function Header() {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200">
-            <nav className="flex flex-col space-y-4">
-              <Link
-                to="/"
-                onClick={closeMobileMenu}
-                className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
-              >
-                Home
-              </Link>
-              <Link
-                to="/courses"
-                onClick={closeMobileMenu}
-                className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
-              >
-                Courses
-              </Link>
-              <Link
-                to="/news"
-                onClick={closeMobileMenu}
-                className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
-              >
-                News
-              </Link>
-              <Link
-                to="/resources"
-                onClick={closeMobileMenu}
-                className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
-              >
-                Resources
-              </Link>
-              <Link
-                to="/faq"
-                onClick={closeMobileMenu}
-                className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
-              >
-                FAQ
-              </Link>
-              <Link
-                to="/about"
-                onClick={closeMobileMenu}
-                className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
-              >
-                About
-              </Link>
-              <Link
-                to="/contact"
-                onClick={closeMobileMenu}
-                className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
-              >
-                Contact
-              </Link>
+            <nav className="flex flex-col space-y-4" aria-label="Mobile navigation">
+              <NavLink to="/" end onClick={closeMobileMenu} className={mobileNavLinkClass}>Home</NavLink>
+              <NavLink to="/courses" onClick={closeMobileMenu} className={mobileNavLinkClass}>Courses</NavLink>
+              <NavLink to="/news" onClick={closeMobileMenu} className={mobileNavLinkClass}>News</NavLink>
+              <NavLink to="/events" onClick={closeMobileMenu} className={mobileNavLinkClass}>Events</NavLink>
+              <NavLink to="/resources" onClick={closeMobileMenu} className={mobileNavLinkClass}>Resources</NavLink>
+              <NavLink to="/about" onClick={closeMobileMenu} className={mobileNavLinkClass}>About</NavLink>
+              <NavLink to="/contact" onClick={closeMobileMenu} className={mobileNavLinkClass}>Contact</NavLink>
 
               {/* Mobile Auth Links */}
               <div className="pt-4 border-t border-gray-200 space-y-4">

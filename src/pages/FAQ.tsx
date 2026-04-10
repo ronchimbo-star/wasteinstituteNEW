@@ -126,35 +126,50 @@ export default function FAQ() {
                   )}
                 </div>
 
-                <div className="space-y-3">
-                  {category.faqs.map((faq) => (
-                    <div
-                      key={faq.id}
-                      className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-emerald-500 transition-colors"
-                    >
-                      <button
-                        onClick={() => toggleItem(faq.id)}
-                        className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+                <div className="space-y-3" role="list">
+                  {category.faqs.map((faq) => {
+                    const isOpen = openItems.has(faq.id);
+                    const panelId = `faq-panel-${faq.id}`;
+                    const buttonId = `faq-btn-${faq.id}`;
+                    return (
+                      <div
+                        key={faq.id}
+                        role="listitem"
+                        className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-emerald-500 transition-colors"
                       >
-                        <span className="text-lg font-semibold text-gray-900 pr-4">
-                          {faq.question}
-                        </span>
-                        <ChevronDown
-                          className={`flex-shrink-0 text-emerald-600 transition-transform ${
-                            openItems.has(faq.id) ? 'transform rotate-180' : ''
-                          }`}
-                          size={24}
-                        />
-                      </button>
-                      {openItems.has(faq.id) && (
-                        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                          <p className="text-gray-700 whitespace-pre-line">
-                            {faq.answer}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                        <button
+                          id={buttonId}
+                          onClick={() => toggleItem(faq.id)}
+                          aria-expanded={isOpen}
+                          aria-controls={panelId}
+                          className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+                        >
+                          <span className="text-lg font-semibold text-gray-900 pr-4">
+                            {faq.question}
+                          </span>
+                          <ChevronDown
+                            className={`flex-shrink-0 text-emerald-600 transition-transform ${
+                              isOpen ? 'transform rotate-180' : ''
+                            }`}
+                            size={24}
+                            aria-hidden="true"
+                          />
+                        </button>
+                        {isOpen && (
+                          <div
+                            id={panelId}
+                            role="region"
+                            aria-labelledby={buttonId}
+                            className="px-6 py-4 bg-gray-50 border-t border-gray-200"
+                          >
+                            <p className="text-gray-700 whitespace-pre-line">
+                              {faq.answer}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             ))}
