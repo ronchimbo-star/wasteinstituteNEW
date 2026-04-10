@@ -1,12 +1,24 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { useCookieConsent } from './CookieConsent';
 
 export const GoogleAnalytics = () => {
   const [gaId, setGaId] = useState<string | null>(null);
+  const { hasAnalyticsConsent } = useCookieConsent();
 
   useEffect(() => {
     loadGASettings();
-  }, []);
+
+    const handleConsentUpdate = () => {
+      const stored = localStorage.getItem('wi_cookie_consent');
+      if (stored !== 'all') {
+        window['ga-disable-' + gaId] = true;
+      }
+    };
+
+    window.addEventListener('cookieConsentUpdated', handleConsentUpdate);
+    return () => window.removeEventListener('cookieConsentUpdated', handleConsentUpdate);
+  }, [gaId]);
 
   const loadGASettings = async () => {
     try {
@@ -25,7 +37,7 @@ export const GoogleAnalytics = () => {
   };
 
   useEffect(() => {
-    if (!gaId || gaId.trim() === '') return;
+    if (!gaId || gaId.trim() === '' || !hasAnalyticsConsent) return;
 
     const script1 = document.createElement('script');
     script1.async = true;
@@ -37,19 +49,15 @@ export const GoogleAnalytics = () => {
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', '${gaId}');
+      gtag('config', '${gaId}', { anonymize_ip: true });
     `;
     document.head.appendChild(script2);
 
     return () => {
-      if (script1.parentNode) {
-        script1.parentNode.removeChild(script1);
-      }
-      if (script2.parentNode) {
-        script2.parentNode.removeChild(script2);
-      }
+      if (script1.parentNode) script1.parentNode.removeChild(script1);
+      if (script2.parentNode) script2.parentNode.removeChild(script2);
     };
-  }, [gaId]);
+  }, [gaId, hasAnalyticsConsent]);
 
   return null;
 };

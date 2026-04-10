@@ -5,6 +5,9 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminLayout } from './components/AdminLayout';
 import { GoogleAnalytics } from './components/GoogleAnalytics';
 import ScrollToTop from './components/ScrollToTop';
+import CookieConsent from './components/CookieConsent';
+
+const AdminAuditLog = lazy(() => import('./pages/admin/AuditLog').then(m => ({ default: m.AdminAuditLog })));
 
 const HomePage = lazy(() => import('./pages/Home').then(m => ({ default: m.HomePage })));
 const CoursesPage = lazy(() => import('./pages/Courses'));
@@ -72,10 +75,11 @@ const LoadingFallback = () => (
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <ScrollToTop />
-        <GoogleAnalytics />
-        <Suspense fallback={<LoadingFallback />}>
+      <CookieConsent>
+        <AuthProvider>
+          <ScrollToTop />
+          <GoogleAnalytics />
+          <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/courses" element={<CoursesPage />} />
@@ -157,12 +161,14 @@ function App() {
             <Route path="membership-levels/:id" element={<MembershipLevelForm />} />
             <Route path="members" element={<Members />} />
             <Route path="settings" element={<AdminSettings />} />
+            <Route path="audit-log" element={<AdminAuditLog />} />
           </Route>
 
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
       </AuthProvider>
+      </CookieConsent>
     </BrowserRouter>
   );
 }

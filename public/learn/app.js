@@ -8,6 +8,142 @@ console.log("====================================");
 console.log("APP.JS IS LOADING - START");
 console.log("====================================");
 
+/* ============================================
+   Supabase Progress Sync
+   Maps mi-li index keys → Supabase lesson UUIDs
+   Course: Certificate in Healthcare Waste Management
+   Course ID: 47dc7e4b-21a0-4d8b-ac86-baa191c8db08
+   ============================================ */
+const SUPABASE_URL = "https://hckahrhomcgnvshwkabd.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhja2FocmhvbWNnbnZzaHdrYWJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMTI1NzksImV4cCI6MjA4NzU4ODU3OX0.ICk5hMLA4wCkHQOMF0iSDM1wqJazvtS-z5dQ4Rsp6FU";
+const LEARN_COURSE_ID = "47dc7e4b-21a0-4d8b-ac86-baa191c8db08";
+
+const LESSON_ID_MAP = {
+  "0-0": "8817e6a4-aa36-4957-b10f-2877393b6074",
+  "0-1": "17a86859-21c1-48d5-b6e7-c25a64663342",
+  "0-2": "b079a092-55f0-4bfa-b3c6-97f7e17c39ae",
+  "0-3": "5ea4e163-8cc1-4149-9a3b-faa04a2fd5c2",
+  "1-0": "2269d9bd-a3d6-428b-9c61-f6c5a3843102",
+  "1-1": "59007333-25ca-498c-8487-d6f44427a375",
+  "1-2": "bba00f3c-91a5-4478-95ae-268c47514bdf",
+  "1-3": "86ed2170-4160-41d0-af38-9f6b299e4f1e",
+  "2-0": "c7e551a0-9e17-499d-9d16-20f403e9c674",
+  "2-1": "e5a1015f-78f4-4978-87d2-1368a8d7d50f",
+  "2-2": "06e87a70-f4fd-43ba-93cc-d4f79f3de116",
+  "3-0": "2c5c276d-fb2d-48f1-b758-5d290b39a0ee",
+  "3-1": "a281ad53-7984-4bab-b216-326ce2e7e5a1",
+  "3-2": "39d46f28-a4c4-405e-b402-ad2cbdf7ebb5",
+  "3-3": "0e443d00-5a31-4c07-80e2-bcc16fca4076",
+  "4-0": "e03232e9-3cce-4fd9-aba6-86578afede8d",
+  "4-1": "7b7b9599-a369-4402-8bf1-a107a29b035f",
+  "4-2": "92bcc8fa-1fd5-408e-b8a1-e19ed3ffa380",
+  "4-3": "5917b1fb-63c1-4750-a445-c7a5f046ce99"
+};
+
+function getSupabaseSession() {
+  try {
+    const storageKey = `sb-hckahrhomcgnvshwkabd-auth-token`;
+    const raw = localStorage.getItem(storageKey);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed?.access_token ? parsed : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function syncLessonProgress(mi, li, completed) {
+  const session = getSupabaseSession();
+  if (!session) return;
+
+  const lessonUuid = LESSON_ID_MAP[`${mi}-${li}`];
+  if (!lessonUuid) return;
+
+  try {
+    const resp = await fetch(
+      `${SUPABASE_URL}/rest/v1/user_progress?lesson_id=eq.${lessonUuid}&user_id=eq.${session.user.id}`,
+      {
+        method: "GET",
+        headers: {
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${session.access_token}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+    const existing = await resp.json();
+
+    if (existing && existing.length > 0) {
+      await fetch(
+        `${SUPABASE_URL}/rest/v1/user_progress?lesson_id=eq.${lessonUuid}&user_id=eq.${session.user.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${session.access_token}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal"
+          },
+          body: JSON.stringify({ completed })
+        }
+      );
+    } else {
+      await fetch(
+        `${SUPABASE_URL}/rest/v1/user_progress`,
+        {
+          method: "POST",
+          headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${session.access_token}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal"
+          },
+          body: JSON.stringify({
+            user_id: session.user.id,
+            lesson_id: lessonUuid,
+            completed
+          })
+        }
+      );
+    }
+  } catch (e) {
+    console.warn("Progress sync failed (offline?):", e);
+  }
+}
+
+async function loadProgressFromSupabase() {
+  const session = getSupabaseSession();
+  if (!session) return;
+
+  try {
+    const lessonIds = Object.values(LESSON_ID_MAP).join(",");
+    const resp = await fetch(
+      `${SUPABASE_URL}/rest/v1/user_progress?user_id=eq.${session.user.id}&lesson_id=in.(${Object.values(LESSON_ID_MAP).map(id => `"${id}"`).join(",")})&select=lesson_id,completed`,
+      {
+        headers: {
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${session.access_token}`
+        }
+      }
+    );
+    const rows = await resp.json();
+    if (!Array.isArray(rows)) return;
+
+    const reverseMap = Object.fromEntries(
+      Object.entries(LESSON_ID_MAP).map(([k, v]) => [v, k])
+    );
+
+    rows.forEach(row => {
+      if (row.completed) {
+        const key = reverseMap[row.lesson_id];
+        if (key) state.completedLessons.add(key);
+      }
+    });
+  } catch (e) {
+    console.warn("Could not load progress from Supabase:", e);
+  }
+}
+
 // ---- State (in-memory only) ----
 const state = {
   currentView: "landing",
@@ -45,9 +181,10 @@ function fetchCourseData() {
       console.log("Course data fetch response received");
       return r.json();
     })
-    .then(data => {
+    .then(async data => {
       console.log("Course data parsed successfully", data);
       state.courseData = data;
+      await loadProgressFromSupabase();
       renderSidebar();
       renderView();
       initScrollToTop();
@@ -539,11 +676,13 @@ function getWIWatermarkSVG(color) {
 function toggleLessonComplete(mi, li) {
   console.log("toggleLessonComplete called:", mi, li);
   const key = `${mi}-${li}`;
-  if (state.completedLessons.has(key)) {
-    state.completedLessons.delete(key);
-  } else {
+  const nowCompleted = !state.completedLessons.has(key);
+  if (nowCompleted) {
     state.completedLessons.add(key);
+  } else {
+    state.completedLessons.delete(key);
   }
+  syncLessonProgress(mi, li, nowCompleted);
   renderView();
   renderSidebar();
 }

@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import Layout from '../components/Layout';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { BookOpen, Award, CheckCircle, Clock, Download } from 'lucide-react';
+import { BookOpen, Award, CheckCircle, Clock, Download, PlayCircle } from 'lucide-react';
 
 interface Course {
   id: string;
@@ -19,6 +19,7 @@ interface EnrolledCourse {
   totalLessons: number;
   completedLessons: number;
   progress: number;
+  nextLessonId: string | null;
 }
 
 interface Certificate {
@@ -107,17 +108,23 @@ export default function Dashboard() {
         .from('lessons')
         .select(`
           id,
+          display_order,
           modules (
-            course_id
+            course_id,
+            display_order
           )
-        `);
+        `)
+        .order('display_order', { ascending: true });
 
       if (lessonsError) throw lessonsError;
 
       const enrolled: EnrolledCourse[] = (coursesData || []).map((course) => {
-        const courseLessons = lessonsData?.filter(
+        const courseLessons = (lessonsData?.filter(
           (l: any) => l.modules?.course_id === course.id
-        ) || [];
+        ) || []).sort((a: any, b: any) => {
+          const modDiff = (a.modules?.display_order ?? 0) - (b.modules?.display_order ?? 0);
+          return modDiff !== 0 ? modDiff : (a.display_order ?? 0) - (b.display_order ?? 0);
+        });
 
         const completedLessonIds = new Set(
           progressData
@@ -131,11 +138,15 @@ export default function Dashboard() {
         ).length;
         const progress = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
 
+        const nextLesson = courseLessons.find((l: any) => !completedLessonIds.has(l.id));
+        const nextLessonId = nextLesson?.id ?? null;
+
         return {
           course,
           totalLessons,
           completedLessons,
           progress,
+          nextLessonId,
         };
       });
 
@@ -237,25 +248,26 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {enrolledCourses.map(({ course, totalLessons, completedLessons, progress }) => (
-                    <Link
+                  {enrolledCourses.map(({ course, totalLessons, completedLessons, progress, nextLessonId }) => (
+                    <div
                       key={course.id}
-                      to={`/courses/${course.slug}`}
-                      className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all border border-gray-200 hover:border-emerald-500"
+                      className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200 hover:shadow-xl transition-all"
                     >
-                      <div className="h-40 overflow-hidden bg-gradient-to-br from-emerald-400 to-emerald-600">
-                        {course.featured_image ? (
-                          <img
-                            src={course.featured_image}
-                            alt={course.title}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <BookOpen className="text-white" size={48} />
-                          </div>
-                        )}
-                      </div>
+                      <Link to={`/courses/${course.slug}`} className="block">
+                        <div className="h-40 overflow-hidden bg-gradient-to-br from-emerald-400 to-emerald-600">
+                          {course.featured_image ? (
+                            <img
+                              src={course.featured_image}
+                              alt={course.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <BookOpen className="text-white" size={48} />
+                            </div>
+                          )}
+                        </div>
+                      </Link>
                       <div className="p-6">
                         <div className="flex items-center gap-2 mb-3">
                           <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">
@@ -264,7 +276,7 @@ export default function Dashboard() {
                         </div>
                         <h3 className="text-xl font-bold text-gray-900 mb-4">{course.title}</h3>
 
-                        <div className="mb-3">
+                        <div className="mb-4">
                           <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
                             <span className="flex items-center gap-1">
                               <CheckCircle size={16} />
@@ -283,18 +295,44 @@ export default function Dashboard() {
                         </div>
 
                         {progress === 100 ? (
-                          <div className="flex items-center gap-2 text-emerald-600 font-semibold">
-                            <CheckCircle size={18} />
-                            Completed
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2 text-emerald-600 font-semibold">
+                              <CheckCircle size={18} />
+                              Completed
+                            </div>
+                            <Link
+                              to={`/courses/${course.slug}`}
+                              className="text-sm px-4 py-2 border border-emerald-600 text-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors font-medium"
+                            >
+                              Review Course
+                            </Link>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 text-gray-600">
-                            <Clock size={18} />
-                            In Progress
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2 text-gray-500 text-sm">
+                              <Clock size={16} />
+                              In Progress
+                            </div>
+                            {nextLessonId ? (
+                              <Link
+                                to={`/courses/${course.slug}?lesson=${nextLessonId}`}
+                                className="flex items-center gap-2 text-sm px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
+                              >
+                                <PlayCircle size={16} />
+                                Continue Learning
+                              </Link>
+                            ) : (
+                              <Link
+                                to={`/courses/${course.slug}`}
+                                className="text-sm px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
+                              >
+                                Start Course
+                              </Link>
+                            )}
                           </div>
                         )}
                       </div>
-                    </Link>
+                    </div>
                   ))}
                 </div>
               )}
@@ -333,7 +371,7 @@ export default function Dashboard() {
                         Certificate ID: {certificate.certificate_id}
                       </p>
                       <p className="text-sm text-gray-600 mb-4">
-                        Issued: {new Date(certificate.issued_date).toLocaleDateString('en-US', {
+                        Issued: {new Date(certificate.issued_date).toLocaleDateString('en-GB', {
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric',

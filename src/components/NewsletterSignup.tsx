@@ -10,6 +10,7 @@ interface NewsletterSignupProps {
 export default function NewsletterSignup({ variant = 'inline', source = 'website' }: NewsletterSignupProps) {
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
+  const [botField, setBotField] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -27,6 +28,7 @@ export default function NewsletterSignup({ variant = 'inline', source = 'website
         first_name: firstName.trim(),
         source,
         status: 'active',
+        bot_field: botField,
       });
 
     if (error) {
@@ -56,6 +58,9 @@ export default function NewsletterSignup({ variant = 'inline', source = 'website
   if (variant === 'banner') {
     return (
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+        <div aria-hidden="true" style={{ display: 'none' }}>
+          <input type="text" name="bot_field" tabIndex={-1} autoComplete="off" value={botField} onChange={e => setBotField(e.target.value)} />
+        </div>
         <input
           type="text"
           placeholder="First name (optional)"
@@ -90,6 +95,9 @@ export default function NewsletterSignup({ variant = 'inline', source = 'website
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
+      <div aria-hidden="true" style={{ display: 'none' }}>
+        <input type="text" name="bot_field" tabIndex={-1} autoComplete="off" value={botField} onChange={e => setBotField(e.target.value)} />
+      </div>
       <div className="flex gap-2">
         <input
           type="text"

@@ -301,7 +301,7 @@ export default function VerifyCertificate() {
                           </label>
                           <p className="text-lg text-gray-900 flex items-center gap-2">
                             <Calendar size={18} />
-                            {new Date(certificate.issued_date).toLocaleDateString('en-US', {
+                            {new Date(certificate.issued_date).toLocaleDateString('en-GB', {
                               year: 'numeric',
                               month: 'long',
                               day: 'numeric',

@@ -449,7 +449,7 @@ export default function NewsDetail() {
                   <div className="flex items-center gap-2">
                     <Calendar size={16} className="text-emerald-600" />
                     <time dateTime={article.published_at}>
-                      {new Date(article.published_at).toLocaleDateString('en-US', {
+                      {new Date(article.published_at).toLocaleDateString('en-GB', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',

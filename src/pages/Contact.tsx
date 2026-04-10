@@ -9,6 +9,7 @@ interface FormData {
   email: string;
   subject: string;
   message: string;
+  bot_field: string;
 }
 
 interface FormStatus {
@@ -22,6 +23,7 @@ export const Contact = () => {
     email: '',
     subject: '',
     message: '',
+    bot_field: '',
   });
   const [status, setStatus] = useState<FormStatus>({ type: null, message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,6 +50,7 @@ export const Contact = () => {
             email: formData.email,
             subject: formData.subject,
             message: formData.message,
+            bot_field: formData.bot_field,
           },
         ])
         .select()
@@ -279,6 +282,17 @@ export const Contact = () => {
                         rows={6}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-colors resize-none"
                         placeholder="Tell us more about your inquiry..."
+                      />
+                    </div>
+
+                    <div aria-hidden="true" style={{ display: 'none' }}>
+                      <input
+                        type="text"
+                        name="bot_field"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={formData.bot_field}
+                        onChange={handleChange}
                       />
                     </div>
 

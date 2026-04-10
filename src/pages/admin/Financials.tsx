@@ -343,7 +343,7 @@ export default function Financials() {
                       </div>
                       <div className="text-right">
                         <p className="font-semibold text-gray-900">
-                          ${Number(payment.amount).toFixed(2)} {payment.currency}
+                          £{Number(payment.amount).toFixed(2)}
                         </p>
                         <span className={`text-xs px-2 py-1 rounded-full ${
                           payment.status === 'completed' ? 'bg-green-100 text-green-800' :

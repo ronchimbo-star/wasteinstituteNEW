@@ -24,13 +24,23 @@ import {
   PoundSterling,
   Megaphone,
   CalendarDays,
-  Mail
+  Mail,
+  ClipboardList
 } from 'lucide-react';
 import { useState } from 'react';
 import NotificationsPanel from './NotificationsPanel';
 
+const ROLE_LABELS: Record<string, string> = {
+  super_admin: 'Super Admin',
+  admin: 'Admin',
+  content_editor: 'Content Editor',
+  instructor: 'Instructor',
+  support: 'Support',
+  user: 'User',
+};
+
 export const AdminLayout = () => {
-  const { signOut, profile } = useAuth();
+  const { signOut, profile, isSuperAdmin, isAdmin, isContentEditor, isInstructor, isSupport } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -40,30 +50,48 @@ export const AdminLayout = () => {
     navigate('/');
   };
 
-  const menuItems = [
+  const role = profile?.role;
+  const canViewFinancials = isSuperAdmin || isAdmin;
+  const canManageCMS = isSuperAdmin || isAdmin || isContentEditor;
+  const canManageCourses = isSuperAdmin || isAdmin || isInstructor;
+  const canViewSupport = isSuperAdmin || isAdmin || isSupport;
+  const canManageSystem = isSuperAdmin || isAdmin;
+
+  type MenuItem = { icon: React.ElementType; label: string; path: string };
+
+  const menuItems: MenuItem[] = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
-    { icon: PoundSterling, label: 'Financials', path: '/admin/financials' },
-    { icon: BookOpen, label: 'Courses', path: '/admin/courses' },
-    { icon: Tag, label: 'Sectors', path: '/admin/sectors' },
-    { icon: GraduationCap, label: 'Enrollments', path: '/admin/enrollments' },
-    { icon: Award, label: 'Certificates', path: '/admin/certificates' },
-    { icon: Users, label: 'Members', path: '/admin/members' },
-    { icon: Award, label: 'Membership Levels', path: '/admin/membership-levels' },
-    { icon: Newspaper, label: 'News', path: '/admin/news' },
-    { icon: Megaphone, label: 'News Ads', path: '/admin/news-ads' },
-    { icon: CalendarDays, label: 'Events', path: '/admin/events' },
-    { icon: Mail, label: 'Newsletter', path: '/admin/newsletter' },
-    { icon: FileText, label: 'Pages', path: '/admin/pages' },
-    { icon: Star, label: 'Testimonials', path: '/admin/testimonials' },
-    { icon: HelpCircle, label: 'FAQs', path: '/admin/faqs' },
-    { icon: FolderOpen, label: 'Resources', path: '/admin/resources' },
-    { icon: Upload, label: 'Media Manager', path: '/admin/media-manager' },
-    { icon: Image, label: 'Media', path: '/admin/media' },
-    { icon: Search, label: 'SEO', path: '/admin/seo' },
-    { icon: MessageSquare, label: 'Contact Forms', path: '/admin/contacts' },
-    { icon: UserPlus, label: 'Registrations', path: '/admin/registrations' },
-    { icon: Users, label: 'Users', path: '/admin/users' },
-    { icon: Settings, label: 'Settings', path: '/admin/settings' },
+    ...(canViewFinancials ? [{ icon: PoundSterling, label: 'Financials', path: '/admin/financials' }] : []),
+    ...(canManageCourses ? [
+      { icon: BookOpen, label: 'Courses', path: '/admin/courses' },
+      { icon: Tag, label: 'Sectors', path: '/admin/sectors' },
+      { icon: GraduationCap, label: 'Enrollments', path: '/admin/enrollments' },
+      { icon: Award, label: 'Certificates', path: '/admin/certificates' },
+    ] : []),
+    ...(canManageSystem ? [
+      { icon: Users, label: 'Members', path: '/admin/members' },
+      { icon: Award, label: 'Membership Levels', path: '/admin/membership-levels' },
+    ] : []),
+    ...(canManageCMS ? [
+      { icon: Newspaper, label: 'News', path: '/admin/news' },
+      { icon: Megaphone, label: 'News Ads', path: '/admin/news-ads' },
+      { icon: CalendarDays, label: 'Events', path: '/admin/events' },
+      { icon: Mail, label: 'Newsletter', path: '/admin/newsletter' },
+      { icon: FileText, label: 'Pages', path: '/admin/pages' },
+      { icon: Star, label: 'Testimonials', path: '/admin/testimonials' },
+      { icon: HelpCircle, label: 'FAQs', path: '/admin/faqs' },
+      { icon: FolderOpen, label: 'Resources', path: '/admin/resources' },
+      { icon: Upload, label: 'Media Manager', path: '/admin/media-manager' },
+      { icon: Image, label: 'Media', path: '/admin/media' },
+    ] : []),
+    ...(canManageSystem ? [{ icon: Search, label: 'SEO', path: '/admin/seo' }] : []),
+    ...(canViewSupport ? [
+      { icon: MessageSquare, label: 'Contact Forms', path: '/admin/contacts' },
+      { icon: UserPlus, label: 'Registrations', path: '/admin/registrations' },
+    ] : []),
+    ...(canManageSystem ? [{ icon: Users, label: 'Users', path: '/admin/users' }] : []),
+    ...(canManageSystem ? [{ icon: Settings, label: 'Settings', path: '/admin/settings' }] : []),
+    ...(isSuperAdmin ? [{ icon: ClipboardList, label: 'Audit Log', path: '/admin/audit-log' }] : []),
   ];
 
   return (
@@ -117,7 +145,7 @@ export const AdminLayout = () => {
           <div className="p-4 border-t border-gray-200">
             <div className="mb-4">
               <p className="text-sm font-medium text-gray-900">{profile?.full_name}</p>
-              <p className="text-xs text-gray-500 capitalize">{profile?.role}</p>
+              <p className="text-xs text-gray-500">{ROLE_LABELS[profile?.role ?? 'user'] ?? profile?.role}</p>
             </div>
             <button
               onClick={handleSignOut}

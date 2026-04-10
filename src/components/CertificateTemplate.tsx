@@ -142,7 +142,7 @@ const CertificateTemplate = forwardRef<HTMLDivElement, CertificateTemplateProps>
 
             <p style={{ fontSize: '16px', color: '#4B5563' }}>
               Awarded on{' '}
-              {new Date(issueDate).toLocaleDateString('en-US', {
+              {new Date(issueDate).toLocaleDateString('en-GB', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',

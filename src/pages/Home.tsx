@@ -56,9 +56,9 @@ export const HomePage = () => {
 
   const loadData = async () => {
     const [coursesRes, sectorsRes, newsRes, testimonialsRes] = await Promise.all([
-      supabase.from('courses').select('*').eq('published', true).limit(3),
+      supabase.from('courses').select('*').eq('published', true).is('deleted_at', null).limit(3),
       supabase.from('sectors').select('*').order('display_order').limit(6),
-      supabase.from('news_articles').select('*').eq('published', true).order('published_at', { ascending: false }).limit(3),
+      supabase.from('news_articles').select('*').eq('published', true).is('deleted_at', null).order('published_at', { ascending: false }).limit(3),
       supabase.from('testimonials').select('*').eq('published', true).eq('featured', true).order('display_order').limit(6),
     ]);
 
@@ -501,7 +501,7 @@ export const HomePage = () => {
                   <div className="h-48 bg-gradient-to-br from-emerald-400 to-emerald-600"></div>
                   <div className="p-6">
                     <p className="text-sm text-gray-500 mb-2">
-                      {new Date(article.published_at).toLocaleDateString('en-US', {
+                      {new Date(article.published_at).toLocaleDateString('en-GB', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',

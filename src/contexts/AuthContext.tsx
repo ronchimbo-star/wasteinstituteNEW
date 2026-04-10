@@ -2,10 +2,12 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
+export type UserRole = 'super_admin' | 'admin' | 'content_editor' | 'instructor' | 'support' | 'user';
+
 interface UserProfile {
   id: string;
   full_name: string;
-  role: 'super_admin' | 'admin' | 'user';
+  role: UserRole;
   created_at: string;
 }
 
@@ -19,6 +21,10 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   isSuperAdmin: boolean;
   isAdmin: boolean;
+  isContentEditor: boolean;
+  isInstructor: boolean;
+  isSupport: boolean;
+  isStaff: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -134,6 +140,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const isSuperAdmin = profile?.role === 'super_admin';
   const isAdmin = profile?.role === 'super_admin' || profile?.role === 'admin';
+  const isContentEditor = profile?.role === 'content_editor';
+  const isInstructor = profile?.role === 'instructor';
+  const isSupport = profile?.role === 'support';
+  const isStaff = isSuperAdmin || isAdmin || isContentEditor || isInstructor || isSupport;
 
   return (
     <AuthContext.Provider
@@ -147,6 +157,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         signOut,
         isSuperAdmin,
         isAdmin,
+        isContentEditor,
+        isInstructor,
+        isSupport,
+        isStaff,
       }}
     >
       {children}

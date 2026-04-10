@@ -3,7 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
-import { BookOpen, Clock, TrendingUp, Filter, X, Star, Quote } from 'lucide-react';
+import { BookOpen, Clock, TrendingUp, Filter, X, Star, Quote, Search } from 'lucide-react';
+import { useDebounce } from '../hooks/useDebounce';
 
 interface Course {
   id: string;
@@ -40,12 +41,14 @@ export default function Courses() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm);
 
   const selectedSector = searchParams.get('sector');
 
   useEffect(() => {
     loadData();
-  }, [selectedSector]);
+  }, [selectedSector, debouncedSearch]);
 
   const loadData = async () => {
     setLoading(true);
@@ -68,15 +71,19 @@ export default function Courses() {
 
       if (testimonialsData) setTestimonials(testimonialsData);
 
-      // Load courses with optional sector filter
+      // Load courses with optional sector filter and full-text search
       let query = supabase
         .from('courses')
         .select('*')
         .eq('published', true)
+        .is('deleted_at', null)
         .order('created_at', { ascending: false });
 
+      if (debouncedSearch.trim()) {
+        query = query.textSearch('fts', debouncedSearch.trim(), { type: 'websearch' });
+      }
+
       if (selectedSector) {
-        // Find sector by slug
         const sector = sectorsData?.find((s) => s.slug === selectedSector);
         if (sector) {
           query = query.eq('sector_id', sector.id);
@@ -138,8 +145,26 @@ export default function Courses() {
         </div>
       </div>
 
-      <div className="bg-white py-8 border-b sticky top-0 z-40 shadow-sm">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-white py-6 border-b sticky top-0 z-40 shadow-sm">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+          <div className="relative max-w-lg">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <input
+              type="text"
+              placeholder="Search courses..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Filter size={20} className="text-gray-600" />

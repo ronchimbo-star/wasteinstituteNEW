@@ -93,6 +93,9 @@ export const AdminUsers = () => {
     const colors: Record<string, string> = {
       super_admin: 'bg-amber-100 text-amber-800',
       admin: 'bg-emerald-100 text-emerald-800',
+      content_editor: 'bg-blue-100 text-blue-800',
+      instructor: 'bg-teal-100 text-teal-800',
+      support: 'bg-orange-100 text-orange-800',
       user: 'bg-gray-100 text-gray-700',
     };
     return colors[role] || colors.user;
@@ -155,6 +158,9 @@ export const AdminUsers = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 >
                   <option value="user">User</option>
+                  <option value="support">Support</option>
+                  <option value="content_editor">Content Editor</option>
+                  <option value="instructor">Instructor</option>
                   <option value="admin">Admin</option>
                   <option value="super_admin">Super Admin</option>
                 </select>
@@ -243,7 +249,7 @@ export const AdminUsers = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
-                      {new Date(user.created_at).toLocaleDateString('en-US', {
+                      {new Date(user.created_at).toLocaleDateString('en-GB', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',

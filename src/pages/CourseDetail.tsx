@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
@@ -68,7 +68,10 @@ interface Certificate {
 export default function CourseDetail() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const jumpToLesson = searchParams.get('lesson');
   const { user, loading: authLoading } = useAuth();
+  const lessonRefs = useRef<Record<string, HTMLElement | null>>({});
 
   const [course, setCourse] = useState<Course | null>(null);
   const [modules, setModules] = useState<ModuleWithLessons[]>([]);
@@ -172,6 +175,18 @@ export default function CourseDetail() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!jumpToLesson || modules.length === 0 || loading) return;
+    const parentModule = modules.find(m => m.lessons.some(l => l.id === jumpToLesson));
+    if (parentModule) {
+      setExpandedModules(prev => new Set([...prev, parentModule.id]));
+      setTimeout(() => {
+        const el = lessonRefs.current[jumpToLesson];
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 150);
+    }
+  }, [jumpToLesson, modules, loading]);
 
   const toggleModule = (moduleId: string) => {
     setExpandedModules((prev) => {
@@ -515,7 +530,8 @@ export default function CourseDetail() {
                               {module.lessons.map((lesson, lessonIndex) => (
                                 <div
                                   key={lesson.id}
-                                  className="px-6 py-4 hover:bg-white transition-colors"
+                                  ref={el => { lessonRefs.current[lesson.id] = el; }}
+                                  className={`px-6 py-4 hover:bg-white transition-colors ${jumpToLesson === lesson.id ? 'ring-2 ring-inset ring-emerald-500 bg-emerald-50' : ''}`}
                                 >
                                   <div className="flex items-start gap-4">
                                     <div className="flex-shrink-0 pt-1">
