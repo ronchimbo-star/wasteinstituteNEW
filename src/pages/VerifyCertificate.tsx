@@ -3,7 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
-import { Award, Search, CheckCircle, XCircle, Calendar, User, Printer } from 'lucide-react';
+import { Award, Search, CheckCircle, XCircle, Calendar, User, Printer, BookOpen } from 'lucide-react';
+import NewsletterSignup from '../components/NewsletterSignup';
 import CertificateTemplate from '../components/CertificateTemplate';
 
 interface CertificateDetails {
@@ -360,6 +361,26 @@ export default function VerifyCertificate() {
           </div>
         </div>
       </div>
+
+      <section className="py-16 bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-700 text-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-white/20 rounded-full mb-6">
+              <BookOpen className="text-white" size={28} />
+            </div>
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+              Stay Ahead in Waste Management
+            </h2>
+            <p className="text-lg text-emerald-100 mb-8">
+              Get the latest industry insights, course updates, and expert guidance delivered to your inbox.
+            </p>
+            <NewsletterSignup variant="banner" source="verify-certificate" />
+            <p className="text-xs text-emerald-200 mt-4">
+              No spam, ever. Unsubscribe at any time.
+            </p>
+          </div>
+        </div>
+      </section>
     </Layout>
   );
 }

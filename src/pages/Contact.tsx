@@ -1,8 +1,9 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import Layout from '../components/Layout';
 import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
-import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle, MessageCircle, Sparkles, Users, Headphones, Recycle } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle, MessageCircle, Sparkles, Users, Headphones, Recycle, BookOpen, Star, Quote } from 'lucide-react';
+import NewsletterSignup from '../components/NewsletterSignup';
 
 interface FormData {
   name: string;
@@ -17,6 +18,15 @@ interface FormStatus {
   message: string;
 }
 
+interface Testimonial {
+  id: string;
+  student_name: string;
+  student_title: string;
+  student_image: string;
+  testimonial_text: string;
+  rating: number;
+}
+
 export const Contact = () => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -27,6 +37,19 @@ export const Contact = () => {
   });
   const [status, setStatus] = useState<FormStatus>({ type: null, message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from('testimonials')
+      .select('id, student_name, student_title, student_image, testimonial_text, rating')
+      .eq('is_published', true)
+      .order('display_order', { ascending: true })
+      .limit(3)
+      .then(({ data }) => {
+        if (data) setTestimonials(data);
+      });
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -390,6 +413,76 @@ export const Contact = () => {
           </div>
         </div>
       </div>
+
+      {testimonials.length > 0 && (
+        <div className="bg-white py-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Success Stories</h2>
+              <p className="text-xl text-gray-600">Hear from professionals who completed our courses</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {testimonials.map((testimonial) => (
+                <div
+                  key={testimonial.id}
+                  className="bg-white rounded-xl shadow-md border border-gray-200 p-6"
+                >
+                  <div className="flex items-center gap-1 mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} size={18} className="fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <Quote className="text-emerald-200 mb-3" size={28} />
+                  <p className="text-gray-700 mb-6 line-clamp-3">{testimonial.testimonial_text}</p>
+                  <div className="flex items-center gap-3">
+                    {testimonial.student_image ? (
+                      <img
+                        src={testimonial.student_image}
+                        alt={testimonial.student_name}
+                        width="40"
+                        height="40"
+                        loading="lazy"
+                        decoding="async"
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                        <span className="text-emerald-700 font-bold">
+                          {testimonial.student_name.charAt(0)}
+                        </span>
+                      </div>
+                    )}
+                    <div>
+                      <p className="font-semibold text-gray-900 text-sm">{testimonial.student_name}</p>
+                      <p className="text-xs text-gray-600">{testimonial.student_title}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <section className="py-16 bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-700 text-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-white/20 rounded-full mb-6">
+              <BookOpen className="text-white" size={28} />
+            </div>
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+              Stay Ahead in Waste Management
+            </h2>
+            <p className="text-lg text-emerald-100 mb-8">
+              Get the latest industry insights, course updates, and expert guidance delivered to your inbox.
+            </p>
+            <NewsletterSignup variant="banner" source="contact" />
+            <p className="text-xs text-emerald-200 mt-4">
+              No spam, ever. Unsubscribe at any time.
+            </p>
+          </div>
+        </div>
+      </section>
     </Layout>
   );
 };
