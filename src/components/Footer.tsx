@@ -1,27 +1,12 @@
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Linkedin } from 'lucide-react';
 import logo from '../assets/waste-institute-logo-new-paths-light.svg';
-import NewsletterSignup from './NewsletterSignup';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
     <footer style={{ backgroundColor: '#00112b' }} className="text-white">
-      <div className="border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="text-center md:text-left">
-              <h3 className="text-lg font-semibold mb-1">Subscribe to Our Newsletter</h3>
-              <p className="text-gray-400 text-sm">Industry insights and course updates, straight to your inbox.</p>
-            </div>
-            <div className="w-full md:w-auto md:min-w-[480px]">
-              <NewsletterSignup variant="inline" source="footer" />
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
