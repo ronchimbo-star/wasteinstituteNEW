@@ -121,9 +121,14 @@ export default function AICourseDirector() {
 
   const getTier = (course: CourseFullData): string => {
     const syllabus = course.syllabus as Record<string, unknown> | null;
-    if (syllabus && typeof syllabus === 'object' && 'tier' in syllabus) {
+    if (syllabus && typeof syllabus === 'object' && !Array.isArray(syllabus) && 'tier' in syllabus) {
       return syllabus.tier as string;
     }
+    // Fallback: detect tier from sector name
+    const sectorName = course.sectors?.name || '';
+    if (sectorName.toLowerCase().includes('wamitab')) return 'Tier 1 - WAMITAB Rival';
+    if (sectorName.toLowerCase().includes('niche') || sectorName.toLowerCase().includes('industry')) return 'Tier 2 - Industry-Specific Niche';
+    if (sectorName.toLowerCase().includes('future') || sectorName.toLowerCase().includes('innovation')) return 'Tier 3 - Future Tech & Innovation';
     return 'Other';
   };
 
