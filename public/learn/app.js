@@ -144,6 +144,144 @@ async function loadProgressFromSupabase() {
   }
 }
 
+async function syncQuizResult(mi, score, passed, answers) {
+  const session = getSupabaseSession();
+  if (!session) return;
+
+  try {
+    const countResp = await fetch(
+      `${SUPABASE_URL}/rest/v1/quiz_results?user_id=eq.${session.user.id}&course_id=eq.${LEARN_COURSE_ID}&module_index=eq.${mi}&select=id`,
+      {
+        headers: {
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${session.access_token}`
+        }
+      }
+    );
+    const existing = await countResp.json();
+    const attemptNumber = Array.isArray(existing) ? existing.length + 1 : 1;
+
+    await fetch(
+      `${SUPABASE_URL}/rest/v1/quiz_results`,
+      {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${session.access_token}`,
+          "Content-Type": "application/json",
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({
+          user_id: session.user.id,
+          course_id: LEARN_COURSE_ID,
+          module_index: mi,
+          score,
+          passed,
+          answers,
+          attempt_number: attemptNumber
+        })
+      }
+    );
+  } catch (e) {
+    console.warn("Quiz sync failed:", e);
+  }
+}
+
+async function syncAssessmentResult(score, passed, answers, correctCount, timeTaken) {
+  const session = getSupabaseSession();
+  if (!session) return;
+
+  try {
+    const countResp = await fetch(
+      `${SUPABASE_URL}/rest/v1/assessment_results?user_id=eq.${session.user.id}&course_id=eq.${LEARN_COURSE_ID}&select=id`,
+      {
+        headers: {
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${session.access_token}`
+        }
+      }
+    );
+    const existing = await countResp.json();
+    const attemptNumber = Array.isArray(existing) ? existing.length + 1 : 1;
+
+    await fetch(
+      `${SUPABASE_URL}/rest/v1/assessment_results`,
+      {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${session.access_token}`,
+          "Content-Type": "application/json",
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({
+          user_id: session.user.id,
+          course_id: LEARN_COURSE_ID,
+          score,
+          passed,
+          answers,
+          total_questions: 25,
+          correct_answers: correctCount,
+          time_taken_seconds: timeTaken,
+          attempt_number: attemptNumber
+        })
+      }
+    );
+  } catch (e) {
+    console.warn("Assessment sync failed:", e);
+  }
+}
+
+async function loadQuizProgressFromSupabase() {
+  const session = getSupabaseSession();
+  if (!session) return;
+
+  try {
+    const resp = await fetch(
+      `${SUPABASE_URL}/rest/v1/quiz_results?user_id=eq.${session.user.id}&course_id=eq.${LEARN_COURSE_ID}&passed=eq.true&select=module_index,score&order=completed_at.desc`,
+      {
+        headers: {
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${session.access_token}`
+        }
+      }
+    );
+    const rows = await resp.json();
+    if (!Array.isArray(rows)) return;
+
+    rows.forEach(row => {
+      state.quizPassed.add(row.module_index);
+      state.quizScores[`mod${row.module_index}`] = row.score;
+    });
+  } catch (e) {
+    console.warn("Could not load quiz progress:", e);
+  }
+}
+
+async function loadAssessmentProgressFromSupabase() {
+  const session = getSupabaseSession();
+  if (!session) return;
+
+  try {
+    const resp = await fetch(
+      `${SUPABASE_URL}/rest/v1/assessment_results?user_id=eq.${session.user.id}&course_id=eq.${LEARN_COURSE_ID}&passed=eq.true&select=score&order=completed_at.desc&limit=1`,
+      {
+        headers: {
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${session.access_token}`
+        }
+      }
+    );
+    const rows = await resp.json();
+    if (Array.isArray(rows) && rows.length > 0) {
+      state.finalPassed = true;
+      state.finalScore = rows[0].score;
+    }
+  } catch (e) {
+    console.warn("Could not load assessment progress:", e);
+  }
+}
+
 // ---- State (in-memory only) ----
 const state = {
   currentView: "landing",
@@ -185,6 +323,8 @@ function fetchCourseData() {
       console.log("Course data parsed successfully", data);
       state.courseData = data;
       await loadProgressFromSupabase();
+      await loadQuizProgressFromSupabase();
+      await loadAssessmentProgressFromSupabase();
       renderSidebar();
       renderView();
       initScrollToTop();
@@ -929,6 +1069,15 @@ function submitQuiz(mi) {
     triggerConfetti();
   }
 
+  // Sync quiz results to database
+  const quizAnswers = quiz.map((q, qi) => ({
+    question_index: qi,
+    selected: quizSelections[`${mi}-${qi}`] ?? null,
+    correct: q.correct,
+    is_correct: quizSelections[`${mi}-${qi}`] === q.correct
+  }));
+  syncQuizResult(mi, score, passed, quizAnswers);
+
   // Hide submit button
   document.getElementById("quiz-submit-btn").style.display = "none";
 
@@ -1088,6 +1237,16 @@ function submitAssessment() {
   state.finalPassed = score >= 75;
 
   if (state.finalPassed) triggerConfetti();
+
+  // Sync assessment results to database
+  const assessmentAnswers = state.assessmentQuestions.map((q, i) => ({
+    question_index: i,
+    selected: state.assessmentAnswers[i] ?? null,
+    correct: q.correct,
+    is_correct: state.assessmentAnswers[i] === q.correct
+  }));
+  const timeTaken = 3600 - state.assessmentTimeLeft;
+  syncAssessmentResult(score, state.finalPassed, assessmentAnswers, correct, timeTaken);
 
   renderAssessmentResults(document.getElementById("content-area"));
   renderSidebar();

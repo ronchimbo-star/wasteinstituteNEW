@@ -81,6 +81,7 @@ export default function CourseDetail() {
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
   const [processingLesson, setProcessingLesson] = useState<string | null>(null);
   const [generatingCertificate, setGeneratingCertificate] = useState(false);
+  const [unmetPrerequisites, setUnmetPrerequisites] = useState<{ id: string; title: string; slug: string }[]>([]);
 
   useEffect(() => {
     if (slug) {
@@ -106,6 +107,26 @@ export default function CourseDetail() {
       }
 
       setCourse(courseData);
+
+      // Check prerequisites
+      if (user && courseData.prerequisites && courseData.prerequisites.length > 0) {
+        const { data: prereqCourses } = await supabase
+          .from('courses')
+          .select('id, title, slug')
+          .in('id', courseData.prerequisites);
+
+        if (prereqCourses && prereqCourses.length > 0) {
+          const { data: completedCerts } = await supabase
+            .from('certificates')
+            .select('course_id')
+            .eq('user_id', user.id)
+            .in('course_id', courseData.prerequisites);
+
+          const completedCourseIds = new Set(completedCerts?.map((c: any) => c.course_id) || []);
+          const unmet = prereqCourses.filter((c) => !completedCourseIds.has(c.id));
+          setUnmetPrerequisites(unmet);
+        }
+      }
 
       // Load modules
       const { data: modulesData } = await supabase
@@ -423,7 +444,21 @@ export default function CourseDetail() {
                   {course.price > 0 && <p className="text-sm text-gray-600">One-time payment</p>}
                 </div>
 
-                {!user ? (
+                {unmetPrerequisites.length > 0 ? (
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                    <p className="text-sm font-semibold text-amber-800 mb-2">Prerequisites Required</p>
+                    <p className="text-xs text-amber-700 mb-3">Complete the following courses first:</p>
+                    <ul className="space-y-1">
+                      {unmetPrerequisites.map((prereq) => (
+                        <li key={prereq.id}>
+                          <Link to={`/courses/${prereq.slug}`} className="text-xs text-amber-700 hover:text-amber-900 underline">
+                            {prereq.title}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : !user ? (
                   <Link
                     to="/signup"
                     className="block w-full py-3 bg-emerald-600 text-white text-center rounded-lg font-semibold hover:bg-emerald-700 transition-colors"

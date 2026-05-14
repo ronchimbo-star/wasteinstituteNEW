@@ -35,6 +35,11 @@ interface Module {
   expanded?: boolean;
 }
 
+interface AvailableCourse {
+  id: string;
+  title: string;
+}
+
 interface CourseFormData {
   title: string;
   slug: string;
@@ -47,6 +52,7 @@ interface CourseFormData {
   seo_title: string;
   seo_description: string;
   seo_keywords: string;
+  prerequisites: string[];
 }
 
 export const CourseForm = () => {
@@ -56,6 +62,7 @@ export const CourseForm = () => {
 
   const [loading, setLoading] = useState(false);
   const [sectors, setSectors] = useState<Sector[]>([]);
+  const [allCourses, setAllCourses] = useState<AvailableCourse[]>([]);
   const [modules, setModules] = useState<Module[]>([]);
   const [showModuleForm, setShowModuleForm] = useState(false);
 
@@ -71,6 +78,7 @@ export const CourseForm = () => {
     seo_title: '',
     seo_description: '',
     seo_keywords: '',
+    prerequisites: [],
   });
 
   const [newModule, setNewModule] = useState({
@@ -80,6 +88,7 @@ export const CourseForm = () => {
 
   useEffect(() => {
     loadSectors();
+    loadAllCourses();
     if (isEditing && id) {
       loadCourse(id);
       loadModules(id);
@@ -97,6 +106,20 @@ export const CourseForm = () => {
       setSectors(data || []);
     } catch (error) {
       console.error('Error loading sectors:', error);
+    }
+  };
+
+  const loadAllCourses = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('id, title')
+        .order('title');
+
+      if (error) throw error;
+      setAllCourses(data || []);
+    } catch (error) {
+      console.error('Error loading courses:', error);
     }
   };
 
@@ -124,6 +147,7 @@ export const CourseForm = () => {
           seo_title: data.seo_title,
           seo_description: data.seo_description,
           seo_keywords: data.seo_keywords,
+          prerequisites: data.prerequisites || [],
         });
       }
     } catch (error) {
@@ -544,6 +568,40 @@ export const CourseForm = () => {
                 />
                 <span className="text-sm font-medium text-gray-700">Published</span>
               </label>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Prerequisites
+              </label>
+              <p className="text-xs text-gray-500 mb-2">
+                Select courses that must be completed before students can enrol in this course.
+              </p>
+              <div className="border border-gray-300 rounded-lg p-3 max-h-48 overflow-y-auto space-y-2">
+                {allCourses
+                  .filter((c) => c.id !== id)
+                  .map((course) => (
+                    <label key={course.id} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.prerequisites.includes(course.id)}
+                        onChange={(e) => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            prerequisites: e.target.checked
+                              ? [...prev.prerequisites, course.id]
+                              : prev.prerequisites.filter((p) => p !== course.id),
+                          }));
+                        }}
+                        className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+                      />
+                      <span className="text-sm text-gray-700">{course.title}</span>
+                    </label>
+                  ))}
+                {allCourses.filter((c) => c.id !== id).length === 0 && (
+                  <p className="text-sm text-gray-500">No other courses available</p>
+                )}
+              </div>
             </div>
           </div>
 

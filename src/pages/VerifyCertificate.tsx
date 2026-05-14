@@ -13,6 +13,7 @@ interface CertificateDetails {
   verification_code: string;
   student_name: string;
   issued_date: string;
+  revoked: boolean;
   user: {
     full_name: string;
   };
@@ -58,6 +59,7 @@ export default function VerifyCertificate() {
           verification_code,
           student_name,
           issued_date,
+          revoked,
           user_profiles!certificates_user_id_fkey (
             full_name
           ),
@@ -82,6 +84,7 @@ export default function VerifyCertificate() {
           verification_code: data.verification_code,
           student_name: data.student_name || (data.user_profiles as any)?.full_name || 'Unknown User',
           issued_date: data.issued_date,
+          revoked: data.revoked || false,
           user: {
             full_name: data.student_name || (data.user_profiles as any)?.full_name || 'Unknown User',
           },
@@ -253,17 +256,31 @@ export default function VerifyCertificate() {
                           VERIFIED
                         </div>
                       </div>
-                      <div className="bg-emerald-50 border-b border-emerald-100 p-6">
-                        <div className="flex items-center gap-3 text-emerald-700">
-                          <div className="bg-emerald-100 p-3 rounded-full">
-                            <CheckCircle size={32} />
-                          </div>
-                          <div>
-                            <h3 className="text-xl font-bold">Certificate Verified</h3>
-                            <p className="text-emerald-600">This is a valid certificate</p>
+                      {certificate.revoked ? (
+                        <div className="bg-red-50 border-b border-red-100 p-6">
+                          <div className="flex items-center gap-3 text-red-700">
+                            <div className="bg-red-100 p-3 rounded-full">
+                              <XCircle size={32} />
+                            </div>
+                            <div>
+                              <h3 className="text-xl font-bold">Certificate Revoked</h3>
+                              <p className="text-red-600">This certificate has been revoked and is no longer valid</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="bg-emerald-50 border-b border-emerald-100 p-6">
+                          <div className="flex items-center gap-3 text-emerald-700">
+                            <div className="bg-emerald-100 p-3 rounded-full">
+                              <CheckCircle size={32} />
+                            </div>
+                            <div>
+                              <h3 className="text-xl font-bold">Certificate Verified</h3>
+                              <p className="text-emerald-600">This is a valid certificate</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                       <div className="p-6 sm:p-8 space-y-6">
                         <div>
                           <label className="block text-sm font-semibold text-gray-500 mb-1">
