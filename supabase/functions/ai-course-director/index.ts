@@ -398,6 +398,37 @@ Deno.serve(async (req: Request) => {
         break;
       }
 
+      case "chat": {
+        const { message, course_id, context } = params;
+        let chatPrompt = `The user is an admin of the Waste Institute platform. They are sending a message to you as the AI Course Director.\n\n`;
+
+        if (context) {
+          chatPrompt += `They are currently viewing this course:\n- Title: ${context.title}\n- Level: ${context.level}\n`;
+          if (context.syllabus) {
+            const syl = context.syllabus;
+            if (syl.tier) chatPrompt += `- Tier: ${syl.tier}\n`;
+            if (syl.wamitab_equivalent) chatPrompt += `- WAMITAB Equivalent: ${syl.wamitab_equivalent}\n`;
+            if (syl.syllabus_topics) chatPrompt += `- Topics: ${(syl.syllabus_topics as string[]).join(", ")}\n`;
+          }
+          chatPrompt += `\n`;
+        }
+
+        chatPrompt += `User message: ${message}\n\nRespond helpfully and concisely. If they ask you to perform actions (generate content, audit, optimise), explain what you can do and suggest they use the specific action buttons. If they ask for advice, course improvement suggestions, or general guidance, provide detailed helpful answers.`;
+
+        const chatAi = await callOpenAI(chatPrompt, "gpt-4o", 2048);
+        result = { response: chatAi.content, tokens_used: chatAi.tokens_used, cost: chatAi.cost };
+
+        await supabase.from("admin_audit_log").insert({
+          user_id: user.id,
+          user_email: user.email,
+          action: "read",
+          resource: "ai_chat",
+          details: { message: message.substring(0, 100), course_id, tokens: chatAi.tokens_used },
+        });
+
+        break;
+      }
+
       default:
         return new Response(
           JSON.stringify({ error: `Unknown action: ${action}` }),

@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
 import {
   Brain,
   BookOpen,
@@ -14,6 +13,17 @@ import {
   Clock,
   Zap,
   BarChart3,
+  Filter,
+  X,
+  ChevronRight,
+  Award,
+  Layers,
+  Rocket,
+  Send,
+  MessageCircle,
+  Loader2,
+  Eye,
+  Pencil,
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { getCourseHealthSummaries } from '../../lib/ai/courseGeneration';
@@ -24,32 +34,80 @@ import { CourseAuditorPanel } from '../../components/admin/CourseAuditorPanel';
 
 type TabView = 'overview' | 'generate' | 'audit' | 'seo';
 
+interface CourseFullData {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  level: string;
+  duration: string;
+  price: number;
+  published: boolean;
+  sector_id: string | null;
+  syllabus: Record<string, unknown> | null;
+  created_at: string;
+  sectors?: { id: string; name: string } | null;
+}
+
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+}
+
 export default function AICourseDirector() {
   const [activeTab, setActiveTab] = useState<TabView>('overview');
-  const [courses, setCourses] = useState<CourseHealthSummary[]>([]);
+  const [healthSummaries, setHealthSummaries] = useState<CourseHealthSummary[]>([]);
+  const [allCourses, setAllCourses] = useState<CourseFullData[]>([]);
   const [recentJobs, setRecentJobs] = useState<AIGenerationJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
 
+  // Filtering
+  const [filterTier, setFilterTier] = useState<string>('all');
+  const [filterSector, setFilterSector] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Chat
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     loadData();
   }, []);
 
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
+
   const loadData = async () => {
     setLoading(true);
     try {
-      const [healthData, jobsData] = await Promise.all([
+      const [healthData, coursesData, jobsData] = await Promise.all([
         getCourseHealthSummaries(),
+        loadAllCourses(),
         loadRecentJobs(),
       ]);
-      setCourses(healthData);
+      setHealthSummaries(healthData);
+      setAllCourses(coursesData);
       setRecentJobs(jobsData);
     } catch (error) {
       console.error('Error loading AI Director data:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadAllCourses = async (): Promise<CourseFullData[]> => {
+    const { data } = await supabase
+      .from('courses')
+      .select('id, title, slug, description, level, duration, price, published, sector_id, syllabus, created_at, sectors(id, name)')
+      .is('deleted_at', null)
+      .order('title');
+    return (data as unknown as CourseFullData[]) || [];
   };
 
   const loadRecentJobs = async (): Promise<AIGenerationJob[]> => {
@@ -61,12 +119,112 @@ export default function AICourseDirector() {
     return (data as AIGenerationJob[]) || [];
   };
 
-  const healthyCourses = courses.filter((c) => c.status === 'healthy').length;
-  const attentionCourses = courses.filter((c) => c.status === 'needs_attention').length;
-  const criticalCourses = courses.filter((c) => c.status === 'critical').length;
-  const avgScore = courses.length > 0
-    ? Math.round(courses.reduce((sum, c) => sum + c.overall_score, 0) / courses.length)
+  const getTier = (course: CourseFullData): string => {
+    const syllabus = course.syllabus as Record<string, unknown> | null;
+    if (syllabus && typeof syllabus === 'object' && 'tier' in syllabus) {
+      return syllabus.tier as string;
+    }
+    return 'Other';
+  };
+
+  const wamitabCount = allCourses.filter(c => getTier(c).includes('Tier 1')).length;
+  const nicheCount = allCourses.filter(c => getTier(c).includes('Tier 2')).length;
+  const futureTechCount = allCourses.filter(c => getTier(c).includes('Tier 3')).length;
+  const otherCount = allCourses.length - wamitabCount - nicheCount - futureTechCount;
+
+  const filteredCourses = allCourses.filter(course => {
+    if (filterTier !== 'all') {
+      const tier = getTier(course);
+      if (filterTier === 'tier1' && !tier.includes('Tier 1')) return false;
+      if (filterTier === 'tier2' && !tier.includes('Tier 2')) return false;
+      if (filterTier === 'tier3' && !tier.includes('Tier 3')) return false;
+      if (filterTier === 'other' && (tier.includes('Tier 1') || tier.includes('Tier 2') || tier.includes('Tier 3'))) return false;
+    }
+    if (filterSector !== 'all' && course.sector_id !== filterSector) return false;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      return (
+        course.title.toLowerCase().includes(q) ||
+        course.description?.toLowerCase().includes(q) ||
+        course.level?.toLowerCase().includes(q)
+      );
+    }
+    return true;
+  });
+
+  const sectors = Array.from(
+    new Map(allCourses.filter(c => c.sectors).map(c => [c.sectors!.id, c.sectors!.name])).entries()
+  );
+
+  const selectedCourse = allCourses.find(c => c.id === selectedCourseId) || null;
+
+  const healthyCourses = healthSummaries.filter(c => c.status === 'healthy').length;
+  const attentionCourses = healthSummaries.filter(c => c.status === 'needs_attention').length;
+  const criticalCourses = healthSummaries.filter(c => c.status === 'critical').length;
+  const avgScore = healthSummaries.length > 0
+    ? Math.round(healthSummaries.reduce((sum, c) => sum + c.overall_score, 0) / healthSummaries.length)
     : 0;
+
+  const handleSendChat = async () => {
+    if (!chatInput.trim() || chatLoading) return;
+
+    const userMessage: ChatMessage = {
+      role: 'user',
+      content: chatInput.trim(),
+      timestamp: new Date(),
+    };
+    setChatMessages(prev => [...prev, userMessage]);
+    setChatInput('');
+    setChatLoading(true);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Not authenticated');
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-course-director`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({
+            action: 'chat',
+            message: userMessage.content,
+            course_id: selectedCourseId,
+            context: selectedCourse ? {
+              title: selectedCourse.title,
+              level: selectedCourse.level,
+              syllabus: selectedCourse.syllabus,
+            } : undefined,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('AI request failed');
+      }
+
+      const result = await response.json();
+      const assistantMessage: ChatMessage = {
+        role: 'assistant',
+        content: result.response || result.message || 'I processed your request but have no specific response.',
+        timestamp: new Date(),
+      };
+      setChatMessages(prev => [...prev, assistantMessage]);
+    } catch (error) {
+      const errorMessage: ChatMessage = {
+        role: 'assistant',
+        content: 'Sorry, I encountered an error processing your request. The AI endpoint may not support chat yet - please try using the specific action buttons (Audit, SEO, Generate) for now.',
+        timestamp: new Date(),
+      };
+      setChatMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setChatLoading(false);
+    }
+  };
 
   const tabs: { id: TabView; label: string; icon: React.ElementType }[] = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -104,67 +262,14 @@ export default function AICourseDirector() {
         </button>
       </div>
 
-      {/* Stats Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-500">Total Courses</span>
-            <BookOpen size={18} className="text-emerald-500" />
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{courses.length}</p>
-          <div className="mt-2 flex items-center gap-3 text-xs">
-            <span className="flex items-center gap-1 text-emerald-600">
-              <CheckCircle2 size={12} /> {healthyCourses} healthy
-            </span>
-            <span className="flex items-center gap-1 text-amber-600">
-              <AlertTriangle size={12} /> {attentionCourses}
-            </span>
-            <span className="flex items-center gap-1 text-red-600">
-              <XCircle size={12} /> {criticalCourses}
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-500">Average Quality</span>
-            <TrendingUp size={18} className="text-blue-500" />
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{avgScore}%</p>
-          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-            <div
-              className={`h-2 rounded-full transition-all ${
-                avgScore >= 75 ? 'bg-emerald-500' : avgScore >= 50 ? 'bg-amber-500' : 'bg-red-500'
-              }`}
-              style={{ width: `${avgScore}%` }}
-            />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-500">AI Jobs (Recent)</span>
-            <Zap size={18} className="text-amber-500" />
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{recentJobs.length}</p>
-          <div className="mt-2 text-xs text-gray-500">
-            {recentJobs.filter((j) => j.status === 'completed').length} completed,{' '}
-            {recentJobs.filter((j) => j.status === 'processing').length} in progress
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-500">Total Tokens Used</span>
-            <BarChart3 size={18} className="text-teal-500" />
-          </div>
-          <p className="text-2xl font-bold text-gray-900">
-            {recentJobs.reduce((sum, j) => sum + (j.tokens_used || 0), 0).toLocaleString()}
-          </p>
-          <div className="mt-2 text-xs text-gray-500">
-            ${recentJobs.reduce((sum, j) => sum + (j.cost_usd || 0), 0).toFixed(4)} estimated cost
-          </div>
-        </div>
+      {/* Tier Metrics */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <MetricCard label="Total Courses" value={allCourses.length} icon={BookOpen} color="emerald" />
+        <MetricCard label="WAMITAB Rival" value={wamitabCount} icon={Award} color="blue" />
+        <MetricCard label="Industry Niche" value={nicheCount} icon={Layers} color="amber" />
+        <MetricCard label="Future Tech" value={futureTechCount} icon={Rocket} color="teal" />
+        <MetricCard label="Avg Quality" value={`${avgScore}%`} icon={TrendingUp} color="emerald" />
+        <MetricCard label="AI Jobs" value={recentJobs.length} icon={Zap} color="amber" />
       </div>
 
       {/* Tab Navigation */}
@@ -189,19 +294,190 @@ export default function AICourseDirector() {
 
       {/* Tab Content */}
       {activeTab === 'overview' && (
-        <OverviewTab
-          courses={courses}
-          recentJobs={recentJobs}
-          onGenerateNew={() => setShowGenerateModal(true)}
-          onAuditCourse={(id) => {
-            setSelectedCourseId(id);
-            setActiveTab('audit');
-          }}
-          onOptimiseSEO={(id) => {
-            setSelectedCourseId(id);
-            setActiveTab('seo');
-          }}
-        />
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          {/* Main course list area */}
+          <div className="xl:col-span-2 space-y-4">
+            {/* Filters */}
+            <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Filter size={16} />
+                  <span className="font-medium">Filters:</span>
+                </div>
+                <select
+                  value={filterTier}
+                  onChange={(e) => setFilterTier(e.target.value)}
+                  className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                >
+                  <option value="all">All Tiers</option>
+                  <option value="tier1">Tier 1 - WAMITAB Rival</option>
+                  <option value="tier2">Tier 2 - Industry Niche</option>
+                  <option value="tier3">Tier 3 - Future Tech</option>
+                  <option value="other">Other</option>
+                </select>
+                <select
+                  value={filterSector}
+                  onChange={(e) => setFilterSector(e.target.value)}
+                  className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                >
+                  <option value="all">All Sectors</option>
+                  {sectors.map(([id, name]) => (
+                    <option key={id} value={id}>{name}</option>
+                  ))}
+                </select>
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search courses..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+                <span className="text-xs text-gray-500">
+                  {filteredCourses.length} of {allCourses.length} courses
+                </span>
+              </div>
+            </div>
+
+            {/* Course List */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="max-h-[600px] overflow-y-auto divide-y divide-gray-100">
+                {filteredCourses.map((course) => {
+                  const tier = getTier(course);
+                  const isSelected = selectedCourseId === course.id;
+                  return (
+                    <button
+                      key={course.id}
+                      onClick={() => setSelectedCourseId(isSelected ? null : course.id)}
+                      className={`w-full text-left px-5 py-4 flex items-center gap-4 transition-colors ${
+                        isSelected ? 'bg-emerald-50 border-l-4 border-l-emerald-600' : 'hover:bg-gray-50 border-l-4 border-l-transparent'
+                      }`}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="text-sm font-semibold text-gray-900 truncate">{course.title}</p>
+                          {!course.published && (
+                            <span className="flex-shrink-0 text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded font-medium">Draft</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-gray-500">
+                          <TierBadge tier={tier} />
+                          <span>{course.level}</span>
+                          <span>{course.duration}</span>
+                          <span>£{Number(course.price).toFixed(0)}</span>
+                        </div>
+                      </div>
+                      <ChevronRight size={16} className={`text-gray-400 transition-transform ${isSelected ? 'rotate-90' : ''}`} />
+                    </button>
+                  );
+                })}
+                {filteredCourses.length === 0 && (
+                  <div className="px-6 py-12 text-center text-gray-500 text-sm">
+                    No courses match your filters.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Panel: Course Detail + Chat */}
+          <div className="space-y-4">
+            {selectedCourse ? (
+              <CourseDetailPanel
+                course={selectedCourse}
+                onClose={() => setSelectedCourseId(null)}
+                onAudit={() => { setSelectedCourseId(selectedCourse.id); setActiveTab('audit'); }}
+                onSEO={() => { setSelectedCourseId(selectedCourse.id); setActiveTab('seo'); }}
+              />
+            ) : (
+              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm text-center">
+                <div className="text-gray-400 mb-3">
+                  <Eye size={32} className="mx-auto" />
+                </div>
+                <p className="text-sm text-gray-500">Select a course to view details and actions</p>
+              </div>
+            )}
+
+            {/* AI Chat Panel */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col" style={{ height: '400px' }}>
+              <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+                <MessageCircle size={16} className="text-emerald-600" />
+                <h3 className="text-sm font-bold text-gray-900">AI Director Chat</h3>
+                {selectedCourse && (
+                  <span className="ml-auto text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-medium truncate max-w-[150px]">
+                    {selectedCourse.title}
+                  </span>
+                )}
+              </div>
+              <div className="flex-1 overflow-y-auto p-3 space-y-3">
+                {chatMessages.length === 0 && (
+                  <div className="text-center text-xs text-gray-400 mt-8">
+                    <Brain size={24} className="mx-auto mb-2 text-gray-300" />
+                    <p>Ask the AI Director anything about your courses.</p>
+                    <p className="mt-1">Try: "Audit this course" or "Suggest improvements"</p>
+                  </div>
+                )}
+                {chatMessages.map((msg, i) => (
+                  <div
+                    key={i}
+                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
+                      msg.role === 'user'
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      <p className="whitespace-pre-wrap">{msg.content}</p>
+                      <p className={`text-[10px] mt-1 ${msg.role === 'user' ? 'text-emerald-200' : 'text-gray-400'}`}>
+                        {msg.timestamp.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {chatLoading && (
+                  <div className="flex justify-start">
+                    <div className="bg-gray-100 rounded-lg px-3 py-2">
+                      <Loader2 size={16} className="animate-spin text-gray-500" />
+                    </div>
+                  </div>
+                )}
+                <div ref={chatEndRef} />
+              </div>
+              <div className="p-3 border-t border-gray-100">
+                <form
+                  onSubmit={(e) => { e.preventDefault(); handleSendChat(); }}
+                  className="flex gap-2"
+                >
+                  <input
+                    type="text"
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder={selectedCourse ? `Ask about "${selectedCourse.title}"...` : 'Ask the AI Director...'}
+                    className="flex-1 text-sm px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    disabled={chatLoading}
+                  />
+                  <button
+                    type="submit"
+                    disabled={!chatInput.trim() || chatLoading}
+                    className="px-3 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Send size={16} />
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {activeTab === 'generate' && (
@@ -226,7 +502,7 @@ export default function AICourseDirector() {
       {activeTab === 'audit' && (
         <CourseAuditorPanel
           courseId={selectedCourseId}
-          courses={courses}
+          courses={healthSummaries}
           onSelectCourse={setSelectedCourseId}
         />
       )}
@@ -234,7 +510,7 @@ export default function AICourseDirector() {
       {activeTab === 'seo' && (
         <SEOOptimiserTool
           courseId={selectedCourseId}
-          courses={courses}
+          courses={healthSummaries}
           onSelectCourse={setSelectedCourseId}
         />
       )}
@@ -252,158 +528,173 @@ export default function AICourseDirector() {
   );
 }
 
-function OverviewTab({
-  courses,
-  recentJobs,
-  onGenerateNew,
-  onAuditCourse,
-  onOptimiseSEO,
-}: {
-  courses: CourseHealthSummary[];
-  recentJobs: AIGenerationJob[];
-  onGenerateNew: () => void;
-  onAuditCourse: (id: string) => void;
-  onOptimiseSEO: (id: string) => void;
-}) {
+function MetricCard({ label, value, icon: Icon, color }: { label: string; value: string | number; icon: React.ElementType; color: string }) {
+  const colorMap: Record<string, string> = {
+    emerald: 'text-emerald-600 bg-emerald-50',
+    blue: 'text-blue-600 bg-blue-50',
+    amber: 'text-amber-600 bg-amber-50',
+    teal: 'text-teal-600 bg-teal-50',
+  };
+  const classes = colorMap[color] || colorMap.emerald;
+
   return (
-    <div className="space-y-6">
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <button
-          onClick={onGenerateNew}
-          className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all text-left group"
-        >
-          <div className="bg-emerald-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-emerald-200 transition-colors">
-            <Plus size={24} className="text-emerald-700" />
-          </div>
-          <h3 className="font-bold text-gray-900 mb-1">Generate New Course</h3>
-          <p className="text-sm text-gray-500">Create a complete course structure from a topic brief</p>
-        </button>
-
-        <button
-          onClick={() => courses[0] && onAuditCourse(courses[0].course_id)}
-          className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md hover:border-blue-300 transition-all text-left group"
-        >
-          <div className="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
-            <ClipboardCheck size={24} className="text-blue-700" />
-          </div>
-          <h3 className="font-bold text-gray-900 mb-1">Audit Courses</h3>
-          <p className="text-sm text-gray-500">Review courses against quality and compliance standards</p>
-        </button>
-
-        <button
-          onClick={() => courses[0] && onOptimiseSEO(courses[0].course_id)}
-          className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md hover:border-teal-300 transition-all text-left group"
-        >
-          <div className="bg-teal-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-teal-200 transition-colors">
-            <Search size={24} className="text-teal-700" />
-          </div>
-          <h3 className="font-bold text-gray-900 mb-1">SEO Optimiser</h3>
-          <p className="text-sm text-gray-500">Optimise course SEO metadata and keywords</p>
-        </button>
+    <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+      <div className="flex items-center gap-2 mb-2">
+        <div className={`p-1.5 rounded-lg ${classes}`}>
+          <Icon size={14} />
+        </div>
+        <span className="text-xs font-medium text-gray-500 truncate">{label}</span>
       </div>
-
-      {/* Course Health Table */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-gray-900">Course Health Overview</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Course</th>
-                <th className="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Score</th>
-                <th className="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Modules</th>
-                <th className="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Lessons</th>
-                <th className="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Last Audit</th>
-                <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {courses.map((course) => (
-                <tr key={course.course_id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4">
-                    <p className="text-sm font-medium text-gray-900 truncate max-w-xs">{course.course_title}</p>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${
-                      course.overall_score >= 75
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : course.overall_score >= 50
-                        ? 'bg-amber-100 text-amber-700'
-                        : course.overall_score > 0
-                        ? 'bg-red-100 text-red-700'
-                        : 'bg-gray-100 text-gray-500'
-                    }`}>
-                      {course.overall_score > 0 ? `${course.overall_score}%` : 'N/A'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-center text-sm text-gray-600">{course.module_count}</td>
-                  <td className="px-6 py-4 text-center text-sm text-gray-600">{course.lesson_count}</td>
-                  <td className="px-6 py-4 text-center">
-                    <StatusBadge status={course.status} />
-                  </td>
-                  <td className="px-6 py-4 text-center text-xs text-gray-500">
-                    {course.last_audit
-                      ? new Date(course.last_audit).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-                      : 'Never'}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => onAuditCourse(course.course_id)}
-                        className="text-xs px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors font-medium"
-                      >
-                        Audit
-                      </button>
-                      <button
-                        onClick={() => onOptimiseSEO(course.course_id)}
-                        className="text-xs px-3 py-1.5 bg-teal-50 text-teal-700 rounded-md hover:bg-teal-100 transition-colors font-medium"
-                      >
-                        SEO
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {courses.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
-                    No courses found. Create your first course to get started.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      {recentJobs.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-100">
-            <h2 className="text-lg font-bold text-gray-900">Recent AI Activity</h2>
-          </div>
-          <RecentJobsList jobs={recentJobs.slice(0, 5)} />
-        </div>
-      )}
+      <p className="text-xl font-bold text-gray-900">{value}</p>
     </div>
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const config = {
-    healthy: { bg: 'bg-emerald-100', text: 'text-emerald-700', label: 'Healthy' },
-    needs_attention: { bg: 'bg-amber-100', text: 'text-amber-700', label: 'Needs Work' },
-    critical: { bg: 'bg-red-100', text: 'text-red-700', label: 'Critical' },
-  }[status] || { bg: 'bg-gray-100', text: 'text-gray-500', label: 'Unknown' };
+function TierBadge({ tier }: { tier: string }) {
+  if (tier.includes('Tier 1')) return <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[10px] font-medium">WAMITAB</span>;
+  if (tier.includes('Tier 2')) return <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded text-[10px] font-medium">Niche</span>;
+  if (tier.includes('Tier 3')) return <span className="px-1.5 py-0.5 bg-teal-100 text-teal-700 rounded text-[10px] font-medium">Future</span>;
+  return <span className="px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded text-[10px] font-medium">General</span>;
+}
+
+function CourseDetailPanel({
+  course,
+  onClose,
+  onAudit,
+  onSEO,
+}: {
+  course: CourseFullData;
+  onClose: () => void;
+  onAudit: () => void;
+  onSEO: () => void;
+}) {
+  const syllabus = course.syllabus as Record<string, unknown> | null;
+  const tier = syllabus?.tier as string || 'General';
+  const wamitabEquiv = syllabus?.wamitab_equivalent as string || 'N/A';
+  const uniqueFeatures = (syllabus?.unique_features as string[]) || [];
+  const learningOutcomes = (syllabus?.learning_outcomes as string[]) || [];
+  const caseStudies = (syllabus?.case_studies as Array<{ title: string; region: string }>) || [];
+  const syllabusTopics = (syllabus?.syllabus_topics as string[]) || [];
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${config.bg} ${config.text}`}>
-      {config.label}
-    </span>
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50">
+        <h3 className="text-sm font-bold text-gray-900 truncate flex-1">{course.title}</h3>
+        <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-600 rounded">
+          <X size={16} />
+        </button>
+      </div>
+      <div className="p-4 space-y-4 max-h-[450px] overflow-y-auto">
+        {/* Key Info */}
+        <div className="grid grid-cols-2 gap-3 text-xs">
+          <div>
+            <span className="text-gray-500 block">Level</span>
+            <span className="font-medium text-gray-900">{course.level}</span>
+          </div>
+          <div>
+            <span className="text-gray-500 block">Duration</span>
+            <span className="font-medium text-gray-900">{course.duration}</span>
+          </div>
+          <div>
+            <span className="text-gray-500 block">Price</span>
+            <span className="font-medium text-gray-900">£{Number(course.price).toFixed(0)}</span>
+          </div>
+          <div>
+            <span className="text-gray-500 block">Status</span>
+            <span className={`font-medium ${course.published ? 'text-emerald-700' : 'text-gray-500'}`}>
+              {course.published ? 'Published' : 'Draft'}
+            </span>
+          </div>
+        </div>
+
+        {/* Tier & Equivalent */}
+        <div className="text-xs space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="text-gray-500">Tier:</span>
+            <TierBadge tier={tier} />
+          </div>
+          {wamitabEquiv !== 'N/A' && (
+            <div>
+              <span className="text-gray-500">WAMITAB Equiv: </span>
+              <span className="text-gray-700">{wamitabEquiv}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Unique Features */}
+        {uniqueFeatures.length > 0 && (
+          <div>
+            <p className="text-xs font-semibold text-gray-700 mb-1.5">Unique Features</p>
+            <div className="flex flex-wrap gap-1">
+              {uniqueFeatures.map((f, i) => (
+                <span key={i} className="text-[10px] px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-full">{f}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Syllabus */}
+        {syllabusTopics.length > 0 && (
+          <div>
+            <p className="text-xs font-semibold text-gray-700 mb-1.5">Syllabus ({syllabusTopics.length} topics)</p>
+            <ul className="text-xs text-gray-600 space-y-0.5 list-disc list-inside max-h-24 overflow-y-auto">
+              {syllabusTopics.map((t, i) => <li key={i}>{t}</li>)}
+            </ul>
+          </div>
+        )}
+
+        {/* Learning Outcomes */}
+        {learningOutcomes.length > 0 && (
+          <div>
+            <p className="text-xs font-semibold text-gray-700 mb-1.5">Learning Outcomes</p>
+            <ul className="text-xs text-gray-600 space-y-0.5 list-disc list-inside max-h-20 overflow-y-auto">
+              {learningOutcomes.map((o, i) => <li key={i}>{o}</li>)}
+            </ul>
+          </div>
+        )}
+
+        {/* Case Studies */}
+        {caseStudies.length > 0 && (
+          <div>
+            <p className="text-xs font-semibold text-gray-700 mb-1.5">Case Studies</p>
+            <div className="space-y-1">
+              {caseStudies.map((cs, i) => (
+                <div key={i} className="text-xs flex items-center gap-2 text-gray-600">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
+                  <span>{cs.title}</span>
+                  <span className="text-gray-400">({cs.region})</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="pt-3 border-t border-gray-100 space-y-2">
+          <button
+            onClick={onAudit}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
+          >
+            <ClipboardCheck size={14} />
+            Run AI Audit
+          </button>
+          <button
+            onClick={onSEO}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium bg-teal-50 text-teal-700 rounded-lg hover:bg-teal-100 transition-colors"
+          >
+            <Search size={14} />
+            Optimise SEO
+          </button>
+          <a
+            href={`/admin/courses/edit/${course.id}`}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            <Pencil size={14} />
+            Edit Course
+          </a>
+        </div>
+      </div>
+    </div>
   );
 }
 
