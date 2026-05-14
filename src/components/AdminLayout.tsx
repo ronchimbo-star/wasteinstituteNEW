@@ -25,7 +25,8 @@ import {
   Megaphone,
   CalendarDays,
   Mail,
-  ClipboardList
+  ClipboardList,
+  Brain
 } from 'lucide-react';
 import { useState } from 'react';
 import NotificationsPanel from './NotificationsPanel';
@@ -61,6 +62,7 @@ export const AdminLayout = () => {
 
   const menuItems: MenuItem[] = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
+    ...(canManageCourses ? [{ icon: Brain, label: 'AI Director', path: '/admin/ai-director' }] : []),
     ...(canViewFinancials ? [{ icon: PoundSterling, label: 'Financials', path: '/admin/financials' }] : []),
     ...(canManageCourses ? [
       { icon: BookOpen, label: 'Courses', path: '/admin/courses' },

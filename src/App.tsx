@@ -62,6 +62,7 @@ const NewsAds = lazy(() => import('./pages/admin/NewsAds'));
 const AdminEvents = lazy(() => import('./pages/admin/Events').then(m => ({ default: m.AdminEvents })));
 const AdminEventForm = lazy(() => import('./pages/admin/EventForm').then(m => ({ default: m.AdminEventForm })));
 const AdminNewsletter = lazy(() => import('./pages/admin/Newsletter').then(m => ({ default: m.AdminNewsletter })));
+const AICourseDirector = lazy(() => import('./pages/admin/AICourseDirector'));
 
 const LoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -161,6 +162,7 @@ function App() {
             <Route path="membership-levels/:id" element={<MembershipLevelForm />} />
             <Route path="members" element={<Members />} />
             <Route path="settings" element={<AdminSettings />} />
+            <Route path="ai-director" element={<AICourseDirector />} />
             <Route path="audit-log" element={<AdminAuditLog />} />
           </Route>
 
