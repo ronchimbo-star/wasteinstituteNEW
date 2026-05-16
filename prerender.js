@@ -75,7 +75,7 @@ async function getDynamicRoutes() {
 
     // Fetch published news articles
     const { data: news } = await supabase
-      .from('news')
+      .from('news_articles')
       .select('slug')
       .eq('published', true);
 
@@ -119,7 +119,7 @@ async function getDynamicRoutes() {
 
 // Generate sitemap
 async function generateSitemap(routes) {
-  const baseUrl = 'https://www.wasteinstitute.com';
+  const baseUrl = 'https://wasteinstitute.org';
   const now = new Date().toISOString();
 
   const heroImages = [
