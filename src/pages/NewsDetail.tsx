@@ -505,9 +505,9 @@ export default function NewsDetail() {
                 </div>
               )}
 
-              <div className="prose prose-lg max-w-none article-content overflow-hidden mb-12">
+              <div className="max-w-none article-content overflow-hidden mb-12">
                 {formatArticleContent(article.content, {
-                  includeAds: true,
+                  includeAds: !!(ads.ad1 || ads.ad2),
                   ads: ads,
                   AdComponent: PromoCard
                 })}

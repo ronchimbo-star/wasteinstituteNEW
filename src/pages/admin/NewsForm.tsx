@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { Save, ArrowLeft } from 'lucide-react';
+import { Save, ArrowLeft, Code, Eye } from 'lucide-react';
 
 interface NewsFormData {
   title: string;
@@ -35,6 +35,8 @@ export const AdminNewsForm = () => {
   const [formData, setFormData] = useState<NewsFormData>(initialFormState);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (id && id !== 'new') {
@@ -210,17 +212,45 @@ export const AdminNewsForm = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Content
-              </label>
-              <textarea
-                name="content"
-                value={formData.content}
-                onChange={handleInputChange}
-                rows={10}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                placeholder="Full article content"
-              />
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Content (HTML or Markdown)
+                </label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-500">Paste HTML directly from your article generator</span>
+                  <button
+                    type="button"
+                    onClick={() => setShowPreview(!showPreview)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                      showPreview
+                        ? 'bg-emerald-100 text-emerald-700 border border-emerald-300'
+                        : 'bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200'
+                    }`}
+                  >
+                    {showPreview ? <Eye size={14} /> : <Code size={14} />}
+                    {showPreview ? 'Preview' : 'Code'}
+                  </button>
+                </div>
+              </div>
+              {showPreview ? (
+                <div className="w-full min-h-[400px] px-4 py-4 border border-gray-300 rounded-lg bg-white overflow-y-auto">
+                  <div
+                    className="article-html-content"
+                    dangerouslySetInnerHTML={{ __html: formData.content }}
+                  />
+                </div>
+              ) : (
+                <textarea
+                  ref={contentRef}
+                  name="content"
+                  value={formData.content}
+                  onChange={handleInputChange}
+                  rows={20}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm"
+                  placeholder="Paste HTML content here (e.g. <h2>Section Title</h2><p>Paragraph text...</p>)"
+                  spellCheck={false}
+                />
+              )}
             </div>
 
             <div>
