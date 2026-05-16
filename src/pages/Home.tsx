@@ -331,9 +331,20 @@ export const HomePage = () => {
                   to={`/courses/${course.slug}`}
                   className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all border border-gray-200 hover:border-emerald-500"
                 >
-                  <div className="h-48 bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
-                    <BookOpen className="text-white" size={64} />
-                  </div>
+                  {course.featured_image ? (
+                    <div className="h-48 overflow-hidden">
+                      <img
+                        src={course.featured_image}
+                        alt={course.title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-48 bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
+                      <BookOpen className="text-white" size={64} />
+                    </div>
+                  )}
                   <div className="p-6">
                     <div className="flex items-center gap-2 mb-3">
                       <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">
@@ -498,7 +509,18 @@ export const HomePage = () => {
                   to={`/news/${article.slug}`}
                   className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all"
                 >
-                  <div className="h-48 bg-gradient-to-br from-emerald-400 to-emerald-600"></div>
+                  {article.featured_image ? (
+                    <div className="h-48 overflow-hidden">
+                      <img
+                        src={article.featured_image}
+                        alt={article.title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-48 bg-gradient-to-br from-emerald-400 to-emerald-600"></div>
+                  )}
                   <div className="p-6">
                     <p className="text-sm text-gray-500 mb-2">
                       {new Date(article.published_at).toLocaleDateString('en-GB', {
