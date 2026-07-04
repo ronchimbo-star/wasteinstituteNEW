@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 import { Users as UsersIcon, Shield, User, CreditCard as Edit2, Trash2, X, Save, Search, Mail } from 'lucide-react';
 
 interface UserProfile {
@@ -11,6 +12,7 @@ interface UserProfile {
 }
 
 export const AdminUsers = () => {
+  const { toast } = useToast();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,7 +63,7 @@ export const AdminUsers = () => {
       setEditingUser(null);
     } catch (error) {
       console.error('Error updating user:', error);
-      alert('Failed to update user.');
+      toast('Failed to update user.', 'error');
     } finally {
       setSaving(false);
     }
@@ -76,7 +78,7 @@ export const AdminUsers = () => {
       setUsers(users.filter(u => u.id !== user.id));
     } catch (error) {
       console.error('Error deleting user:', error);
-      alert('Failed to delete user profile.');
+      toast('Failed to delete user profile.', 'error');
     } finally {
       setDeleting(null);
     }

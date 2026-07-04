@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Plus, Trash2, Eye, CheckCircle, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 
 interface Enrollment {
   id: string;
@@ -37,6 +38,7 @@ export default function AdminEnrollments() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState('');
   const [selectedStudent, setSelectedStudent] = useState('');
+  const { toast } = useToast();
 
   useEffect(() => {
     loadData();
@@ -75,7 +77,7 @@ export default function AdminEnrollments() {
 
   const handleEnroll = async () => {
     if (!selectedStudent || !selectedCourse) {
-      alert('Please select both a student and a course');
+      toast('Please select both a student and a course', 'warning');
       return;
     }
 
@@ -97,9 +99,9 @@ export default function AdminEnrollments() {
 
     if (error) {
       if (error.code === '23505') {
-        alert('This student is already enrolled in this course');
+        toast('This student is already enrolled in this course', 'warning');
       } else {
-        alert('Error enrolling student: ' + error.message);
+        toast('Error enrolling student: ' + error.message, 'error');
       }
       return;
     }
@@ -157,7 +159,7 @@ export default function AdminEnrollments() {
       .eq('id', id);
 
     if (error) {
-      alert('Error removing enrollment: ' + error.message);
+      toast('Error removing enrollment: ' + error.message, 'error');
       return;
     }
 
@@ -175,7 +177,7 @@ export default function AdminEnrollments() {
       .eq('id', enrollment.id);
 
     if (error) {
-      alert('Error marking enrollment as complete: ' + error.message);
+      toast('Error marking enrollment as complete: ' + error.message, 'error');
       return;
     }
 

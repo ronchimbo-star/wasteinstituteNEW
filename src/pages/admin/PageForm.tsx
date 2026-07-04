@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 import { ArrowLeft, Save } from 'lucide-react';
 
 interface PageFormData {
@@ -16,6 +17,7 @@ interface PageFormData {
 export const AdminPageForm = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<PageFormData>({
     title: '',
@@ -55,7 +57,7 @@ export const AdminPageForm = () => {
       }
     } catch (error) {
       console.error('Error loading page:', error);
-      alert('Failed to load page');
+      toast('Failed to load page', 'error');
     }
   };
 
@@ -89,7 +91,7 @@ export const AdminPageForm = () => {
       navigate('/admin/pages');
     } catch (error) {
       console.error('Error saving page:', error);
-      alert('Failed to save page');
+      toast('Failed to save page', 'error');
     } finally {
       setLoading(false);
     }

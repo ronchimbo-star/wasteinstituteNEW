@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import { AdminLayout } from '../../components/AdminLayout';
+import { useToast } from '../../contexts/ToastContext';
 import { Plus, CreditCard as Edit, Trash2, Eye, EyeOff, Save, X, CheckCircle, Image as ImageIcon, Link as LinkIcon } from 'lucide-react';
 
 interface NewsAd {
@@ -38,6 +38,7 @@ interface ArticleAd {
 }
 
 export default function NewsAds() {
+  const { toast } = useToast();
   const [ads, setAds] = useState<NewsAd[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [articles, setArticles] = useState<NewsArticle[]>([]);
@@ -91,22 +92,27 @@ export default function NewsAds() {
     try {
       if (editingAd) {
         await supabase.from('news_ads').update(formData).eq('id', editingAd.id);
+        toast('Ad updated successfully');
       } else {
         await supabase.from('news_ads').insert([formData]);
+        toast('Ad created successfully');
       }
       resetForm();
       loadData();
     } catch (error) {
       console.error('Error saving ad:', error);
+      toast('Failed to save ad', 'error');
     }
   };
 
   const toggleActive = async (ad: NewsAd) => {
     try {
       await supabase.from('news_ads').update({ is_active: !ad.is_active }).eq('id', ad.id);
+      toast(ad.is_active ? 'Ad deactivated' : 'Ad activated');
       loadData();
     } catch (error) {
       console.error('Error toggling active status:', error);
+      toast('Failed to update ad status', 'error');
     }
   };
 
@@ -114,9 +120,11 @@ export default function NewsAds() {
     if (!confirm('Are you sure you want to delete this ad?')) return;
     try {
       await supabase.from('news_ads').delete().eq('id', id);
+      toast('Ad deleted');
       loadData();
     } catch (error) {
       console.error('Error deleting ad:', error);
+      toast('Failed to delete ad', 'error');
     }
   };
 
@@ -195,16 +203,14 @@ export default function NewsAds() {
 
   if (loading) {
     return (
-      <AdminLayout>
-        <div className="flex justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
-        </div>
-      </AdminLayout>
+      <div className="flex justify-center py-20">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
+    <div>
       <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">News Promotional Cards</h1>
@@ -621,6 +627,6 @@ export default function NewsAds() {
           )}
         </div>
       )}
-    </AdminLayout>
+    </div>
   );
 }

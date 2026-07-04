@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Plus, Edit2, Trash2, Save, X, ExternalLink } from 'lucide-react';
+import { Plus, CreditCard as Edit2, Trash2, Save, X, ExternalLink } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 
 interface Resource {
   id: string;
@@ -30,6 +31,7 @@ export default function AdminResources() {
   const [editingResource, setEditingResource] = useState<Resource | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const { toast } = useToast();
 
   const [formData, setFormData] = useState({
     category_id: '',
@@ -93,7 +95,7 @@ export default function AdminResources() {
 
   const handleSave = async () => {
     if (!formData.title || !formData.file_url) {
-      alert('Please fill in all required fields');
+      toast('Please fill in all required fields', 'warning');
       return;
     }
 
@@ -107,14 +109,14 @@ export default function AdminResources() {
         .eq('id', editingResource.id);
 
       if (error) {
-        alert('Error updating resource: ' + error.message);
+        toast('Error updating resource: ' + error.message, 'error');
         return;
       }
     } else {
       const { error } = await supabase.from('resources').insert([formData]);
 
       if (error) {
-        alert('Error creating resource: ' + error.message);
+        toast('Error creating resource: ' + error.message, 'error');
         return;
       }
     }
@@ -130,7 +132,7 @@ export default function AdminResources() {
     const { error } = await supabase.from('resources').delete().eq('id', id);
 
     if (error) {
-      alert('Error deleting resource: ' + error.message);
+      toast('Error deleting resource: ' + error.message, 'error');
       return;
     }
 

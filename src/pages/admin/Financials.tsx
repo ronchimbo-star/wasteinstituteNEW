@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 import { PoundSterling, TrendingUp, Users, CreditCard, Download, Search, Filter, Trash2 } from 'lucide-react';
 
 interface Payment {
@@ -54,6 +55,7 @@ export default function Financials() {
   const [activeTab, setActiveTab] = useState<'overview' | 'payments' | 'invoices'>('overview');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const { toast } = useToast();
 
   useEffect(() => {
     loadData();
@@ -123,7 +125,7 @@ export default function Financials() {
       setPayments(payments.map(p => p.id === id ? { ...p, status } : p));
     } catch (error) {
       console.error('Error updating payment status:', error);
-      alert('Failed to update payment status.');
+      toast('Failed to update payment status.', 'error');
     }
   };
 
@@ -135,7 +137,7 @@ export default function Financials() {
       setPayments(payments.filter(p => p.id !== id));
     } catch (error) {
       console.error('Error deleting payment:', error);
-      alert('Failed to delete payment.');
+      toast('Failed to delete payment.', 'error');
     }
   };
 
@@ -146,7 +148,7 @@ export default function Financials() {
       setInvoices(invoices.map(i => i.id === id ? { ...i, status } : i));
     } catch (error) {
       console.error('Error updating invoice status:', error);
-      alert('Failed to update invoice status.');
+      toast('Failed to update invoice status.', 'error');
     }
   };
 
@@ -158,7 +160,7 @@ export default function Financials() {
       setInvoices(invoices.filter(i => i.id !== id));
     } catch (error) {
       console.error('Error deleting invoice:', error);
-      alert('Failed to delete invoice.');
+      toast('Failed to delete invoice.', 'error');
     }
   };
 

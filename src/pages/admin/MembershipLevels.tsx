@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 import { Plus, CreditCard as Edit, Trash2, Eye, EyeOff, Award, DollarSign, Percent } from 'lucide-react';
 
 interface MembershipLevel {
@@ -30,6 +31,7 @@ export function MembershipLevels() {
   const [levels, setLevels] = useState<MembershipLevel[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     loadLevels();
@@ -66,7 +68,7 @@ export function MembershipLevels() {
       setDeleteId(null);
     } catch (error) {
       console.error('Error deleting membership level:', error);
-      alert('Error deleting membership level. It may be in use.');
+      toast('Error deleting membership level. It may be in use.', 'error');
     }
   }
 
@@ -84,7 +86,7 @@ export function MembershipLevels() {
       ));
     } catch (error) {
       console.error('Error updating membership level:', error);
-      alert('Error updating membership level status.');
+      toast('Error updating membership level status.', 'error');
     }
   }
 

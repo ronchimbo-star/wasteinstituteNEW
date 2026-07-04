@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Plus, Edit2, Trash2, Save, X } from 'lucide-react';
+import { Plus, CreditCard as Edit2, Trash2, Save, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 
 interface FAQ {
   id: string;
@@ -20,6 +21,7 @@ interface FAQCategory {
 }
 
 export default function AdminFAQs() {
+  const { toast } = useToast();
   const [categories, setCategories] = useState<FAQCategory[]>([]);
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,7 +79,7 @@ export default function AdminFAQs() {
 
   const handleSave = async () => {
     if (!formData.question || !formData.answer || !formData.category_id) {
-      alert('Please fill in all required fields');
+      toast('Please fill in all required fields', 'warning');
       return;
     }
 
@@ -91,14 +93,14 @@ export default function AdminFAQs() {
         .eq('id', editingFAQ.id);
 
       if (error) {
-        alert('Error updating FAQ: ' + error.message);
+        toast('Error updating FAQ: ' + error.message, 'error');
         return;
       }
     } else {
       const { error } = await supabase.from('faqs').insert([formData]);
 
       if (error) {
-        alert('Error creating FAQ: ' + error.message);
+        toast('Error creating FAQ: ' + error.message, 'error');
         return;
       }
     }
@@ -114,7 +116,7 @@ export default function AdminFAQs() {
     const { error } = await supabase.from('faqs').delete().eq('id', id);
 
     if (error) {
-      alert('Error deleting FAQ: ' + error.message);
+      toast('Error deleting FAQ: ' + error.message, 'error');
       return;
     }
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Award, Eye, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 
 interface CompletedEnrollment {
   id: string;
@@ -37,6 +38,7 @@ export default function AdminCertificates() {
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     loadData();
@@ -118,7 +120,7 @@ export default function AdminCertificates() {
     `).single();
 
     if (error) {
-      alert('Error generating certificate: ' + error.message);
+      toast('Error generating certificate: ' + error.message, 'error');
       setGenerating(null);
       return;
     }
@@ -172,7 +174,7 @@ export default function AdminCertificates() {
     const { error } = await supabase.from('certificates').delete().eq('id', id);
 
     if (error) {
-      alert('Error deleting certificate: ' + error.message);
+      toast('Error deleting certificate: ' + error.message, 'error');
       return;
     }
 

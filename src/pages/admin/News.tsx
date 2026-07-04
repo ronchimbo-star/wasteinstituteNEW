@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 import { Plus, CreditCard as Edit, Trash2, Eye, RotateCcw } from 'lucide-react';
 
 interface NewsArticle {
@@ -15,6 +16,7 @@ interface NewsArticle {
 }
 
 export const AdminNews = () => {
+  const { toast } = useToast();
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [showArchived, setShowArchived] = useState(false);
@@ -58,7 +60,7 @@ export const AdminNews = () => {
       setArticles(articles.filter(a => a.id !== id));
     } catch (error) {
       console.error('Error archiving news article:', error);
-      alert('Failed to archive news article');
+      toast('Failed to archive news article', 'error');
     }
   };
 
@@ -72,7 +74,7 @@ export const AdminNews = () => {
       setArticles(articles.filter(a => a.id !== id));
     } catch (error) {
       console.error('Error restoring news article:', error);
-      alert('Failed to restore news article');
+      toast('Failed to restore news article', 'error');
     }
   };
 

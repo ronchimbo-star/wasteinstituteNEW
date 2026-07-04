@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 import { Mail, User, Phone, Building, MessageSquare, Calendar, Trash2, Eye, X, Search } from 'lucide-react';
 
 interface RegistrationSubmission {
@@ -13,6 +14,7 @@ interface RegistrationSubmission {
 }
 
 export const AdminRegistrations = () => {
+  const { toast } = useToast();
   const [submissions, setSubmissions] = useState<RegistrationSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
@@ -49,7 +51,7 @@ export const AdminRegistrations = () => {
       if (viewingSubmission?.id === id) setViewingSubmission(null);
     } catch (error) {
       console.error('Error deleting submission:', error);
-      alert('Failed to delete submission.');
+      toast('Failed to delete submission.', 'error');
     } finally {
       setDeleting(null);
     }

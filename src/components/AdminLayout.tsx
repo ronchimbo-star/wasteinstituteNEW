@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { ToastProvider } from '../contexts/ToastContext';
 import {
   LayoutDashboard,
   BookOpen,
@@ -97,6 +98,7 @@ export const AdminLayout = () => {
   ];
 
   return (
+    <ToastProvider>
     <div className="min-h-screen bg-gray-100">
       <div className="lg:hidden fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50 px-4 py-3 flex items-center justify-between">
         <h1 className="text-xl font-bold text-emerald-600">WI Admin</h1>
@@ -176,5 +178,6 @@ export const AdminLayout = () => {
         </div>
       </main>
     </div>
+    </ToastProvider>
   );
 };

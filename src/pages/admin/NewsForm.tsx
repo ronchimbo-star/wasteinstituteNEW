@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 import { Save, ArrowLeft, Code, Eye } from 'lucide-react';
 
 interface NewsFormData {
@@ -32,6 +33,7 @@ const initialFormState: NewsFormData = {
 export const AdminNewsForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [formData, setFormData] = useState<NewsFormData>(initialFormState);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -71,7 +73,7 @@ export const AdminNewsForm = () => {
       });
     } catch (error) {
       console.error('Error loading article:', error);
-      alert('Failed to load article');
+      toast('Failed to load article', 'error');
       navigate('/admin/news');
     } finally {
       setLoading(false);
@@ -128,7 +130,7 @@ export const AdminNewsForm = () => {
       navigate('/admin/news');
     } catch (error) {
       console.error('Error saving article:', error);
-      alert('Failed to save article');
+      toast('Failed to save article', 'error');
     } finally {
       setSubmitting(false);
     }

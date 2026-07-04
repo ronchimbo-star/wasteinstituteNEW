@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 import {
   Save,
   ArrowLeft,
@@ -58,6 +59,7 @@ interface CourseFormData {
 export const CourseForm = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const { toast } = useToast();
   const isEditing = Boolean(id);
 
   const [loading, setLoading] = useState(false);
@@ -152,7 +154,7 @@ export const CourseForm = () => {
       }
     } catch (error) {
       console.error('Error loading course:', error);
-      alert('Failed to load course');
+      toast('Failed to load course', 'error');
     } finally {
       setLoading(false);
     }
@@ -222,7 +224,7 @@ export const CourseForm = () => {
     e.preventDefault();
 
     if (!formData.title || !formData.slug || !formData.description) {
-      alert('Please fill in all required fields');
+      toast('Please fill in all required fields', 'warning');
       return;
     }
 
@@ -244,7 +246,7 @@ export const CourseForm = () => {
         // Save modules and lessons
         await saveModulesAndLessons(id);
 
-        alert('Course updated successfully!');
+        toast('Course updated successfully!', 'success');
       } else {
         // Create new course
         const { data: courseData, error: courseError } = await supabase
@@ -265,13 +267,13 @@ export const CourseForm = () => {
           await saveModulesAndLessons(courseData.id);
         }
 
-        alert('Course created successfully!');
+        toast('Course created successfully!', 'success');
       }
 
       navigate('/admin/courses');
     } catch (error) {
       console.error('Error saving course:', error);
-      alert('Failed to save course');
+      toast('Failed to save course', 'error');
     } finally {
       setLoading(false);
     }
@@ -327,7 +329,7 @@ export const CourseForm = () => {
 
   const addModule = () => {
     if (!newModule.title) {
-      alert('Please enter a module title');
+      toast('Please enter a module title', 'warning');
       return;
     }
 

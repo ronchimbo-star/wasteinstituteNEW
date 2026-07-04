@@ -1,6 +1,7 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 import { Save, ArrowLeft, Award } from 'lucide-react';
 
 interface FormData {
@@ -28,6 +29,7 @@ export function MembershipLevelForm() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const { toast } = useToast();
   const [formData, setFormData] = useState<FormData>({
     name: '',
     slug: '',
@@ -87,7 +89,7 @@ export function MembershipLevelForm() {
       }
     } catch (error) {
       console.error('Error loading membership level:', error);
-      alert('Error loading membership level');
+      toast('Error loading membership level', 'error');
     } finally {
       setLoading(false);
     }
@@ -152,7 +154,7 @@ export function MembershipLevelForm() {
       navigate('/admin/membership-levels');
     } catch (error: any) {
       console.error('Error saving membership level:', error);
-      alert('Error saving membership level: ' + (error.message || 'Unknown error'));
+      toast('Error saving membership level: ' + (error.message || 'Unknown error'), 'error');
     } finally {
       setSaving(false);
     }

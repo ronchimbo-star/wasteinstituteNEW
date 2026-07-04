@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 import { Plus, CreditCard as Edit, Trash2, Save, X, Eye, EyeOff } from 'lucide-react';
 
 interface Sector {
@@ -32,6 +33,7 @@ const initialFormState: SectorForm = {
 };
 
 export const AdminSectors = () => {
+  const { toast } = useToast();
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -104,7 +106,7 @@ export const AdminSectors = () => {
       closeModal();
     } catch (error) {
       console.error('Error saving sector:', error);
-      alert('Failed to save sector');
+      toast('Failed to save sector', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -133,7 +135,7 @@ export const AdminSectors = () => {
       setSectors(sectors.filter((s) => s.id !== id));
     } catch (error) {
       console.error('Error deleting sector:', error);
-      alert('Failed to delete sector');
+      toast('Failed to delete sector', 'error');
     }
   };
 

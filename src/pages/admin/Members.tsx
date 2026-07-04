@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 import { Users, Award, Calendar, CheckCircle, XCircle, Clock, Filter, Plus, Trash2, X, Save } from 'lucide-react';
 
 interface Member {
@@ -36,6 +37,7 @@ interface UserProfileOption {
 }
 
 export function Members() {
+  const { toast } = useToast();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -103,14 +105,14 @@ export function Members() {
       ));
     } catch (error) {
       console.error('Error updating member status:', error);
-      alert('Error updating member status.');
+      toast('Error updating member status.', 'error');
     }
   }
 
   async function createMembership(e: React.FormEvent) {
     e.preventDefault();
     if (!createForm.user_id || !createForm.membership_level_id) {
-      alert('Please select a user and membership level.');
+      toast('Please select a user and membership level.', 'warning');
       return;
     }
     setSaving(true);
@@ -139,7 +141,7 @@ export function Members() {
       await loadMembers();
     } catch (error) {
       console.error('Error creating membership:', error);
-      alert('Failed to create membership.');
+      toast('Failed to create membership.', 'error');
     } finally {
       setSaving(false);
     }
@@ -154,7 +156,7 @@ export function Members() {
       setMembers(members.filter(m => m.id !== id));
     } catch (error) {
       console.error('Error deleting membership:', error);
-      alert('Failed to delete membership.');
+      toast('Failed to delete membership.', 'error');
     } finally {
       setDeleting(null);
     }

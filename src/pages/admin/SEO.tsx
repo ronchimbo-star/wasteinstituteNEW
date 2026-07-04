@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 import { Save, Search, FileText, Download, ExternalLink, RefreshCw, Copy, Check } from 'lucide-react';
 
 interface SEOSetting {
@@ -21,6 +22,7 @@ export const AdminSEO = () => {
   const [generatingSitemap, setGeneratingSitemap] = useState(false);
   const [copiedSitemap, setCopiedSitemap] = useState(false);
   const [copiedRobots, setCopiedRobots] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     loadSettings();
@@ -152,10 +154,10 @@ export const AdminSEO = () => {
       sitemap += `</urlset>`;
 
       setSitemapContent(sitemap);
-      alert('Sitemap generated successfully! Copy the content and update your sitemap.xml file.');
+      toast('Sitemap generated successfully! Copy the content and update your sitemap.xml file.', 'success');
     } catch (error) {
       console.error('Error generating sitemap:', error);
-      alert('Failed to generate sitemap');
+      toast('Failed to generate sitemap', 'error');
     } finally {
       setGeneratingSitemap(false);
     }
@@ -216,10 +218,10 @@ export const AdminSEO = () => {
       if (error) throw error;
 
       setSettings(settings.map((s) => (s.id === id ? { ...s, ...updatedData } : s)));
-      alert('SEO settings updated successfully');
+      toast('SEO settings updated successfully', 'success');
     } catch (error) {
       console.error('Error updating SEO settings:', error);
-      alert('Failed to update SEO settings');
+      toast('Failed to update SEO settings', 'error');
     } finally {
       setSavingId(null);
     }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 import { Plus, CreditCard as Edit, Trash2, Eye, RotateCcw } from 'lucide-react';
 
 interface Course {
@@ -16,6 +17,7 @@ interface Course {
 }
 
 export const AdminCourses = () => {
+  const { toast } = useToast();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [showArchived, setShowArchived] = useState(false);
@@ -59,7 +61,7 @@ export const AdminCourses = () => {
       setCourses(courses.filter(c => c.id !== id));
     } catch (error) {
       console.error('Error archiving course:', error);
-      alert('Failed to archive course');
+      toast('Failed to archive course', 'error');
     }
   };
 
@@ -73,7 +75,7 @@ export const AdminCourses = () => {
       setCourses(courses.filter(c => c.id !== id));
     } catch (error) {
       console.error('Error restoring course:', error);
-      alert('Failed to restore course');
+      toast('Failed to restore course', 'error');
     }
   };
 

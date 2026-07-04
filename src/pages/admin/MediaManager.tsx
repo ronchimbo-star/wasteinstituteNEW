@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Upload, Trash2, Copy, CheckCircle, Image as ImageIcon, FileText, Video, File } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 
 interface MediaFile {
   id: string;
@@ -20,6 +21,7 @@ export default function MediaManager() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const { user } = useAuth();
+  const { toast } = useToast();
 
   const [uploadForm, setUploadForm] = useState({
     filename: '',
@@ -128,7 +130,7 @@ export default function MediaManager() {
       loadMedia();
     } catch (error) {
       console.error('Upload error:', error);
-      alert('Error uploading file: ' + (error as Error).message);
+      toast('Error uploading file: ' + (error as Error).message, 'error');
     } finally {
       setIsUploading(false);
     }
@@ -136,7 +138,7 @@ export default function MediaManager() {
 
   const handleUpload = async () => {
     if (!uploadForm.filename || !uploadForm.file_url) {
-      alert('Please provide filename and URL');
+      toast('Please provide filename and URL', 'warning');
       return;
     }
 
@@ -147,7 +149,7 @@ export default function MediaManager() {
     }]);
 
     if (error) {
-      alert('Error uploading file: ' + error.message);
+      toast('Error uploading file: ' + error.message, 'error');
       setIsUploading(false);
       return;
     }
@@ -173,7 +175,7 @@ export default function MediaManager() {
       .eq('id', id);
 
     if (error) {
-      alert('Error deleting file: ' + error.message);
+      toast('Error deleting file: ' + error.message, 'error');
       return;
     }
 
@@ -186,7 +188,7 @@ export default function MediaManager() {
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 2000);
     } catch (err) {
-      alert('Failed to copy URL');
+      toast('Failed to copy URL', 'error');
     }
   };
 

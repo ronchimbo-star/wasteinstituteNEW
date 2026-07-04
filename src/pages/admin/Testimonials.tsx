@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Plus, Edit, Trash2, Star } from 'lucide-react';
+import { useToast } from '../../contexts/ToastContext';
+import { Plus, CreditCard as Edit, Trash2, Star } from 'lucide-react';
 
 interface Testimonial {
   id: string;
@@ -17,6 +18,7 @@ interface Testimonial {
 }
 
 export const AdminTestimonials = () => {
+  const { toast } = useToast();
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -72,7 +74,7 @@ export const AdminTestimonials = () => {
       loadTestimonials();
     } catch (error) {
       console.error('Error saving testimonial:', error);
-      alert('Failed to save testimonial');
+      toast('Failed to save testimonial', 'error');
     }
   };
 
@@ -100,7 +102,7 @@ export const AdminTestimonials = () => {
       loadTestimonials();
     } catch (error) {
       console.error('Error deleting testimonial:', error);
-      alert('Failed to delete testimonial');
+      toast('Failed to delete testimonial', 'error');
     }
   };
 

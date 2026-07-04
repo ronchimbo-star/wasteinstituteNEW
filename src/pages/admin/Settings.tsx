@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 import { Save, Settings as SettingsIcon } from 'lucide-react';
 
 interface SiteSetting {
@@ -12,6 +13,7 @@ export const AdminSettings = () => {
   const [settings, setSettings] = useState<SiteSetting[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingKey, setSavingKey] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     loadSettings();
@@ -42,10 +44,10 @@ export const AdminSettings = () => {
         .eq('id', id);
 
       if (error) throw error;
-      alert(`${formatKey(key)} updated successfully`);
+      toast(`${formatKey(key)} updated successfully`, 'success');
     } catch (error) {
       console.error('Error updating setting:', error);
-      alert('Failed to update setting');
+      toast('Failed to update setting', 'error');
     } finally {
       setSavingKey(null);
     }

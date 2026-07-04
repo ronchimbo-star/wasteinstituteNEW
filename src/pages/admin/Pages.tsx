@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { Plus, Edit, Trash2, Eye } from 'lucide-react';
+import { useToast } from '../../contexts/ToastContext';
+import { Plus, CreditCard as Edit, Trash2, Eye } from 'lucide-react';
 
 interface StaticPage {
   id: string;
@@ -12,6 +13,7 @@ interface StaticPage {
 }
 
 export const AdminPages = () => {
+  const { toast } = useToast();
   const [pages, setPages] = useState<StaticPage[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -44,7 +46,7 @@ export const AdminPages = () => {
       setPages(pages.filter((p) => p.id !== id));
     } catch (error) {
       console.error('Error deleting page:', error);
-      alert('Failed to delete page');
+      toast('Failed to delete page', 'error');
     }
   };
 
