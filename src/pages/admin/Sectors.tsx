@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
+import { Plus, CreditCard as Edit, Trash2, Save, X, Eye, EyeOff } from 'lucide-react';
 
 interface Sector {
   id: string;
@@ -9,6 +9,7 @@ interface Sector {
   description: string;
   icon: string;
   display_order: number;
+  show_in_public: boolean;
   created_at: string;
 }
 
@@ -18,6 +19,7 @@ interface SectorForm {
   description: string;
   icon: string;
   display_order: number;
+  show_in_public: boolean;
 }
 
 const initialFormState: SectorForm = {
@@ -26,6 +28,7 @@ const initialFormState: SectorForm = {
   description: '',
   icon: '',
   display_order: 0,
+  show_in_public: true,
 };
 
 export const AdminSectors = () => {
@@ -65,6 +68,7 @@ export const AdminSectors = () => {
         description: sector.description,
         icon: sector.icon,
         display_order: sector.display_order,
+        show_in_public: sector.show_in_public,
       });
     } else {
       setEditingId(null);
@@ -85,7 +89,6 @@ export const AdminSectors = () => {
 
     try {
       if (editingId) {
-        // Update existing sector
         const { error } = await supabase
           .from('sectors')
           .update(formData)
@@ -93,9 +96,7 @@ export const AdminSectors = () => {
 
         if (error) throw error;
       } else {
-        // Create new sector
         const { error } = await supabase.from('sectors').insert([formData]);
-
         if (error) throw error;
       }
 
@@ -106,6 +107,20 @@ export const AdminSectors = () => {
       alert('Failed to save sector');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const togglePublicVisibility = async (sector: Sector) => {
+    try {
+      const { error } = await supabase
+        .from('sectors')
+        .update({ show_in_public: !sector.show_in_public })
+        .eq('id', sector.id);
+
+      if (error) throw error;
+      setSectors(prev => prev.map(s => s.id === sector.id ? { ...s, show_in_public: !s.show_in_public } : s));
+    } catch (error) {
+      console.error('Error updating sector visibility:', error);
     }
   };
 
@@ -174,29 +189,18 @@ export const AdminSectors = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Order
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Slug
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Icon
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Description
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slug</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Icon</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Public Filter</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {sectors.map((sector) => (
-                  <tr key={sector.id} className="hover:bg-gray-50">
+                  <tr key={sector.id} className={`hover:bg-gray-50 ${!sector.show_in_public ? 'bg-gray-50/50' : ''}`}>
                     <td className="px-6 py-4 text-sm text-gray-900">{sector.display_order}</td>
                     <td className="px-6 py-4">
                       <div className="text-sm font-medium text-gray-900">{sector.name}</div>
@@ -204,9 +208,21 @@ export const AdminSectors = () => {
                     <td className="px-6 py-4 text-sm text-gray-600">{sector.slug}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{sector.icon}</td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-600 truncate max-w-md">
-                        {sector.description}
-                      </div>
+                      <div className="text-sm text-gray-600 truncate max-w-md">{sector.description}</div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        onClick={() => togglePublicVisibility(sector)}
+                        title={sector.show_in_public ? 'Visible in public filter — click to hide' : 'Hidden from public filter — click to show'}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                          sector.show_in_public
+                            ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                            : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                        }`}
+                      >
+                        {sector.show_in_public ? <Eye size={12} /> : <EyeOff size={12} />}
+                        {sector.show_in_public ? 'Visible' : 'Admin only'}
+                      </button>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -253,9 +269,7 @@ export const AdminSectors = () => {
             <form onSubmit={handleSubmit} className="p-6">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Name *
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
                   <input
                     type="text"
                     name="name"
@@ -267,9 +281,7 @@ export const AdminSectors = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Slug *
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Slug *</label>
                   <input
                     type="text"
                     name="slug"
@@ -282,9 +294,7 @@ export const AdminSectors = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                   <textarea
                     name="description"
                     value={formData.description}
@@ -295,9 +305,7 @@ export const AdminSectors = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Icon
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Icon</label>
                   <input
                     type="text"
                     name="icon"
@@ -306,15 +314,11 @@ export const AdminSectors = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     placeholder="e.g., wind, solar, leaf"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Enter icon name from lucide-react
-                  </p>
+                  <p className="text-xs text-gray-500 mt-1">Enter icon name from lucide-react</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Display Order
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Display Order</label>
                   <input
                     type="number"
                     name="display_order"
@@ -323,6 +327,24 @@ export const AdminSectors = () => {
                     min="0"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
+                </div>
+
+                <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <input
+                    type="checkbox"
+                    id="show_in_public"
+                    checked={formData.show_in_public}
+                    onChange={(e) => setFormData(prev => ({ ...prev, show_in_public: e.target.checked }))}
+                    className="mt-0.5 w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+                  />
+                  <div>
+                    <label htmlFor="show_in_public" className="text-sm font-medium text-gray-700 cursor-pointer">
+                      Show in public course filter
+                    </label>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Uncheck to keep this sector for internal admin use only — it will not appear in the public course catalogue filter.
+                    </p>
+                  </div>
                 </div>
               </div>
 

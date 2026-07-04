@@ -54,10 +54,11 @@ export default function Courses() {
   const loadData = async () => {
     setLoading(true);
     try {
-      // Load sectors
+      // Load sectors — only show public-facing ones
       const { data: sectorsData } = await supabase
         .from('sectors')
         .select('*')
+        .eq('show_in_public', true)
         .order('display_order');
 
       if (sectorsData) setSectors(sectorsData);
