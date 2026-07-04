@@ -24,13 +24,32 @@ import {
   Loader2,
   Eye,
   Pencil,
+  Tag,
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { getCourseHealthSummaries } from '../../lib/ai/courseGeneration';
-import type { CourseHealthSummary, AIGenerationJob } from '../../types/ai';
+import type { CourseHealthSummary, AIGenerationJob, ProjectCategory } from '../../types/ai';
 import { CourseGenerationModal } from '../../components/admin/CourseGenerationModal';
 import { SEOOptimiserTool } from '../../components/admin/SEOOptimiserTool';
 import { CourseAuditorPanel } from '../../components/admin/CourseAuditorPanel';
+
+const PROJECT_CATEGORIES: ProjectCategory[] = [
+  'WasteInstitute',
+  'MediWaste',
+  'Circular Horizons',
+  'SharpsNearMe',
+  'Clinical Waste Audit',
+  'Medical Waste Directory',
+];
+
+const PROJECT_CATEGORY_COLORS: Record<string, { pill: string }> = {
+  'WasteInstitute':          { pill: 'bg-emerald-100 text-emerald-700' },
+  'MediWaste':               { pill: 'bg-red-100 text-red-700' },
+  'Circular Horizons':       { pill: 'bg-teal-100 text-teal-700' },
+  'SharpsNearMe':            { pill: 'bg-orange-100 text-orange-700' },
+  'Clinical Waste Audit':    { pill: 'bg-blue-100 text-blue-700' },
+  'Medical Waste Directory': { pill: 'bg-purple-100 text-purple-700' },
+};
 
 type TabView = 'overview' | 'generate' | 'audit' | 'seo';
 
@@ -67,6 +86,7 @@ export default function AICourseDirector() {
   // Filtering
   const [filterTier, setFilterTier] = useState<string>('all');
   const [filterSector, setFilterSector] = useState<string>('all');
+  const [filterCategory, setFilterCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Chat
@@ -74,6 +94,9 @@ export default function AICourseDirector() {
   const [chatInput, setChatInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Job filter
+  const [filterJobCategory, setFilterJobCategory] = useState<string>('all');
 
   useEffect(() => {
     loadData();
@@ -330,6 +353,16 @@ export default function AICourseDirector() {
                     <option key={id} value={id}>{name}</option>
                   ))}
                 </select>
+                <select
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                  className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                >
+                  <option value="all">All Projects</option>
+                  {PROJECT_CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
                 <div className="relative flex-1 min-w-[200px]">
                   <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
@@ -500,7 +533,46 @@ export default function AICourseDirector() {
               New Course
             </button>
           </div>
-          <RecentJobsList jobs={recentJobs} />
+
+          {/* Project category filter for jobs */}
+          <div className="flex flex-wrap items-center gap-2 mb-4 pb-4 border-b border-gray-100">
+            <Tag size={14} className="text-gray-400" />
+            <span className="text-xs font-medium text-gray-500">Filter by project:</span>
+            <button
+              onClick={() => setFilterJobCategory('all')}
+              className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+                filterJobCategory === 'all'
+                  ? 'bg-gray-800 text-white border-gray-800'
+                  : 'border-gray-300 text-gray-600 hover:border-gray-400'
+              }`}
+            >
+              All
+            </button>
+            {PROJECT_CATEGORIES.map((cat) => {
+              const colors = PROJECT_CATEGORY_COLORS[cat];
+              const isActive = filterJobCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setFilterJobCategory(isActive ? 'all' : cat)}
+                  className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+                    isActive
+                      ? `${colors.pill} border-current`
+                      : 'border-gray-300 text-gray-600 hover:border-gray-400'
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+
+          <RecentJobsList
+            jobs={filterJobCategory === 'all'
+              ? recentJobs
+              : recentJobs.filter(j => j.project_category === filterJobCategory)
+            }
+          />
         </div>
       )}
 
@@ -734,9 +806,16 @@ function RecentJobsList({ jobs }: { jobs: AIGenerationJob[] }) {
             <div className="flex items-center gap-3">
               <StatusIcon size={18} className={`${statusColor} ${job.status === 'processing' ? 'animate-spin' : ''}`} />
               <div>
-                <p className="text-sm font-medium text-gray-900">
-                  {jobTypeLabels[job.job_type] || job.job_type}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium text-gray-900">
+                    {jobTypeLabels[job.job_type] || job.job_type}
+                  </p>
+                  {job.project_category && (
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${PROJECT_CATEGORY_COLORS[job.project_category]?.pill || 'bg-gray-100 text-gray-600'}`}>
+                      {job.project_category}
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-gray-500">
                   {new Date(job.created_at).toLocaleString('en-GB', {
                     day: 'numeric',

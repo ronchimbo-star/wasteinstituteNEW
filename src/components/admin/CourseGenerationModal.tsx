@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { X, Brain, BookOpen, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { generateCourseOutline, createCourseFromOutline } from '../../lib/ai/courseGeneration';
-import type {
+import {
   CourseGenerationInput,
   GeneratedCourseOutline,
   CourseLevel,
   RiskLevel,
   CaseStudyRegion,
+  ProjectCategory,
 } from '../../types/ai';
 
 interface Props {
@@ -31,6 +32,7 @@ export function CourseGenerationModal({ onClose, onGenerated }: Props) {
     description: '',
     target_audience: '',
     regions: ['UK'],
+    project_category: 'WasteInstitute',
   });
 
   const handleGenerate = async () => {
@@ -67,6 +69,14 @@ export function CourseGenerationModal({ onClose, onGenerated }: Props) {
   };
 
   const regions: CaseStudyRegion[] = ['UK', 'EU', 'USA', 'Africa', 'Asia'];
+  const projectCategories: ProjectCategory[] = [
+    'WasteInstitute',
+    'MediWaste',
+    'Circular Horizons',
+    'SharpsNearMe',
+    'Clinical Waste Audit',
+    'Medical Waste Directory',
+  ];
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -92,6 +102,7 @@ export function CourseGenerationModal({ onClose, onGenerated }: Props) {
               formData={formData}
               setFormData={setFormData}
               regions={regions}
+              projectCategories={projectCategories}
               error={error}
             />
           )}
@@ -181,15 +192,26 @@ export function CourseGenerationModal({ onClose, onGenerated }: Props) {
   );
 }
 
+const PROJECT_CATEGORY_STYLES: Record<string, { active: string }> = {
+  'WasteInstitute':          { active: 'border-emerald-500 bg-emerald-50 text-emerald-700' },
+  'MediWaste':               { active: 'border-red-400 bg-red-50 text-red-700' },
+  'Circular Horizons':       { active: 'border-teal-500 bg-teal-50 text-teal-700' },
+  'SharpsNearMe':            { active: 'border-orange-400 bg-orange-50 text-orange-700' },
+  'Clinical Waste Audit':    { active: 'border-blue-500 bg-blue-50 text-blue-700' },
+  'Medical Waste Directory': { active: 'border-purple-500 bg-purple-50 text-purple-700' },
+};
+
 function InputForm({
   formData,
   setFormData,
   regions,
+  projectCategories,
   error,
 }: {
   formData: CourseGenerationInput;
   setFormData: React.Dispatch<React.SetStateAction<CourseGenerationInput>>;
   regions: CaseStudyRegion[];
+  projectCategories: ProjectCategory[];
   error: string;
 }) {
   return (
@@ -220,6 +242,26 @@ function InputForm({
             placeholder="e.g., Healthcare, Industrial, Municipal"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
           />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Project / Brand</label>
+        <div className="flex flex-wrap gap-2">
+          {projectCategories.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setFormData((prev) => ({ ...prev, project_category: cat }))}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                formData.project_category === cat
+                  ? PROJECT_CATEGORY_STYLES[cat].active
+                  : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
       </div>
 

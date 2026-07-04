@@ -51,7 +51,10 @@ async function callAIEndpoint<T>(
 export async function generateCourseOutline(
   input: CourseGenerationInput
 ): Promise<GeneratedCourseOutline> {
-  return callAIEndpoint<GeneratedCourseOutline>('generate_course', { input });
+  const result = await callAIEndpoint<GeneratedCourseOutline>('generate_course', { input });
+  // Record the job with project category so it shows in the dashboard
+  await createGenerationJob('course_generate', null, input as unknown as Record<string, unknown>, input.project_category).catch(() => {});
+  return result;
 }
 
 export async function createCourseFromOutline(
@@ -261,7 +264,8 @@ export async function getCourseHealthSummaries(): Promise<CourseHealthSummary[]>
 export async function createGenerationJob(
   jobType: JobType,
   courseId: string | null,
-  inputParams: Record<string, unknown>
+  inputParams: Record<string, unknown>,
+  projectCategory?: string
 ): Promise<string> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
@@ -274,6 +278,7 @@ export async function createGenerationJob(
       course_id: courseId,
       input_params: inputParams,
       status: 'pending',
+      ...(projectCategory ? { project_category: projectCategory } : {}),
     })
     .select('id')
     .single();

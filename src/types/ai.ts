@@ -16,6 +16,14 @@ export type AuditSeverity = 'critical' | 'warning' | 'info' | 'good';
 
 export type CourseLevel = 'Beginner' | 'Intermediate' | 'Advanced';
 
+export type ProjectCategory =
+  | 'WasteInstitute'
+  | 'MediWaste'
+  | 'Circular Horizons'
+  | 'SharpsNearMe'
+  | 'Clinical Waste Audit'
+  | 'Medical Waste Directory';
+
 export type RiskLevel = 'Low' | 'Medium' | 'High';
 
 export type CaseStudyRegion = 'UK' | 'EU' | 'USA' | 'Africa' | 'Asia';
@@ -32,6 +40,7 @@ export interface AIGenerationJob {
   error_message: string | null;
   tokens_used: number;
   cost_usd: number;
+  project_category: ProjectCategory | null;
   started_at: string | null;
   completed_at: string | null;
   created_at: string;
@@ -87,6 +96,7 @@ export interface CourseGenerationInput {
   description?: string;
   target_audience?: string;
   regions?: CaseStudyRegion[];
+  project_category?: ProjectCategory;
 }
 
 export interface GeneratedCourseOutline {
