@@ -149,7 +149,7 @@ export default function AICourseDirector() {
     }
     // Fallback: detect tier from sector name
     const sectorName = course.sectors?.name || '';
-    if (sectorName.toLowerCase().includes('wamitab')) return 'Tier 1 - WAMITAB Rival';
+    if (sectorName.toLowerCase().includes('wamitab')) return 'Tier 1 - Core Qualifications';
     if (sectorName.toLowerCase().includes('niche') || sectorName.toLowerCase().includes('industry')) return 'Tier 2 - Industry-Specific Niche';
     if (sectorName.toLowerCase().includes('future') || sectorName.toLowerCase().includes('innovation')) return 'Tier 3 - Future Tech & Innovation';
     return 'Other';
@@ -293,7 +293,7 @@ export default function AICourseDirector() {
       {/* Tier Metrics */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <MetricCard label="Total Courses" value={allCourses.length} icon={BookOpen} color="emerald" />
-        <MetricCard label="WAMITAB Rival" value={wamitabCount} icon={Award} color="blue" />
+        <MetricCard label="Core Qualifications" value={wamitabCount} icon={Award} color="blue" />
         <MetricCard label="Industry Niche" value={nicheCount} icon={Layers} color="amber" />
         <MetricCard label="Future Tech" value={futureTechCount} icon={Rocket} color="teal" />
         <MetricCard label="Avg Quality" value={`${avgScore}%`} icon={TrendingUp} color="emerald" />
@@ -338,7 +338,7 @@ export default function AICourseDirector() {
                   className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 >
                   <option value="all">All Tiers</option>
-                  <option value="tier1">Tier 1 - WAMITAB Rival</option>
+                  <option value="tier1">Tier 1 - Core Qualifications</option>
                   <option value="tier2">Tier 2 - Industry Niche</option>
                   <option value="tier3">Tier 3 - Future Tech</option>
                   <option value="other">Other</option>
@@ -628,7 +628,7 @@ function MetricCard({ label, value, icon: Icon, color }: { label: string; value:
 }
 
 function TierBadge({ tier }: { tier: string }) {
-  if (tier.includes('Tier 1')) return <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[10px] font-medium">WAMITAB</span>;
+  if (tier.includes('Tier 1')) return <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[10px] font-medium">Core</span>;
   if (tier.includes('Tier 2')) return <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded text-[10px] font-medium">Niche</span>;
   if (tier.includes('Tier 3')) return <span className="px-1.5 py-0.5 bg-teal-100 text-teal-700 rounded text-[10px] font-medium">Future</span>;
   return <span className="px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded text-[10px] font-medium">General</span>;
@@ -692,7 +692,7 @@ function CourseDetailPanel({
           </div>
           {wamitabEquiv !== 'N/A' && (
             <div>
-              <span className="text-gray-500">WAMITAB Equiv: </span>
+              <span className="text-gray-500">Qualification Equiv: </span>
               <span className="text-gray-700">{wamitabEquiv}</span>
             </div>
           )}
