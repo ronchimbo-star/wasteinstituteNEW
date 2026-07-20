@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../contexts/ToastContext';
-import { Plus, CreditCard as Edit, Trash2, Eye, RotateCcw } from 'lucide-react';
+import { Plus, CreditCard as Edit, Trash2, Eye, RotateCcw, Download } from 'lucide-react';
+import { exportCoursesCsv } from '../../utils/exportCoursesCsv';
 
 interface Course {
   id: string;
@@ -21,6 +22,7 @@ export const AdminCourses = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [showArchived, setShowArchived] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     loadCourses();
@@ -79,6 +81,19 @@ export const AdminCourses = () => {
     }
   };
 
+  const handleExportCsv = async () => {
+    setExporting(true);
+    try {
+      await exportCoursesCsv();
+      toast('CSV downloaded', 'success');
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      toast('Failed to export CSV', 'error');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -95,6 +110,14 @@ export const AdminCourses = () => {
           <p className="text-gray-600 mt-2">Manage your course library</p>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={handleExportCsv}
+            disabled={exporting}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Download size={16} />
+            {exporting ? 'Exporting...' : 'Download CSV'}
+          </button>
           <button
             onClick={() => setShowArchived(v => !v)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors text-sm ${
