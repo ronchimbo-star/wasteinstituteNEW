@@ -1,9 +1,46 @@
 User-agent: *
 Allow: /
+Allow: /courses
+Allow: /news
+Allow: /events
+Allow: /membership
+Allow: /resources
+Allow: /about
+Allow: /contact
+Allow: /faq
 Disallow: /login
 Disallow: /signup
 Disallow: /dashboard
 Disallow: /admin
 Disallow: /verify
+Disallow: /my-payments
+
+# AI crawlers - explicitly allowed
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: AppleBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
 
 Sitemap: https://wasteinstitute.org/sitemap.xml

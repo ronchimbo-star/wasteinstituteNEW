@@ -47,7 +47,7 @@ async function getDynamicRoutes() {
     '/resources',
     '/contact',
     '/faq',
-    '/verify-certificate',
+    '/verify',
     '/privacy',
     '/terms',
     '/cookies',

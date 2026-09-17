@@ -100,7 +100,14 @@ export const AdminNewsForm = () => {
       const submitData = {
         ...formData,
         published_at: formData.published_at || null,
+        seo_title: formData.seo_title || formData.title,
+        seo_description: formData.seo_description || formData.excerpt,
       };
+
+      if (formData.published && (!formData.seo_description || !formData.excerpt)) {
+        toast('Excerpt and SEO description are required before publishing', 'warning');
+        return;
+      }
 
       if (id && id !== 'new') {
         // Update existing article

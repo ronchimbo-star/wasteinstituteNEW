@@ -228,6 +228,11 @@ export const CourseForm = () => {
       return;
     }
 
+    if (formData.published && (!formData.seo_title || !formData.seo_description)) {
+      toast('SEO title and description are required before publishing a course', 'warning');
+      return;
+    }
+
     try {
       setLoading(true);
 
