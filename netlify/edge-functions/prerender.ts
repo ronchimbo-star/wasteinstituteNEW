@@ -192,7 +192,7 @@ async function getMembershipLevel(slug: string) {
     .from("membership_levels")
     .select("*")
     .eq("slug", slug)
-    .eq("active", true)
+    .eq("published", true)
     .maybeSingle();
   return data;
 }
@@ -234,8 +234,8 @@ async function getMembershipList() {
   const client = getSupabaseClient();
   const { data } = await client
     .from("membership_levels")
-    .select("slug,title,description,annual_price,monthly_price")
-    .eq("active", true)
+    .select("slug,name,description,annual_fee,monthly_fee")
+    .eq("published", true)
     .order("display_order");
   return data || [];
 }
@@ -404,14 +404,14 @@ ${event.excerpt ? `<p><em>${esc(event.excerpt)}</em></p>` : ""}
 }
 
 function renderMembershipPage(m: any): string {
-  const title = m.seo_title || `${m.title} | Waste Institute`;
-  const desc = m.seo_description || truncate(stripHtml(m.description), 160);
+  const title = m.meta_title || `${m.name} Membership | Waste Institute`;
+  const desc = m.meta_description || truncate(stripHtml(m.description), 160);
   const canonical = `${BASE_URL}/membership/${m.slug}`;
 
   const benefits = m.benefits ? stripHtml(m.benefits) : "";
   const body = `<article>
-<h1>${esc(m.title)}</h1>
-<p><strong>Price:</strong> ${m.annual_price ? `£${m.annual_price}/year` : "Free"}</p>
+<h1>${esc(m.name)} Membership</h1>
+<p><strong>Price:</strong> ${m.annual_fee ? `£${m.annual_fee}/year` : "Free"}</p>
 <p>${esc(m.description)}</p>
 ${benefits ? `<section><h2>Benefits</h2><div>${benefits}</div></section>` : ""}
 <nav style="margin-top:2rem"><a href="${BASE_URL}/membership">← All membership levels</a> | <a href="${BASE_URL}/courses">Explore courses</a> | <a href="${BASE_URL}/contact">Contact us</a></nav>
@@ -421,9 +421,9 @@ ${benefits ? `<section><h2>Benefits</h2><div>${benefits}</div></section>` : ""}
     {
       "@context": "https://schema.org",
       "@type": "Product",
-      name: m.title,
+      name: `${m.name} Membership`,
       description: desc,
-      offers: { "@type": "Offer", price: (m.annual_price || 0).toString(), priceCurrency: "GBP" },
+      offers: { "@type": "Offer", price: (m.annual_fee || 0).toString(), priceCurrency: "GBP" },
     },
     {
       "@context": "https://schema.org",
@@ -431,7 +431,7 @@ ${benefits ? `<section><h2>Benefits</h2><div>${benefits}</div></section>` : ""}
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: `${BASE_URL}/` },
         { "@type": "ListItem", position: 2, name: "Membership", item: `${BASE_URL}/membership` },
-        { "@type": "ListItem", position: 3, name: m.title, item: canonical },
+        { "@type": "ListItem", position: 3, name: `${m.name} Membership`, item: canonical },
       ],
     },
   ];
@@ -560,7 +560,7 @@ function renderMembershipListPage(levels: any[]): string {
   const levelLinks = levels
     .map(
       (m) =>
-        `<article><h2><a href="${BASE_URL}/membership/${esc(m.slug)}">${esc(m.title)}</a></h2><p>${esc(truncate(stripHtml(m.description), 200))}</p><p><strong>Price:</strong> ${m.annual_price ? `£${m.annual_price}/year` : "Free"}</p></article>`
+        `<article><h2><a href="${BASE_URL}/membership/${esc(m.slug)}">${esc(m.name)} Membership</a></h2><p>${esc(truncate(stripHtml(m.description), 200))}</p><p><strong>Price:</strong> ${m.annual_fee ? `£${m.annual_fee}/year` : "Free"}</p></article>`
     )
     .join("");
 
@@ -579,7 +579,7 @@ ${levelLinks || "<p>Membership levels coming soon.</p>"}
       itemListElement: levels.map((m, i) => ({
         "@type": "ListItem",
         position: i + 1,
-        name: m.title,
+        name: `${m.name} Membership`,
         url: `${BASE_URL}/membership/${m.slug}`,
       })),
     },
