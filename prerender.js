@@ -37,21 +37,20 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // Fetch all dynamic routes from database
 async function getDynamicRoutes() {
   const routes = [
-    // Static routes
-    '/',
-    '/about',
-    '/courses',
-    '/membership',
-    '/news',
-    '/events',
-    '/resources',
-    '/contact',
-    '/faq',
-    '/verify',
-    '/privacy',
-    '/terms',
-    '/cookies',
-    '/accessibility',
+    { path: '/', type: 'home' },
+    { path: '/about', type: 'static' },
+    { path: '/courses', type: 'hub' },
+    { path: '/membership', type: 'hub' },
+    { path: '/news', type: 'hub' },
+    { path: '/events', type: 'hub' },
+    { path: '/resources', type: 'static' },
+    { path: '/contact', type: 'static' },
+    { path: '/faq', type: 'static' },
+    { path: '/verify', type: 'static' },
+    { path: '/privacy', type: 'static' },
+    { path: '/terms', type: 'static' },
+    { path: '/cookies', type: 'static' },
+    { path: '/accessibility', type: 'static' },
   ];
 
   // Skip database queries if using placeholder credentials
@@ -64,48 +63,50 @@ async function getDynamicRoutes() {
     // Fetch published courses
     const { data: courses } = await supabase
       .from('courses')
-      .select('slug')
-      .eq('published', true);
+      .select('slug,updated_at')
+      .eq('published', true)
+      .is('deleted_at', null);
 
     if (courses) {
       courses.forEach(course => {
-        routes.push(`/courses/${course.slug}`);
+        routes.push({ path: `/courses/${course.slug}`, lastmod: course.updated_at, type: 'course' });
       });
     }
 
     // Fetch published news articles
     const { data: news } = await supabase
       .from('news_articles')
-      .select('slug')
-      .eq('published', true);
+      .select('slug,published_at,updated_at')
+      .eq('published', true)
+      .is('deleted_at', null);
 
     if (news) {
       news.forEach(article => {
-        routes.push(`/news/${article.slug}`);
+        routes.push({ path: `/news/${article.slug}`, lastmod: article.updated_at || article.published_at, type: 'news' });
       });
     }
 
     // Fetch published membership levels
     const { data: memberships } = await supabase
       .from('membership_levels')
-      .select('slug')
-      .eq('active', true);
+      .select('slug,updated_at')
+      .eq('published', true);
 
     if (memberships) {
       memberships.forEach(membership => {
-        routes.push(`/membership/${membership.slug}`);
+        routes.push({ path: `/membership/${membership.slug}`, lastmod: membership.updated_at, type: 'membership' });
       });
     }
 
     // Fetch published events
     const { data: events } = await supabase
       .from('events')
-      .select('slug')
+      .select('slug,updated_at,start_date')
       .eq('published', true);
 
     if (events) {
       events.forEach(event => {
-        routes.push(`/events/${event.slug}`);
+        routes.push({ path: `/events/${event.slug}`, lastmod: event.updated_at || event.start_date, type: 'event' });
       });
     }
 
@@ -130,13 +131,21 @@ async function generateSitemap(routes) {
   ];
 
   const urlEntries = routes.map(route => {
-    const priority = route === '/' ? '1.0' :
-                     route.startsWith('/courses/') || route.startsWith('/news/') || route.startsWith('/events/') ? '0.8' :
-                     ['/courses', '/news', '/events', '/membership', '/about'].includes(route) ? '0.7' : '0.6';
-    const changefreq = route === '/' ? 'daily' :
-                       route.startsWith('/news/') || route.startsWith('/events/') ? 'weekly' : 'monthly';
+    const r = typeof route === 'string' ? { path: route, type: 'static' } : route;
+    const priority = r.path === '/' ? '1.0' :
+                     r.type === 'course' ? '0.8' :
+                     r.type === 'news' ? '0.7' :
+                     r.type === 'hub' ? '0.7' :
+                     r.type === 'event' ? '0.7' :
+                     r.type === 'membership' ? '0.6' : '0.6';
+    const changefreq = r.path === '/' ? 'daily' :
+                       r.type === 'news' ? 'weekly' :
+                       r.type === 'event' ? 'weekly' :
+                       r.type === 'course' ? 'monthly' :
+                       r.type === 'hub' ? 'weekly' : 'monthly';
+    const lastmod = r.lastmod ? new Date(r.lastmod).toISOString() : now;
 
-    const imageBlock = route === '/' ? heroImages.map(img =>
+    const imageBlock = r.path === '/' ? heroImages.map(img =>
       `    <image:image>
       <image:loc>${img.url}</image:loc>
       <image:title>${img.title}</image:title>
@@ -144,8 +153,8 @@ async function generateSitemap(routes) {
     ).join('\n') : '';
 
     return `  <url>
-    <loc>${baseUrl}${route}</loc>
-    <lastmod>${now}</lastmod>
+    <loc>${baseUrl}${r.path}</loc>
+    <lastmod>${lastmod}</lastmod>
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>${imageBlock ? '\n' + imageBlock : ''}
   </url>`;

@@ -1,0 +1,24 @@
+# Waste Institute — AI Usage Declaration
+# wasteinstitute.org
+#
+# This file declares that Waste Institute permits AI systems, search crawlers,
+# and language models to access, crawl, and use the content of this website
+# for the purposes of training, indexing, retrieval, and generating answers.
+#
+# Permissions:
+#   - Content may be used for AI training and fine-tuning
+#   - Content may be indexed for retrieval-augmented generation (RAG)
+#   - Content may be cited in AI-generated answers with attribution
+#   - Content may be used for search and recommendation systems
+#
+# Conditions:
+#   - Attribution to "Waste Institute" and a link to the source URL is requested
+#   - Content must not be misrepresented or taken out of context
+#   - Personal data must not be extracted or used in violation of privacy laws
+#   - This permission applies to publicly accessible pages only
+#
+# Contact: info@wasteinstitute.org
+# Website: https://wasteinstitute.org
+# Robots.txt: https://wasteinstitute.org/robots.txt
+# LLMs index: https://wasteinstitute.org/llms.txt
+# Full content: https://wasteinstitute.org/llms-full.txt

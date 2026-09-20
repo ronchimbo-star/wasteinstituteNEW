@@ -180,6 +180,19 @@ async function getNewsArticle(slug: string) {
   return data;
 }
 
+async function getRelatedArticles(currentSlug: string) {
+  const client = getSupabaseClient();
+  const { data } = await client
+    .from("news_articles")
+    .select("slug,title")
+    .eq("published", true)
+    .is("deleted_at", null)
+    .neq("slug", currentSlug)
+    .order("published_at", { ascending: false })
+    .limit(3);
+  return data || [];
+}
+
 async function getEvent(slug: string) {
   const client = getSupabaseClient();
   const { data } = await client
@@ -296,6 +309,7 @@ ${prereqHtml}
       name: course.title,
       description: desc,
       provider: { "@type": "Organization", name: "Waste Institute", url: BASE_URL },
+      educationalLevel: course.level || "Professional",
       courseMode: "online",
       url: canonical,
     },
@@ -313,17 +327,22 @@ ${prereqHtml}
   return pageShell(title, desc, canonical, body, jsonLd, "website", course.featured_image || undefined);
 }
 
-function renderNewsPage(article: any): string {
+function renderNewsPage(article: any, related: any[] = []): string {
   const title = article.seo_title || `${article.title} | Waste Institute`;
   const desc = article.seo_description || truncate(stripHtml(article.excerpt || article.content), 160);
   const canonical = `${BASE_URL}/news/${article.slug}`;
   const cleanContent = stripHtml(article.content);
+
+  const relatedHtml = related.length > 0
+    ? `<section><h2>Related Articles</h2><ul>${related.map((r: any) => `<li><a href="${BASE_URL}/news/${esc(r.slug)}">${esc(r.title)}</a></li>`).join("")}</ul></section>`
+    : "";
 
   const body = `<article>
 <h1>${esc(article.title)}</h1>
 <p><strong>Published:</strong> ${article.published_at ? new Date(article.published_at).toLocaleDateString("en-GB") : ""}</p>
 ${article.excerpt ? `<p><em>${esc(article.excerpt)}</em></p>` : ""}
 <div>${cleanContent}</div>
+${relatedHtml}
 <nav style="margin-top:2rem"><a href="${BASE_URL}/news">← Back to all articles</a> | <a href="${BASE_URL}/courses">Explore courses</a> | <a href="${BASE_URL}/membership">Membership</a></nav>
 </article>`;
 
@@ -334,6 +353,7 @@ ${article.excerpt ? `<p><em>${esc(article.excerpt)}</em></p>` : ""}
       headline: article.title,
       description: desc,
       datePublished: article.published_at,
+      dateModified: article.updated_at || article.published_at,
       author: { "@type": "Organization", name: "Waste Institute" },
       publisher: {
         "@type": "Organization",
@@ -341,6 +361,7 @@ ${article.excerpt ? `<p><em>${esc(article.excerpt)}</em></p>` : ""}
         logo: { "@type": "ImageObject", url: `${BASE_URL}/white-icon.png` },
       },
       mainEntityOfPage: canonical,
+      ...(article.featured_image ? { image: article.featured_image } : {}),
     },
     {
       "@context": "https://schema.org",
@@ -598,6 +619,17 @@ function renderHomePage(): string {
   const desc = "Professional waste management courses and certifications from industry experts. Learn waste legislation, circular economy, hazardous waste handling and more.";
   const canonical = `${BASE_URL}/`;
 
+  const faqItems = [
+    { q: "What is the circular economy?", a: "The circular economy is an economic system designed to eliminate waste by keeping resources in use for as long as possible. Unlike the traditional linear economy (make, use, dispose), a circular economy reuses, repairs, refurbishes, and recycles materials. Waste Institute offers a dedicated Circular Economy Fundamentals course covering principles, sustainable design, and implementation strategies." },
+    { q: "How does Extended Producer Responsibility work?", a: "Extended Producer Responsibility (EPR) makes manufacturers responsible for the entire lifecycle of their products, especially end-of-life disposal. Producers must fund or organise collection, recycling, and safe disposal of their products. EPR schemes operate across packaging, electronics, batteries, and vehicles in the UK. Our Environmental Regulations and Compliance course covers EPR in detail." },
+    { q: "What is Waste-to-Energy?", a: "Waste-to-Energy (WtE) is the process of generating energy from waste materials through incineration, gasification, pyrolysis, or anaerobic digestion. Modern WtE facilities can reduce waste volume by up to 90% while generating electricity and heat. Our Waste-to-Energy Technologies course provides comprehensive training on these processes." },
+    { q: "What are PFAS?", a: "PFAS (Per- and Polyfluoroalkyl Substances) are a group of synthetic chemicals used in products like firefighting foam, non-stick coatings, and food packaging. They are known as "forever chemicals" because they do not break down naturally. PFAS contamination in waste streams is a growing regulatory concern. Our PFAS Detection and Treatment course covers testing protocols and treatment technologies." },
+    { q: "How should I dispose of clinical waste at home?", a: "Clinical waste at home includes sharps (needles, lancets), dressings, and medicines. Sharps must go in a proper sharps bin available from pharmacies. Other clinical waste should be collected by your local council's clinical waste service. Never put clinical waste in normal household bins. Read our complete guide on clinical waste disposal at home for detailed instructions." },
+    { q: "Where can I dispose of sharps near me?", a: "Sharps can be disposed of at participating pharmacies, GP surgeries, and local council collection points. Many councils offer free sharps collection services. Use a proper sharps bin (never reinsert the cap on a used needle). Our complete sharps disposal guide lists pharmacy take-back schemes and council services across the UK." },
+  ];
+
+  const faqHtml = faqItems.map(f => `<details><summary><strong>${esc(f.q)}</strong></summary><p>${esc(f.a)}</p></details>`).join("\n");
+
   const body = `<article>
 <h1>Start Learning With Leading Waste Management Experts Today</h1>
 <p>Professional training and certification programs designed by industry experts. Learn waste legislation, circular economy, hazardous waste handling, and more.</p>
@@ -611,6 +643,10 @@ function renderHomePage(): string {
 <a href="${BASE_URL}/contact">Contact</a>
 <a href="${BASE_URL}/faq">FAQ</a>
 </nav>
+<section>
+<h2>Frequently Asked Questions</h2>
+${faqHtml}
+</section>
 </article>`;
 
   const jsonLd = [
@@ -622,12 +658,38 @@ function renderHomePage(): string {
       description: desc,
       email: "info@wasteinstitute.org",
       telephone: "+441322879087",
+      logo: { "@type": "ImageObject", url: `${BASE_URL}/white-icon.png` },
       address: {
         "@type": "PostalAddress",
         streetAddress: "82 James Carter Rd",
         addressLocality: "Mildenhall, Bury Saint Edmunds",
         postalCode: "IP28 7DE",
         addressCountry: "GB",
+      },
+      sameAs: [
+        "https://www.linkedin.com/company/waste-institute",
+        "https://twitter.com/wasteinstitute",
+        "https://www.facebook.com/wasteinstitute",
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqItems.map(f => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Waste Institute",
+      url: BASE_URL,
+      potentialAction: {
+        "@type": "SearchAction",
+        target: `${BASE_URL}/courses?q={search_term_string}`,
+        "query-input": "required name=search_term_string",
       },
     },
   ];
@@ -732,7 +794,8 @@ export default async (request: Request, context: Context) => {
       const slug = pathname.replace("/news/", "");
       const article = await getNewsArticle(slug);
       if (article) {
-        const html = renderNewsPage(article);
+        const related = await getRelatedArticles(slug);
+        const html = renderNewsPage(article, related);
         return new Response(html, {
           headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600, s-maxage=3600", "x-prerendered": "true" },
         });
