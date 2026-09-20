@@ -1,28 +1,55 @@
-User-agent: *
-Allow: /
-Allow: /courses
-Allow: /news
-Allow: /events
-Allow: /membership
-Allow: /resources
-Allow: /about
-Allow: /contact
-Allow: /faq
-Disallow: /login
-Disallow: /signup
-Disallow: /dashboard
-Disallow: /admin
-Disallow: /verify
-Disallow: /my-payments
+# robots.txt — Waste Institute (wasteinstitute.org)
+# All AI crawlers and search engines are explicitly allowed.
 
-# AI crawlers - explicitly allowed
+# ---------------------------------------------------------------------------
+# Traditional search engine crawlers
+# ---------------------------------------------------------------------------
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: PetalBot
+Allow: /
+
+User-agent: SeznamBot
+Allow: /
+
+User-agent: AppleBot
+Allow: /
+
+# ---------------------------------------------------------------------------
+# AI crawlers — explicitly allowed to crawl and use content for training/search
+# ---------------------------------------------------------------------------
 User-agent: GPTBot
 Allow: /
 
 User-agent: ChatGPT-User
 Allow: /
 
+User-agent: OAI-SearchBot
+Allow: /
+
 User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
 Allow: /
 
 User-agent: anthropic-ai
@@ -34,13 +61,51 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-User-agent: Bytespider
+User-agent: CCBot
 Allow: /
 
-User-agent: AppleBot
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bytespider
 Allow: /
 
 User-agent: Amazonbot
 Allow: /
 
+# ---------------------------------------------------------------------------
+# Social media crawlers
+# ---------------------------------------------------------------------------
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+# ---------------------------------------------------------------------------
+# Catch-all — allow everything except private/admin routes
+# ---------------------------------------------------------------------------
+User-agent: *
+Allow: /
+Allow: /courses
+Allow: /news
+Allow: /events
+Allow: /membership
+Allow: /resources
+Allow: /about
+Allow: /contact
+Allow: /faq
+Allow: /verify
+Disallow: /login
+Disallow: /signup
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /my-payments
+
+# ---------------------------------------------------------------------------
+# Sitemaps and AI discovery files
+# ---------------------------------------------------------------------------
 Sitemap: https://wasteinstitute.org/sitemap.xml

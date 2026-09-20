@@ -21,9 +21,14 @@ function isCrawler(userAgent: string): boolean {
     "googlebot", "bingbot", "slurp", "duckduckbot", "baiduspider",
     "yandexbot", "facebookexternalhit", "twitterbot", "linkedinbot",
     "whatsapp", "telegrambot", "applebot", "petalbot", "seznambot",
-    "bytespider", "gptbot", "chatgpt-user", "claudebot", "anthropic",
-    "perplexity", "amazonbot", "googleother", "crawler",
+    "bytespider", "googleother", "crawler",
     "spider", "bot/", "indexer", "archive.org",
+    // AI crawlers — explicitly served prerendered HTML
+    "gptbot", "chatgpt-user", "oai-searchbot", "oai-search",
+    "claudebot", "claude-web", "anthropic-ai", "anthropic",
+    "perplexitybot", "perplexity",
+    "google-extended", "ccbot",
+    "applebot-extended", "amazonbot",
   ];
   return crawlers.some((c) => ua.includes(c));
 }

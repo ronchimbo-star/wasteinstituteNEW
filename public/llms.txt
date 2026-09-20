@@ -1,47 +1,67 @@
 # Waste Institute
 
-> Professional waste management courses, certifications, and training programs from industry experts. Covering waste legislation, circular economy, hazardous waste handling, clinical waste management, and sustainability.
+> Empowering sustainable waste management through education and innovation.
 
-## About
-
-Waste Institute is a professional education platform providing industry-leading waste management courses and certifications. We offer training across all waste management sectors including healthcare waste, hazardous materials, recycling, circular economy, and environmental compliance. Our courses are designed by industry experts and recognized by professionals worldwide.
+Waste Institute is a professional education platform providing industry-leading waste management courses, certifications, and training programs. We cover healthcare waste, hazardous materials, recycling, circular economy, environmental compliance, and sustainability. Our courses are designed by industry experts and recognized by professionals worldwide.
 
 ## Courses
 
-- [Browse all courses](https://wasteinstitute.org/courses)
-- Courses range from beginner to advanced levels
-- Topics include: Healthcare Waste Management, Hazardous Waste Handling, Circular Economy, Waste Legislation, Recycling Operations, Environmental Compliance, Clinical Waste Audit, Sharps Management
-- Professional certifications available upon course completion
-- Online, self-paced learning
+- [Advanced Recycling Operations](https://wasteinstitute.org/courses/advanced-recycling-operations): Comprehensive training on modern recycling technologies, MRF operations, and contamination management.
+- [AI-Powered Waste Sorting Systems](https://wasteinstitute.org/courses/ai-powered-waste-sorting): Learn how AI and machine learning are revolutionizing waste sorting with computer vision and robotics.
+- [Certificate in Healthcare Waste Management: Compliance, Auditing, and HTM 07-01](https://wasteinstitute.org/courses/certificate-healthcare-waste-management-compliance-auditing-htm-07-01): Deep dive into healthcare waste regulations, legal Duty of Care, hazardous waste classification, and practical auditing.
+- [Circular Economy Fundamentals](https://wasteinstitute.org/courses/circular-economy-fundamentals: Learn circular economy principles, sustainable design, and how to implement circular practices in organizations.
+- [Construction Waste Management](https://wasteinstitute.org/courses/construction-waste-management): Comprehensive construction and demolition waste management covering regulations, site waste management plans, and material recovery.
+- [Data-Driven Sustainability: Waste Reporting and Resource Efficiency](https://wasteinstitute.org/courses/data-driven-sustainability-waste-reporting-resource-efficiency): Turn waste data into a tool for business improvement, ESG reporting, and resource efficiency.
+- [Environmental Regulations and Compliance](https://wasteinstitute.org/courses/environmental-regulations-compliance): Master UK environmental regulations, compliance frameworks, and regulatory reporting requirements.
+- [Hazardous Waste Handling Certification](https://wasteinstitute.org/courses/hazardous-waste-handling): Certification in safe hazardous waste handling, storage, transport, and disposal procedures.
+- [Leadership in Waste Management Organizations](https://wasteinstitute.org/courses/leadership-waste-management): Develop leadership and management skills specific to waste management organizations and teams.
+- [Modern Landfill Management](https://wasteinstitute.org/courses/modern-landfill-management): Modern landfill operations including leachate management, gas collection, environmental monitoring, and aftercare.
+- [Organic Waste Composting and Management](https://wasteinstitute.org/courses/organic-waste-composting): Composting and organic waste management from small-scale to commercial facility operations.
+- [PFAS Detection and Treatment](https://wasteinstitute.org/courses/pfas-detection-treatment): PFAS contamination detection, testing protocols, treatment technologies, and regulatory compliance.
+- [Practical Waste Segregation and Staff Training for Healthcare](https://wasteinstitute.org/courses/practical-waste-segregation-staff-training-healthcare): Practical training on healthcare waste segregation, staff training techniques, and building a culture of safety.
+- [Waste-to-Energy Technologies](https://wasteinstitute.org/courses/waste-to-energy-technologies): Converting waste to energy through incineration, gasification, anaerobic digestion, and emerging technologies.
 
-## Membership
+## News Articles
 
-- [Membership levels](https://wasteinstitute.org/membership)
-- Student (Free), Affiliate (£97/yr), Associate (£147/yr), Technical (£197/yr), Chartered (£297/yr), Fellowship (invitation only)
-- Members receive course discounts, resources, and professional recognition
-
-## News & Articles
-
-- [Latest news and articles](https://wasteinstitute.org/news)
-- Coverage of waste management industry trends, circular economy developments, PFAS regulations, waste-to-energy technology, and sustainability research
-
-## Events
-
-- [Upcoming events and webinars](https://wasteinstitute.org/events)
-- Workshops, conferences, webinars, and networking events for waste management professionals
+- [The UK Simpler Recycling Rules Explained](https://wasteinstitute.org/news/the-uk-simpler-recycling-rules-explained): What councils must collect, what belongs in each bin, and how new rules affect households and businesses from 2026.
+- [How to Dispose of Clinical Waste at Home](https://wasteinstitute.org/news/how-to-dispose-of-clinical-waste-at-home): Complete UK guide covering sharps, dressings, medicines, infectious waste, collection services, and legal requirements.
+- [MediWaste Named Leading Waste Management Provider for Small Clinics](https://wasteinstitute.org/news/celebrating-excellence-mediwaste-named-leading-waste-management-provider-for-small-clinics-and-studios-waste-institute): How MediWaste helps healthcare businesses achieve compliance from set-up through ongoing operations.
+- [Where to Dispose of Sharps Safely in the UK](https://wasteinstitute.org/news/where-to-dispose-of-sharps-safely-in-the-uk-a-complete-guide-for-patients-and-caregivers): Complete guide for patients and caregivers on safe sharps disposal, including pharmacy take-back schemes.
+- [Medium-Risk Waste Facilities: Tighter Odour Controls](https://wasteinstitute.org/news/medium-risk-waste-facilities-how-to-prepare-for-tighter-odour-controls): How medium-risk facilities can prepare for tighter odour control regulations and compliance.
+- [Consistency in Recycling Collections: What Every Collector Must Know](https://wasteinstitute.org/news/consistency-in-recycling-collections-what-every-collector-must-know): Standardisation requirements for recycling collections and what every waste collector needs to know.
+- [The Cost of Non-Compliance: Recent EA Fines](https://wasteinstitute.org/news/the-cost-of-non-compliance-recent-ea-fines-that-should-worry-you): Recent Environment Agency fines that highlight the real cost of waste management non-compliance.
+- [AI Revolution in Waste Sorting: 2026 Update](https://wasteinstitute.org/news/ai-revolution-waste-sorting-2026-update): Latest developments in AI-powered waste sorting technology and what's new in 2026.
+- [Urban Composting Facilities on the Rise: UK Revolution](https://wasteinstitute.org/news/urban-composting-facilities-rise-uk-revolution): How urban composting facilities are transforming organic waste management across the UK.
+- [Construction Waste Recycling Standards: UK Framework](https://wasteinstitute.org/news/construction-waste-recycling-standards-uk-framework): The UK framework for construction waste recycling standards and compliance requirements.
+- [UK Hazardous Waste Labelling: New Regulations](https://wasteinstitute.org/news/uk-hazardous-waste-labelling-regulations-compliance-2026): New hazardous waste labelling regulations and compliance requirements for 2026.
+- [Advanced Recycling: Chemical Processes for Plastic Recovery](https://wasteinstitute.org/news/advanced-recycling-chemical-processes-plastic-recovery): How chemical recycling processes enable plastic-to-plastic recovery and advance circular economy goals.
+- [PFAS in Waste: New Testing Protocols](https://wasteinstitute.org/news/pfas-waste-new-testing-protocols-treatment-requirements): New PFAS testing protocols and treatment requirements for waste management facilities.
+- [Leadership Strategies for Multi-Generational Waste Teams](https://wasteinstitute.org/news/leadership-strategies-managing-multi-generational-waste-teams): Practical leadership strategies for managing multi-generational teams in the waste management industry.
+- [Circular Economy Success: City Achieves 75% Waste Diversion](https://wasteinstitute.org/news/circular-economy-success-city-achieves-75-waste-diversion): How one city achieved 75% waste diversion through circular economy initiatives.
+- [Breakthrough in Waste-to-Energy: 40% Efficiency Increase](https://wasteinstitute.org/news/waste-to-energy-efficiency-breakthrough): New process increases waste-to-energy efficiency by 40%, advancing the technology's viability.
 
 ## Resources
 
-- [Free learning resources](https://wasteinstitute.org/resources)
-- Templates, checklists, guides, and reference materials for waste management professionals
+- [Learning Resources](https://wasteinstitute.org/resources): Free learning resources, guides, templates, and tools for waste management professionals.
 
-## Key Pages
+## About
+
+- [About Waste Institute](https://wasteinstitute.org/about): Learn about our mission to provide world-class waste management education and professional certifications.
+- [Contact Us](https://wasteinstitute.org/contact): Get in touch about courses, certifications, corporate training, or partnership opportunities.
+- [Frequently Asked Questions](https://wasteinstitute.org/faq): Answers to common questions about courses, certifications, enrolment, and corporate training.
+- [Membership Levels](https://wasteinstitute.org/membership): Professional membership levels from Student to Fellowship with course discounts and professional recognition.
+
+## Key Links
 
 - [Home](https://wasteinstitute.org/)
-- [About Us](https://wasteinstitute.org/about)
-- [Contact](https://wasteinstitute.org/contact)
-- [FAQ](https://wasteinstitute.org/faq)
-- [Verify a Certificate](https://wasteinstitute.org/verify)
+- [Course Catalog](https://wasteinstitute.org/courses)
+- [News and Articles](https://wasteinstitute.org/news)
+- [Events and Webinars](https://wasteinstitute.org/events)
+- [Certificate Verification](https://wasteinstitute.org/verify)
+- [Privacy Policy](https://wasteinstitute.org/privacy)
+- [Terms of Service](https://wasteinstitute.org/terms)
+- [Cookie Policy](https://wasteinstitute.org/cookies)
+- [Accessibility Statement](https://wasteinstitute.org/accessibility)
 
 ## Contact
 
