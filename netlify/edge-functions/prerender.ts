@@ -29,6 +29,8 @@ function isCrawler(userAgent: string): boolean {
     "perplexitybot", "perplexity",
     "google-extended", "ccbot",
     "applebot-extended", "amazonbot",
+    // SEO audit crawlers
+    "ahrefsbot", "semrushbot", "mj12bot", "dotbot", "sogou",
   ];
   return crawlers.some((c) => ua.includes(c));
 }
@@ -755,10 +757,21 @@ function renderStaticPage(pathname: string): string {
   const body = `<article>
 <h1>${esc(m.h1)}</h1>
 <p>${esc(m.body)}</p>
-<nav style="margin-top:2rem"><a href="${BASE_URL}/">← Back to home</a> | <a href="${BASE_URL}/courses">Explore courses</a> | <a href="${BASE_URL}/contact">Contact us</a></nav>
+<nav style="margin-top:2rem"><a href="${BASE_URL}/">← Back to home</a> | <a href="${BASE_URL}/courses">Explore courses</a> | <a href="${BASE_URL}/news">Latest news</a> | <a href="${BASE_URL}/contact">Contact us</a></nav>
 </article>`;
 
-  return pageShell(m.title, m.desc, `${BASE_URL}${pathname}`, body, []);
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: `${BASE_URL}/` },
+        { "@type": "ListItem", position: 2, name: m.h1, item: `${BASE_URL}${pathname}` },
+      ],
+    },
+  ];
+
+  return pageShell(m.title, m.desc, `${BASE_URL}${pathname}`, body, jsonLd);
 }
 
 // --- Main handler ---

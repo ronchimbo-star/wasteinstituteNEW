@@ -125,6 +125,11 @@ export default async (request: Request, context: Context) => {
     return response;
   }
 
+  // Skip if the prerender edge function already generated a complete page
+  if (response.headers.get('x-prerendered') === 'true') {
+    return response;
+  }
+
   // Get page metadata based on pathname
   const pageMeta = getPageMeta(pathname);
 
