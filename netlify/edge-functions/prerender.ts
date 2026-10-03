@@ -62,17 +62,21 @@ function seoTitle(value: unknown, fallback: string): string {
   return truncate(String(value || fallback).trim(), 60);
 }
 
+function publicPath(path: string): string {
+  return path === "/" ? "/" : `${path.replace(/\/+$/, "")}/`;
+}
+
 function navLinks(): string {
   return `<nav style="display:flex;flex-wrap:wrap;gap:1rem;padding:1rem 0;font-family:sans-serif">
 <a href="${BASE_URL}/">Home</a>
-<a href="${BASE_URL}/courses">Courses</a>
-<a href="${BASE_URL}/news">News</a>
-<a href="${BASE_URL}/events">Events</a>
-<a href="${BASE_URL}/membership">Membership</a>
-<a href="${BASE_URL}/resources">Resources</a>
-<a href="${BASE_URL}/about">About</a>
-<a href="${BASE_URL}/contact">Contact</a>
-<a href="${BASE_URL}/faq">FAQ</a>
+<a href="${BASE_URL}${publicPath("/courses")}">Courses</a>
+<a href="${BASE_URL}${publicPath("/news")}">News</a>
+<a href="${BASE_URL}${publicPath("/events")}">Events</a>
+<a href="${BASE_URL}${publicPath("/membership")}">Membership</a>
+<a href="${BASE_URL}${publicPath("/resources")}">Resources</a>
+<a href="${BASE_URL}${publicPath("/about")}">About</a>
+<a href="${BASE_URL}${publicPath("/contact")}">Contact</a>
+<a href="${BASE_URL}${publicPath("/faq")}">FAQ</a>
 </nav>`;
 }
 
@@ -87,6 +91,8 @@ function pageShell(
   robots = "index, follow"
 ): string {
   const img = ogImage || `${BASE_URL}/og-image.jpg`;
+  const normalizedCanonical = canonical === BASE_URL || canonical.endsWith("/") ? canonical : `${canonical}/`;
+  const normalizedBody = bodyHtml.replace(/href="(https:\/\/wasteinstitute\.org\/(?:courses|news|events|membership|resources|about|contact|faq)(?:\/[^\"]*)?)"/g, (_match: string, href: string) => `href="${href.endsWith("/") ? href : `${href}/`}"`);
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -94,11 +100,11 @@ function pageShell(
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
-<link rel="canonical" href="${esc(canonical)}">
+<link rel="canonical" href="${esc(normalizedCanonical)}">
 <meta name="robots" content="${robots}">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
-<meta property="og:url" content="${esc(canonical)}">
+<meta property="og:url" content="${esc(normalizedCanonical)}">
 <meta property="og:type" content="${esc(ogType)}">
 <meta property="og:image" content="${esc(img)}">
 <meta property="og:site_name" content="Waste Institute">
@@ -114,7 +120,7 @@ ${jsonLd.map((d) => `<script type="application/ld+json">${JSON.stringify(d)}</sc
 <body style="font-family:system-ui,-apple-system,sans-serif;max-width:900px;margin:0 auto;padding:1.5rem;line-height:1.6;color:#1f2937">
 ${navLinks()}
 <div id="root">
-${bodyHtml}
+${normalizedBody}
 </div>
 </body>
 </html>`;

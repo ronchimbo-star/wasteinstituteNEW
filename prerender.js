@@ -185,9 +185,13 @@ function routeMeta(route) {
   };
 }
 
+function publicPath(path) {
+  return path === '/' ? '/' : `${path.replace(/\/+$/, '')}/`;
+}
+
 function routeLink(route) {
   const meta = routeMeta(route);
-  return `<li><a href="${escapeHtml(route.path)}">${escapeHtml(meta.title.replace(/ \| Waste Institute$/, ''))}</a></li>`;
+  return `<li><a href="${publicPath(route.path)}">${escapeHtml(meta.title.replace(/ \| Waste Institute$/, ''))}</a></li>`;
 }
 
 function pageBody(route, routes) {
@@ -202,14 +206,14 @@ function pageBody(route, routes) {
     '/accessibility': 'Waste Institute is committed to making its website, courses, documents, and support services accessible to as many people as possible. We aim to use clear language, readable layouts, keyboard-friendly controls, meaningful headings, and suitable text alternatives.',
   };
   const content = route.content || legalContent[route.path] ? `<div>${escapeHtml(String(route.content || legalContent[route.path]).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim())}</div>` : '';
-  return `<main><article><h1>${escapeHtml(meta.title.replace(/ \| Waste Institute$/, ''))}</h1><p>${escapeHtml(meta.description)}</p>${content}${links}<nav><a href="/">Home</a> | <a href="/courses">Courses</a> | <a href="/news">News</a> | <a href="/events">Events</a> | <a href="/membership">Membership</a> | <a href="/contact">Contact</a></nav></article></main>`;
+  return `<main><article><h1>${escapeHtml(meta.title.replace(/ \| Waste Institute$/, ''))}</h1><p>${escapeHtml(meta.description)}</p>${content}${links}<nav><a href="/">Home</a> | <a href="${publicPath('/courses')}">Courses</a> | <a href="${publicPath('/news')}">News</a> | <a href="${publicPath('/events')}">Events</a> | <a href="${publicPath('/membership')}">Membership</a> | <a href="${publicPath('/contact')}">Contact</a></nav></article></main>`;
 }
 
 function writePrerenderedPages(routes) {
   const template = readFileSync(join(__dirname, 'dist', 'index.html'), 'utf8');
   routes.forEach((route) => {
     const meta = routeMeta(route);
-    const canonical = `https://wasteinstitute.org${route.path === '/' ? '/' : route.path}`;
+    const canonical = `https://wasteinstitute.org${publicPath(route.path)}`;
     const html = template
       .replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(meta.title)}</title>`)
       .replace(/<meta name="description"[^>]*>/i, `<meta name="description" content="${escapeHtml(meta.description)}" />`)
@@ -263,7 +267,7 @@ async function generateSitemap(routes) {
     ).join('\n') : '';
 
     return `  <url>
-    <loc>${baseUrl}${r.path}</loc>
+    <loc>${baseUrl}${publicPath(r.path)}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>${imageBlock ? '\n' + imageBlock : ''}
