@@ -7,6 +7,16 @@
   publish = "dist"
 
 [[redirects]]
+  from = "/verify-certificate"
+  to = "/verify"
+  status = 301
+
+[[redirects]]
+  from = "/news/circular-economy-city-success-story"
+  to = "/news/circular-economy-success-city-achieves-75-waste-diversion"
+  status = 301
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
