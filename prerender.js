@@ -47,10 +47,6 @@ async function getDynamicRoutes() {
     { path: '/contact', type: 'static' },
     { path: '/faq', type: 'static' },
     { path: '/verify', type: 'static' },
-    { path: '/privacy', type: 'static' },
-    { path: '/terms', type: 'static' },
-    { path: '/cookies', type: 'static' },
-    { path: '/accessibility', type: 'static' },
   ];
 
   // Skip database queries if using placeholder credentials

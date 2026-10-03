@@ -383,7 +383,7 @@ export default function Dashboard() {
                       </p>
                       <div className="flex flex-col sm:flex-row gap-2">
                         <Link
-                          to={`/verify-certificate?id=${certificate.certificate_id}`}
+                          to={`/verify?id=${certificate.certificate_id}`}
                           className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors text-sm"
                         >
                           View Certificate

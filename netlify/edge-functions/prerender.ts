@@ -30,7 +30,7 @@ function isCrawler(userAgent: string): boolean {
     "google-extended", "ccbot",
     "applebot-extended", "amazonbot",
     // SEO audit crawlers
-    "ahrefsbot", "semrushbot", "mj12bot", "dotbot", "sogou",
+    "ahrefs", "semrush", "mj12bot", "dotbot", "sogou",
   ];
   return crawlers.some((c) => ua.includes(c));
 }
@@ -55,7 +55,11 @@ function stripHtml(html: string): string {
 
 function truncate(text: string, max: number): string {
   if (text.length <= max) return text;
-  return text.substring(0, max - 3) + "...";
+  return text.substring(0, max - 3).replace(/\s+\S*$/, "") + "...";
+}
+
+function seoTitle(value: unknown, fallback: string): string {
+  return truncate(String(value || fallback).trim(), 60);
 }
 
 function navLinks(): string {
@@ -79,7 +83,8 @@ function pageShell(
   bodyHtml: string,
   jsonLd: object[],
   ogType = "website",
-  ogImage?: string
+  ogImage?: string,
+  robots = "index, follow"
 ): string {
   const img = ogImage || `${BASE_URL}/og-image.jpg`;
   return `<!DOCTYPE html>
@@ -90,7 +95,7 @@ function pageShell(
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${esc(canonical)}">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="${robots}">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${esc(canonical)}">
@@ -273,8 +278,8 @@ async function getSectors() {
 
 function renderCoursePage(data: any): string {
   const { course, modules, lessonsByModule, sectorName, prereqTitles } = data;
-  const title = course.seo_title || `${course.title} | Waste Institute`;
-  const desc = course.seo_description || truncate(stripHtml(course.description), 160);
+  const title = seoTitle(course.seo_title, `${course.title} | Waste Institute`);
+  const desc = truncate(course.seo_description || stripHtml(course.description), 160);
   const canonical = `${BASE_URL}/courses/${course.slug}`;
 
   const moduleHtml = modules
@@ -330,8 +335,8 @@ ${prereqHtml}
 }
 
 function renderNewsPage(article: any, related: any[] = []): string {
-  const title = article.seo_title || `${article.title} | Waste Institute`;
-  const desc = article.seo_description || truncate(stripHtml(article.excerpt || article.content), 160);
+  const title = seoTitle(article.seo_title, `${article.title} | Waste Institute`);
+  const desc = truncate(article.seo_description || stripHtml(article.excerpt || article.content), 160);
   const canonical = `${BASE_URL}/news/${article.slug}`;
   const cleanContent = stripHtml(article.content);
 
@@ -380,8 +385,8 @@ ${relatedHtml}
 }
 
 function renderEventPage(event: any): string {
-  const title = event.seo_title || `${event.title} | Waste Institute`;
-  const desc = event.seo_description || truncate(stripHtml(event.excerpt || event.description), 160);
+  const title = seoTitle(event.seo_title, `${event.title} | Waste Institute`);
+  const desc = truncate(event.seo_description || stripHtml(event.excerpt || event.description), 160);
   const canonical = `${BASE_URL}/events/${event.slug}`;
   const startDate = new Date(event.start_date).toLocaleString("en-GB");
 
@@ -432,8 +437,8 @@ ${event.excerpt ? `<p><em>${esc(event.excerpt)}</em></p>` : ""}
 }
 
 function renderMembershipPage(m: any): string {
-  const title = m.meta_title || `${m.name} Membership | Waste Institute`;
-  const desc = m.meta_description || truncate(stripHtml(m.description), 160);
+  const title = seoTitle(m.meta_title, `${m.name} Membership | Waste Institute`);
+  const desc = truncate(m.meta_description || stripHtml(m.description), 160);
   const canonical = `${BASE_URL}/membership/${m.slug}`;
 
   const benefits = m.benefits ? stripHtml(m.benefits) : "";
@@ -727,27 +732,33 @@ function renderStaticPage(pathname: string): string {
     },
     "/terms": {
       title: "Terms of Service | Waste Institute",
-      desc: "Terms of service for Waste Institute platform.",
+      desc: "Read the Waste Institute terms of service covering accounts, courses, certificates, payments, acceptable use, and your responsibilities.",
       h1: "Terms of Service",
-      body: "The terms and conditions governing use of the Waste Institute platform and services.",
+      body: "These terms explain how the Waste Institute platform and services may be used. They cover account responsibilities, course enrolment, certificates, payments, communications, intellectual property, acceptable use, and the circumstances in which access may be limited. Please read them before creating an account or purchasing a course. If you have questions about these terms, contact the Waste Institute team.",
     },
     "/privacy": {
       title: "Privacy Policy | Waste Institute",
-      desc: "Privacy policy for Waste Institute platform.",
+      desc: "Learn how Waste Institute collects, uses, stores, and protects personal information when you use our website and services.",
       h1: "Privacy Policy",
-      body: "How Waste Institute collects, uses, and protects your personal data.",
+      body: "This privacy policy explains what personal information Waste Institute may collect when you browse the website, create an account, enrol on a course, contact our team, or use membership services. It describes how information is used, how it is protected, when it may be shared, and the choices available to you. Contact us if you need help exercising your privacy rights.",
     },
     "/cookies": {
       title: "Cookie Policy | Waste Institute",
-      desc: "Cookie policy for Waste Institute platform.",
+      desc: "Learn how Waste Institute uses necessary, preference, analytics, and other cookies to improve the website experience.",
       h1: "Cookie Policy",
-      body: "How Waste Institute uses cookies to improve your browsing experience.",
+      body: "Cookies are small files stored by your browser that help Waste Institute operate the website, remember preferences, understand usage, and improve services. This policy explains the types of cookies that may be used, why they are needed, and how you can manage them through your browser settings or the site consent controls.",
     },
     "/accessibility": {
       title: "Accessibility Statement | Waste Institute",
-      desc: "Accessibility statement for Waste Institute platform.",
+      desc: "Read Waste Institute's accessibility statement and our commitment to making courses, information, and support usable by everyone.",
       h1: "Accessibility Statement",
-      body: "Our commitment to making Waste Institute accessible to all users, including those with disabilities.",
+      body: "Waste Institute is committed to making its website, courses, documents, and support services accessible to as many people as possible. We aim to use clear language, readable layouts, keyboard-friendly controls, meaningful headings, and suitable text alternatives. If you experience an accessibility barrier or need information in another format, please contact our team so we can help.",
+    },
+    "/verify": {
+      title: "Verify a Waste Institute Certificate | Waste Institute",
+      desc: "Verify the authenticity of a Waste Institute course certificate using its certificate number.",
+      h1: "Verify a Waste Institute Certificate",
+      body: "Use the certificate number provided on a Waste Institute certificate to confirm its authenticity. If you need help with verification, contact our team.",
     },
   };
 
@@ -771,7 +782,8 @@ function renderStaticPage(pathname: string): string {
     },
   ];
 
-  return pageShell(m.title, m.desc, `${BASE_URL}${pathname}`, body, jsonLd);
+  const noindex = ["/terms", "/privacy", "/cookies", "/accessibility"].includes(pathname);
+  return pageShell(m.title, m.desc, `${BASE_URL}${pathname}`, body, jsonLd, "website", undefined, noindex ? "noindex, follow" : "index, follow");
 }
 
 // --- Main handler ---
@@ -786,7 +798,7 @@ export default async (request: Request, context: Context) => {
   const staticExts = [".js", ".css", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".woff", ".woff2", ".ttf", ".eot", ".json", ".xml", ".txt", ".webp", ".avif"];
   if (staticExts.some((ext) => pathname.endsWith(ext))) return context.next();
 
-  const adminPaths = ["/admin", "/login", "/signup", "/dashboard", "/my-payments", "/verify"];
+  const adminPaths = ["/admin", "/login", "/signup", "/dashboard", "/my-payments"];
   if (adminPaths.some((p) => pathname.startsWith(p))) return context.next();
 
   try {

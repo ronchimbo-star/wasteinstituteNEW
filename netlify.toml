@@ -2,10 +2,6 @@
   function = "prerender"
   path = "/*"
 
-[[edge_functions]]
-  function = "seo-rewrite"
-  path = "/*"
-
 [build]
   command = "npm run build"
   publish = "dist"
