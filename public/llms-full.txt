@@ -95,20 +95,6 @@ Target audience: Business owners, practice managers, sustainability leads
 
 ---
 
-## How to Use GreenRegistry.org to Generate Your First ESG Report
-
-URL: https://wasteinstitute.org/courses/how-to-use-greenregistry-first-esg-report
-
-Description: Learn to use GreenRegistry.org to generate your first ESG report. Measure, track and showcase your salon or clinic environmental credentials.
-
-Clients are increasingly choosing businesses that can demonstrate their environmental credentials. This course shows you how to use GreenRegistry.org, the AI-powered ESG reporting tool, to measure, track, and report your salon or clinic's environmental impact.
-
-Level: All Levels
-Duration: 2 modules, approx. 2 hours, self-paced
-Target audience: Salon and clinic owners, practice managers, sustainability leads
-
----
-
 ## Infection Control and Waste Compliance for Salons & Clinics
 
 URL: https://wasteinstitute.org/courses/infection-control-waste-compliance-salons-clinics

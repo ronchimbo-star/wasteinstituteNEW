@@ -209,7 +209,7 @@ function pageBody(route, routes) {
     '/accessibility': 'Waste Institute is committed to making its website, courses, documents, and support services accessible to as many people as possible. We aim to use clear language, readable layouts, keyboard-friendly controls, meaningful headings, and suitable text alternatives.',
   };
   const content = route.content || legalContent[route.path] || certContent ? `<div>${escapeHtml(String(route.content || legalContent[route.path] || certContent).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim())}</div>` : '';
-  return `<main><article><h1>${escapeHtml(meta.title.replace(/ \| Waste Institute$/, ''))}</h1><p>${escapeHtml(meta.description)}</p>${content}${links}<nav><a href="/">Home</a> | <a href="${publicPath('/courses')}">Courses</a> | <a href="${publicPath('/about')}">About</a> | <a href="${publicPath('/certification')}">Certification</a> | <a href="${publicPath('/contact')}">Contact</a></nav></article></main>`;
+  return `<div class="prerendered-content" style="display:none" aria-hidden="true"><main><article><h1>${escapeHtml(meta.title.replace(/ \| Waste Institute$/, ''))}</h1><p>${escapeHtml(meta.description)}</p>${content}${links}<nav><a href="/">Home</a> | <a href="${publicPath('/courses')}">Courses</a> | <a href="${publicPath('/about')}">About</a> | <a href="${publicPath('/certification')}">Certification</a> | <a href="${publicPath('/contact')}">Contact</a></nav></article></main></div>`;
 }
 
 function writePrerenderedPages(routes) {
@@ -227,7 +227,8 @@ function writePrerenderedPages(routes) {
       .replace(/<meta name="twitter:title"[^>]*>/i, `<meta name="twitter:title" content="${escapeHtml(meta.title)}" />`)
       .replace(/<meta name="twitter:description"[^>]*>/i, `<meta name="twitter:description" content="${escapeHtml(meta.description)}" />`)
       .replace(/<meta name="robots"[^>]*>\s*/gi, '')
-      .replace(/<\/head>/i, `<meta name="robots" content="${route.noindex ? 'noindex, follow' : 'index, follow'}" />\n</head>`)
+      .replace(/<noscript><style>\.prerendered-content\{display:block!important\}<\/style><\/noscript>\s*/gi, '')
+      .replace(/<\/head>/i, `<meta name="robots" content="${route.noindex ? 'noindex, follow' : 'index, follow'}" />\n<noscript><style>.prerendered-content{display:block!important}</style></noscript>\n</head>`)
       .replace(/<div id="root">[\s\S]*?<\/div>/i, `<div id="root">${pageBody(route, routes)}</div>`);
     const outputPath = route.path === '/' ? join(__dirname, 'dist', 'index.html') : join(__dirname, 'dist', route.path.slice(1), 'index.html');
     mkdirSync(dirname(outputPath), { recursive: true });
