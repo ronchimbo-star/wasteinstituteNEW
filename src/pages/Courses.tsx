@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
-import { BookOpen, Clock, TrendingUp, Filter, X, Star, Quote, Search } from 'lucide-react';
+import { BookOpen, Clock, Filter, X, Star, Quote, Search, Award, ShieldCheck, Layers } from 'lucide-react';
 import { useDebounce } from '../hooks/useDebounce';
 import { OptimizedImage } from '../components/OptimizedImage';
 
@@ -16,6 +16,8 @@ interface Course {
   level: string;
   duration: string;
   price: number;
+  original_price: number | null;
+  target_audience: string | null;
   sector_id: string | null;
 }
 
@@ -24,6 +26,18 @@ interface Sector {
   name: string;
   slug: string;
   icon: string;
+}
+
+interface Bundle {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  bundle_price: number;
+  individual_total: number;
+  saving_amount: number;
+  target_audience: string;
+  sector_id: string | null;
 }
 
 interface Testimonial {
@@ -39,6 +53,7 @@ export default function Courses() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [courses, setCourses] = useState<Course[]>([]);
   const [sectors, setSectors] = useState<Sector[]>([]);
+  const [bundles, setBundles] = useState<Bundle[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -54,7 +69,6 @@ export default function Courses() {
   const loadData = async () => {
     setLoading(true);
     try {
-      // Load sectors — only show public-facing ones
       const { data: sectorsData } = await supabase
         .from('sectors')
         .select('*')
@@ -63,7 +77,6 @@ export default function Courses() {
 
       if (sectorsData) setSectors(sectorsData);
 
-      // Load testimonials
       const { data: testimonialsData } = await supabase
         .from('testimonials')
         .select('*')
@@ -73,7 +86,6 @@ export default function Courses() {
 
       if (testimonialsData) setTestimonials(testimonialsData);
 
-      // Load courses with optional sector filter and full-text search
       let query = supabase
         .from('courses')
         .select('*')
@@ -93,8 +105,24 @@ export default function Courses() {
       }
 
       const { data: coursesData } = await query;
-
       if (coursesData) setCourses(coursesData);
+
+      // Load bundles
+      let bundleQuery = supabase
+        .from('course_bundles')
+        .select('*')
+        .eq('published', true)
+        .order('display_order');
+
+      if (selectedSector) {
+        const sector = sectorsData?.find((s) => s.slug === selectedSector);
+        if (sector) {
+          bundleQuery = bundleQuery.eq('sector_id', sector.id);
+        }
+      }
+
+      const { data: bundlesData } = await bundleQuery;
+      if (bundlesData) setBundles(bundlesData);
     } catch (error) {
       console.error('Error loading courses:', error);
     } finally {
@@ -116,7 +144,7 @@ export default function Courses() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "name": "Waste Management Courses",
+    "name": "Clinical Waste Management Courses",
     "itemListElement": courses.map((course, index) => ({
       "@type": "Course",
       "position": index + 1,
@@ -133,8 +161,8 @@ export default function Courses() {
   return (
     <Layout>
       <SEO
-        title="Browse Waste Management Courses | Waste Institute"
-        description="Explore our full catalogue of waste management courses. From introductory modules to advanced certifications, learn from leading industry professionals."
+        title="Clinical Waste Management Courses | Waste Institute"
+        description="Browse certified clinical waste management courses for beauty, aesthetics, tattoo, and podiatry professionals. Powered by MediWaste."
         canonical="https://wasteinstitute.org/courses"
         structuredData={structuredData}
       />
@@ -142,8 +170,20 @@ export default function Courses() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl lg:text-5xl font-bold mb-4">Course Catalog</h1>
           <p className="text-xl text-emerald-50 max-w-2xl">
-            Explore our comprehensive collection of waste management courses designed by industry experts
+            Certified clinical waste management training for beauty, tattoo, and podiatry professionals. Every course includes a verifiable certificate.
           </p>
+        </div>
+      </div>
+
+      {/* Money-back guarantee banner */}
+      <div className="bg-emerald-50 border-b border-emerald-200 py-3">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center gap-2 text-emerald-800">
+            <ShieldCheck size={18} className="flex-shrink-0" />
+            <p className="text-sm font-medium text-center">
+              14-day money-back guarantee. Not satisfied? Full refund, no questions asked.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -283,8 +323,9 @@ export default function Courses() {
 
                     <div className="p-6 flex flex-col flex-grow">
                       <div className="flex flex-wrap items-center gap-2 mb-3">
-                        <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">
-                          {course.level}
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">
+                          <Award size={12} />
+                          Certificate included
                         </span>
                         {course.duration && (
                           <span className="flex items-center gap-1 text-sm text-gray-600">
@@ -301,12 +342,19 @@ export default function Courses() {
                       <p className="text-gray-600 mb-4 line-clamp-3 flex-grow">{course.description}</p>
 
                       <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
-                        <span className="text-2xl font-bold text-emerald-600">
-                          {course.price > 0 ? `£${course.price}` : 'Free'}
-                        </span>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-2xl font-bold text-emerald-600">
+                            £{course.price}
+                          </span>
+                          {course.original_price && (
+                            <span className="text-lg text-gray-400 line-through">
+                              £{course.original_price}
+                            </span>
+                          )}
+                        </div>
                         <span className="text-emerald-600 font-semibold group-hover:gap-2 transition-all flex items-center gap-1">
-                          Learn More
-                          <TrendingUp size={18} />
+                          Enrol Now
+                          <ArrowRightSmall />
                         </span>
                       </div>
                     </div>
@@ -314,6 +362,52 @@ export default function Courses() {
                 ))}
               </div>
             </>
+          )}
+
+          {/* Bundles Section */}
+          {bundles.length > 0 && (
+            <div className="mt-16 pt-16 border-t border-gray-200">
+              <div className="text-center mb-10">
+                <div className="inline-flex items-center justify-center w-14 h-14 bg-emerald-100 rounded-full mb-4">
+                  <Layers className="text-emerald-600" size={28} />
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">Bundle Offers</h2>
+                <p className="text-xl text-gray-600">Save when you buy multiple courses together</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {bundles.map((bundle) => (
+                  <div
+                    key={bundle.id}
+                    className="bg-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-xl hover:border-emerald-500 transition-all flex flex-col"
+                  >
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">{bundle.name}</h3>
+                    <p className="text-gray-600 text-sm mb-4 flex-grow">{bundle.description}</p>
+                    <div className="mb-4">
+                      <span className="text-xs text-gray-500">{bundle.target_audience}</span>
+                    </div>
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-bold text-emerald-600">
+                          £{bundle.bundle_price}
+                        </span>
+                        <span className="text-lg text-gray-400 line-through">
+                          £{bundle.individual_total}
+                        </span>
+                      </div>
+                      <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-sm font-semibold rounded-full">
+                        Save £{bundle.saving_amount}
+                      </span>
+                    </div>
+                    <Link
+                      to="/contact"
+                      className="mt-4 w-full py-2.5 bg-emerald-600 text-white text-center rounded-lg font-semibold hover:bg-emerald-700 transition-colors"
+                    >
+                      Enrol in Bundle
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </div>
@@ -368,5 +462,14 @@ export default function Courses() {
         </div>
       )}
     </Layout>
+  );
+}
+
+function ArrowRightSmall() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
+    </svg>
   );
 }

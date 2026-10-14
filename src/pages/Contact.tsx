@@ -1,9 +1,9 @@
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent } from 'react';
 import Layout from '../components/Layout';
 import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
-import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle, MessageCircle, Sparkles, Users, Headphones, Recycle, BookOpen, Star, Quote } from 'lucide-react';
-import NewsletterSignup from '../components/NewsletterSignup';
+import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle, ExternalLink, MessageCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface FormData {
   name: string;
@@ -18,15 +18,6 @@ interface FormStatus {
   message: string;
 }
 
-interface Testimonial {
-  id: string;
-  student_name: string;
-  student_title: string;
-  student_image: string;
-  testimonial_text: string;
-  rating: number;
-}
-
 export const Contact = () => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -37,19 +28,6 @@ export const Contact = () => {
   });
   const [status, setStatus] = useState<FormStatus>({ type: null, message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-
-  useEffect(() => {
-    supabase
-      .from('testimonials')
-      .select('id, student_name, student_title, student_image, testimonial_text, rating')
-      .eq('is_published', true)
-      .order('display_order', { ascending: true })
-      .limit(3)
-      .then(({ data }) => {
-        if (data) setTestimonials(data);
-      });
-  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -137,67 +115,22 @@ export const Contact = () => {
     <Layout>
       <SEO
         title="Contact Us | Waste Institute"
-        description="Get in touch with the Waste Institute team. Enquire about courses, certifications, corporate training or partnership opportunities."
+        description="Get in touch with the Waste Institute team about clinical waste management courses, certifications, or corporate training. Powered by MediWaste."
         canonical="https://wasteinstitute.org/contact"
       />
-      <div className="bg-gradient-to-br from-emerald-700 via-emerald-600 to-emerald-800 py-20 overflow-hidden">
+
+      <div className="bg-gradient-to-br from-emerald-700 via-emerald-600 to-emerald-800 py-16 lg:py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="relative">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-500">
-                <img
-                  src="https://hckahrhomcgnvshwkabd.supabase.co/storage/v1/object/public/media/contact/wasteinstitute-image4.jpg"
-                  alt="Team members collaborating"
-                  className="w-full h-[500px] object-cover"
-                />
-
-                <div className="absolute top-4 right-4 animate-bounce">
-                  <img
-                    src="https://hckahrhomcgnvshwkabd.supabase.co/storage/v1/object/public/media/icons/white-icon.png"
-                    alt="Waste Institute"
-                    className="w-12 h-12 drop-shadow-lg"
-                  />
-                </div>
-
-                <div className="absolute inset-0 pointer-events-none">
-                  <div className="absolute top-16 left-10 text-yellow-300 animate-float">
-                    <Sparkles size={27} className="fill-current" />
-                  </div>
-                  <div className="absolute top-28 right-20 text-yellow-400 animate-float-delayed">
-                    <Sparkles size={24} className="fill-current" />
-                  </div>
-                  <div className="absolute bottom-36 left-16 text-yellow-300 animate-float-slow">
-                    <Sparkles size={30} className="fill-current" />
-                  </div>
-                  <div className="absolute top-1/2 right-12 text-yellow-400 animate-float">
-                    <Sparkles size={21} className="fill-current" />
-                  </div>
-                </div>
-
-                <div className="absolute bottom-6 left-6 bg-black bg-opacity-70 backdrop-blur-sm rounded-xl p-5 shadow-2xl max-w-xs animate-fade-in-up border border-white border-opacity-20">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span className="text-xs text-gray-300">Support Available</span>
-                  </div>
-                  <p className="text-xl font-handwriting text-white font-semibold animate-text-wave">
-                    "We're here to help!"
-                  </p>
-                  <div className="flex gap-3 mt-3">
-                    <MessageCircle size={32} className="text-emerald-400" />
-                    <Headphones size={32} className="text-blue-400" />
-                  </div>
-                </div>
-              </div>
+          <div className="max-w-3xl mx-auto text-center text-white">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/15 backdrop-blur-sm rounded-full mb-6">
+              <MessageCircle className="text-white" size={32} />
             </div>
-
-            <div className="text-white">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
-                Get in Touch
-              </h1>
-              <p className="text-xl text-emerald-50">
-                Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
-              </p>
-            </div>
+            <h1 className="text-4xl sm:text-5xl font-bold mb-6">
+              Get in Touch
+            </h1>
+            <p className="text-xl text-emerald-50">
+              Have questions about our courses, certifications, or corporate training? We're here to help.
+            </p>
           </div>
         </div>
       </div>
@@ -206,6 +139,7 @@ export const Contact = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+              {/* Contact Form */}
               <div className="lg:col-span-2">
                 <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
@@ -232,10 +166,7 @@ export const Contact = () => {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div>
-                        <label
-                          htmlFor="name"
-                          className="block text-sm font-semibold text-gray-700 mb-2"
-                        >
+                        <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
                           Name *
                         </label>
                         <input
@@ -249,12 +180,8 @@ export const Contact = () => {
                           placeholder="Your name"
                         />
                       </div>
-
                       <div>
-                        <label
-                          htmlFor="email"
-                          className="block text-sm font-semibold text-gray-700 mb-2"
-                        >
+                        <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
                           Email *
                         </label>
                         <input
@@ -269,12 +196,8 @@ export const Contact = () => {
                         />
                       </div>
                     </div>
-
                     <div>
-                      <label
-                        htmlFor="subject"
-                        className="block text-sm font-semibold text-gray-700 mb-2"
-                      >
+                      <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 mb-2">
                         Subject *
                       </label>
                       <input
@@ -288,12 +211,8 @@ export const Contact = () => {
                         placeholder="How can we help you?"
                       />
                     </div>
-
                     <div>
-                      <label
-                        htmlFor="message"
-                        className="block text-sm font-semibold text-gray-700 mb-2"
-                      >
+                      <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-2">
                         Message *
                       </label>
                       <textarea
@@ -303,35 +222,33 @@ export const Contact = () => {
                         onChange={handleChange}
                         required
                         rows={6}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-colors resize-none"
-                        placeholder="Tell us more about your inquiry..."
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-colors resize-y"
+                        placeholder="Tell us more..."
                       />
                     </div>
-
-                    <div aria-hidden="true" style={{ display: 'none' }}>
-                      <input
-                        type="text"
-                        name="bot_field"
-                        tabIndex={-1}
-                        autoComplete="off"
-                        value={formData.bot_field}
-                        onChange={handleChange}
-                      />
-                    </div>
-
+                    <input
+                      type="text"
+                      name="bot_field"
+                      value={formData.bot_field}
+                      onChange={handleChange}
+                      className="hidden"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                    />
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                      className="w-full sm:w-auto px-8 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {isSubmitting ? (
                         <>
-                          <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
+                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
                           Sending...
                         </>
                       ) : (
                         <>
-                          <Send size={20} />
+                          <Send size={18} />
                           Send Message
                         </>
                       )}
@@ -340,151 +257,77 @@ export const Contact = () => {
                 </div>
               </div>
 
-              <div className="space-y-6">
+              {/* Contact Info */}
+              <div className="space-y-8">
                 <div className="bg-white rounded-xl shadow-lg p-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                    Contact Information
-                  </h2>
-
-                  <div className="space-y-6">
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                        <Mail className="text-emerald-600" size={24} />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
-                        <a
-                          href="mailto:info@wasteinstitute.org"
-                          className="text-emerald-600 hover:text-emerald-700 transition-colors"
-                        >
-                          info@wasteinstitute.org
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                        <Phone className="text-emerald-600" size={24} />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900 mb-1">Phone</h3>
-                        <a
-                          href="tel:+441322879087"
-                          className="text-emerald-600 hover:text-emerald-700 transition-colors"
-                        >
-                          +44 (01322) 879 087
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                        <MapPin className="text-emerald-600" size={24} />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900 mb-1">Address</h3>
-                        <p className="text-gray-600">
-                          82 James Carter Rd<br />
-                          Mildenhall, Bury Saint Edmunds<br />
-                          IP28 7DE, United Kingdom
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">Contact Details</h3>
+                  <ul className="space-y-4">
+                    <li className="flex items-start gap-3">
+                      <Mail className="h-5 w-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                      <a href="mailto:info@wasteinstitute.org" className="text-gray-700 hover:text-emerald-600 transition-colors">
+                        info@wasteinstitute.org
+                      </a>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <Phone className="h-5 w-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                      <a href="tel:+441322879087" className="text-gray-700 hover:text-emerald-600 transition-colors">
+                        +44 (01322) 879 087
+                      </a>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <MapPin className="h-5 w-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700 text-sm">
+                        82 James Carter Rd,<br />
+                        Mildenhall, Bury Saint Edmunds<br />
+                        IP28 7DE, United Kingdom
+                      </span>
+                    </li>
+                  </ul>
                 </div>
 
-                <div className="bg-emerald-600 rounded-xl shadow-lg p-6 text-white">
-                  <h3 className="text-xl font-bold mb-3">Office Hours</h3>
-                  <div className="space-y-2 text-emerald-50">
-                    <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                    <p>Saturday: 10:00 AM - 4:00 PM</p>
-                    <p>Sunday: Closed</p>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-lg p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">Quick Response</h3>
-                  <p className="text-gray-600">
-                    We typically respond to all inquiries within 24 hours during business days. For urgent matters, please call us directly.
+                {/* MediWaste link */}
+                <div className="bg-emerald-50 rounded-xl shadow-lg p-6 border border-emerald-200">
+                  <h3 className="text-lg font-bold text-gray-900 mb-3">Need Waste Collection?</h3>
+                  <p className="text-gray-700 text-sm mb-4">
+                    If you need clinical waste collection services for your practice, our parent company MediWaste can help.
                   </p>
+                  <a
+                    href="https://mediwaste.co.uk"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold text-sm"
+                  >
+                    Visit mediwaste.co.uk
+                    <ExternalLink size={16} />
+                  </a>
+                </div>
+
+                {/* Quick FAQ */}
+                <div className="bg-white rounded-xl shadow-lg p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Questions</h3>
+                  <div className="space-y-3">
+                    <Link to="/faq" className="block text-gray-600 hover:text-emerald-600 text-sm transition-colors">
+                      How long do courses take?
+                    </Link>
+                    <Link to="/faq" className="block text-gray-600 hover:text-emerald-600 text-sm transition-colors">
+                      What is the certificate?
+                    </Link>
+                    <Link to="/faq" className="block text-gray-600 hover:text-emerald-600 text-sm transition-colors">
+                      Is there a money-back guarantee?
+                    </Link>
+                    <Link to="/faq" className="block text-gray-600 hover:text-emerald-600 text-sm transition-colors">
+                      Are bundle offers available?
+                    </Link>
+                    <Link to="/faq" className="block text-emerald-600 hover:text-emerald-700 font-semibold text-sm pt-2">
+                      View all FAQs &rarr;
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      {testimonials.length > 0 && (
-        <div className="bg-white py-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Success Stories</h2>
-              <p className="text-xl text-gray-600">Hear from professionals who completed our courses</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial) => (
-                <div
-                  key={testimonial.id}
-                  className="bg-white rounded-xl shadow-md border border-gray-200 p-6"
-                >
-                  <div className="flex items-center gap-1 mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} size={18} className="fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <Quote className="text-emerald-200 mb-3" size={28} />
-                  <p className="text-gray-700 mb-6 line-clamp-3">{testimonial.testimonial_text}</p>
-                  <div className="flex items-center gap-3">
-                    {testimonial.student_image ? (
-                      <img
-                        src={testimonial.student_image}
-                        alt={testimonial.student_name}
-                        width="40"
-                        height="40"
-                        loading="lazy"
-                        decoding="async"
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
-                        <span className="text-emerald-700 font-bold">
-                          {testimonial.student_name.charAt(0)}
-                        </span>
-                      </div>
-                    )}
-                    <div>
-                      <p className="font-semibold text-gray-900 text-sm">{testimonial.student_name}</p>
-                      <p className="text-xs text-gray-600">{testimonial.student_title}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      <section className="py-16 bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-700 text-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto text-center">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-white/20 rounded-full mb-6">
-              <BookOpen className="text-white" size={28} />
-            </div>
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-              Stay Ahead in Waste Management
-            </h2>
-            <p className="text-lg text-emerald-100 mb-8">
-              Get the latest industry insights, course updates, and expert guidance delivered to your inbox.
-            </p>
-            <NewsletterSignup variant="banner" source="contact" />
-            <p className="text-xs text-emerald-200 mt-4">
-              No spam, ever. Unsubscribe at any time.
-            </p>
-          </div>
-        </div>
-      </section>
     </Layout>
   );
 };
-
-export default Contact;

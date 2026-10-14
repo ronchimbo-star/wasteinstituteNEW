@@ -25,6 +25,7 @@ const ResourcesPage = lazy(() => import('./pages/Resources'));
 const MembershipPage = lazy(() => import('./pages/Membership'));
 const MembershipDetail = lazy(() => import('./pages/MembershipDetail').then(m => ({ default: m.MembershipDetail })));
 const AboutPage = lazy(() => import('./pages/About'));
+const CertificationPage = lazy(() => import('./pages/Certification'));
 const TermsPage = lazy(() => import('./pages/Terms'));
 const PrivacyPage = lazy(() => import('./pages/Privacy'));
 const CookiesPage = lazy(() => import('./pages/Cookies'));
@@ -94,6 +95,7 @@ function App() {
             <Route path="/events" element={<EventsPage />} />
             <Route path="/events/:slug" element={<EventDetailPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/certification" element={<CertificationPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />

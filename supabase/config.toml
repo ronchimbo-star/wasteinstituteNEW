@@ -1,0 +1,17 @@
+[functions.ai-course-director]
+  verify_jwt = false
+
+[functions.convert-to-webp]
+  verify_jwt = false
+
+[functions.optimize-image]
+  verify_jwt = false
+
+[functions.send-notification-email]
+  verify_jwt = false
+
+[functions.stripe-webhook]
+  verify_jwt = false
+
+[functions.create-checkout]
+  verify_jwt = true

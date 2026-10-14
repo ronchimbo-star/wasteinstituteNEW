@@ -4,8 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers":
-    "Content-Type, Authorization, X-Client-Info, Apikey",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
 Deno.serve(async (req: Request) => {
@@ -47,7 +46,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Store the event before processing (prevents re-processing on retry)
+    // Store the event before processing
     await supabase.from("stripe_webhooks").insert({
       event_id: eventId,
       event_type: eventType,
@@ -55,12 +54,78 @@ Deno.serve(async (req: Request) => {
       processed: false,
     });
 
-    // Process the event based on type
     let processingError = null;
 
     try {
       switch (eventType) {
+        case "checkout.session.completed": {
+          const session = event.data.object;
+          const metadata = session.metadata || {};
+          const userId = metadata.user_id;
+          const type = metadata.type;
+
+          if (type === "course") {
+            const enrollmentId = metadata.enrollment_id;
+            const paymentId = metadata.payment_id;
+
+            if (userId && enrollmentId) {
+              // Update payment status
+              if (paymentId) {
+                await supabase
+                  .from("payments")
+                  .update({
+                    status: "completed",
+                    stripe_payment_intent_id: session.payment_intent,
+                    paid_at: new Date().toISOString(),
+                  })
+                  .eq("id", paymentId);
+              }
+
+              // Update enrollment status
+              await supabase
+                .from("course_enrollments")
+                .update({ status: "enrolled" })
+                .eq("id", enrollmentId);
+            }
+          } else if (type === "bundle") {
+            const bundleId = metadata.bundle_id;
+            const courseIds: string[] = JSON.parse(metadata.course_ids || "[]");
+
+            if (userId && courseIds.length > 0) {
+              // Create enrollments for all courses in the bundle
+              for (const courseId of courseIds) {
+                const { data: enrollment } = await supabase
+                  .from("course_enrollments")
+                  .upsert({
+                    user_id: userId,
+                    course_id: courseId,
+                    enrolled_by: userId,
+                    status: "enrolled",
+                  })
+                  .select()
+                  .single();
+
+                if (enrollment) {
+                  await supabase.from("payments").insert({
+                    enrollment_id: enrollment.id,
+                    user_id: userId,
+                    amount: 0, // Individual course price in bundle is 0 for accounting
+                    currency: "gbp",
+                    status: "completed",
+                    stripe_payment_intent_id: session.payment_intent,
+                    payment_method: "stripe",
+                    paid_at: new Date().toISOString(),
+                    metadata: { bundle_id: bundleId, type: "bundle" },
+                  });
+                }
+              }
+            }
+          }
+          break;
+        }
+
         case "payment_intent.succeeded": {
+          // Keep for backward compatibility with old payment flow
           const paymentIntent = event.data.object;
           const metadata = paymentIntent.metadata || {};
           const userId = metadata.user_id;

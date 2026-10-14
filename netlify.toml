@@ -12,6 +12,31 @@
   status = 301
 
 [[redirects]]
+  from = "/membership"
+  to = "/courses/"
+  status = 301
+
+[[redirects]]
+  from = "/membership/*"
+  to = "/courses/"
+  status = 301
+
+[[redirects]]
+  from = "/news"
+  to = "/courses/"
+  status = 301
+
+[[redirects]]
+  from = "/events"
+  to = "/courses/"
+  status = 301
+
+[[redirects]]
+  from = "/resources"
+  to = "/certification/"
+  status = 301
+
+[[redirects]]
   from = "/news/circular-economy-city-success-story"
   to = "/news/circular-economy-success-city-achieves-75-waste-diversion"
   status = 301

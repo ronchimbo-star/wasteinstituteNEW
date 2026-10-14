@@ -4,4 +4,9 @@
 /llms-full.txt    /llms-full.txt    200
 /.well-known/ai.txt       /.well-known/ai.txt       200
 /.well-known/identity.json  /.well-known/identity.json  200
+/certification/    /certification/index.html    200
+/membership/*      /courses/                     301
+/news              /courses/                     301
+/events            /courses/                     301
+/resources         /certification/               301
 /*                /index.html       200

@@ -40,6 +40,7 @@ async function getDynamicRoutes() {
     { path: '/', type: 'home' },
     { path: '/about', type: 'static' },
     { path: '/courses', type: 'hub' },
+    { path: '/certification', type: 'static' },
     { path: '/membership', type: 'hub' },
     { path: '/news', type: 'hub' },
     { path: '/events', type: 'hub' },
@@ -163,9 +164,10 @@ function truncateSeo(value, max) {
 
 function routeMeta(route) {
   const staticMeta = {
-    '/': { title: 'Waste Institute | Waste Management Courses & Certifications', description: 'Professional waste management courses and certifications from industry experts. Learn waste legislation, circular economy, hazardous waste handling and more.' },
-    '/about': { title: 'About Us | Waste Institute', description: 'Learn about Waste Institute, our mission to provide world-class waste management education, and our industry experts.' },
-    '/courses': { title: 'Browse Waste Management Courses | Waste Institute', description: 'Explore waste management courses from introductory modules to advanced professional certifications.' },
+    '/': { title: 'Waste Institute | Clinical Waste Training for Beauty, Tattoo & Podiatry', description: 'Certified clinical waste management training for beauty, aesthetics, tattoo, and podiatry professionals. Powered by MediWaste. Enrol today.' },
+    '/about': { title: 'About Waste Institute | Clinical Waste Training Powered by MediWaste', description: 'Waste Institute provides certified clinical waste management training for beauty, tattoo, and podiatry professionals. Created by MediWaste.' },
+    '/certification': { title: 'Certification | Waste Institute', description: 'Earn a recognised Certificate of Completion in clinical waste management. Display it in your clinic, show it to inspectors, and include it in your marketing.' },
+    '/courses': { title: 'Clinical Waste Management Courses | Waste Institute', description: 'Browse certified clinical waste management courses for beauty, aesthetics, tattoo, and podiatry professionals. Powered by MediWaste.' },
     '/membership': { title: 'Membership Levels | Waste Institute', description: 'Join the Waste Institute professional community with membership options for students and waste management professionals.' },
     '/news': { title: 'News & Articles | Waste Institute', description: 'Read the latest waste management, circular economy, sustainability, and environmental compliance news.' },
     '/events': { title: 'Waste Management Events | Waste Institute', description: 'Discover upcoming waste management events, training sessions, and professional opportunities from Waste Institute.' },
@@ -199,14 +201,15 @@ function pageBody(route, routes) {
   const childTypes = route.type === 'hub' ? ({ '/courses': ['course'], '/news': ['news'], '/membership': ['membership'], '/events': ['event'] }[route.path] || []) : [];
   const children = routes.filter((candidate) => childTypes.includes(candidate.type));
   const links = children.length ? `<section><h2>Explore Waste Institute</h2><ul>${children.map(routeLink).join('')}</ul></section>` : '';
+  const certContent = route.path === '/certification' ? 'Waste Institute offers verifiable Certificates of Completion for every course. Display your certificate in your clinic, show it to inspectors, and include it in your marketing. Certificates are verifiable through our public verification portal.' : '';
   const legalContent = {
     '/privacy': 'This privacy policy explains what personal information Waste Institute may collect when you browse the website, create an account, enrol on a course, contact our team, or use membership services. It describes how information is used, how it is protected, when it may be shared, and the choices available to you.',
     '/terms': 'These terms explain how the Waste Institute platform and services may be used. They cover account responsibilities, course enrolment, certificates, payments, communications, intellectual property, acceptable use, and the circumstances in which access may be limited.',
     '/cookies': 'Cookies are small files stored by your browser that help Waste Institute operate the website, remember preferences, understand usage, and improve services. This policy explains the types of cookies that may be used and how you can manage them.',
     '/accessibility': 'Waste Institute is committed to making its website, courses, documents, and support services accessible to as many people as possible. We aim to use clear language, readable layouts, keyboard-friendly controls, meaningful headings, and suitable text alternatives.',
   };
-  const content = route.content || legalContent[route.path] ? `<div>${escapeHtml(String(route.content || legalContent[route.path]).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim())}</div>` : '';
-  return `<main><article><h1>${escapeHtml(meta.title.replace(/ \| Waste Institute$/, ''))}</h1><p>${escapeHtml(meta.description)}</p>${content}${links}<nav><a href="/">Home</a> | <a href="${publicPath('/courses')}">Courses</a> | <a href="${publicPath('/news')}">News</a> | <a href="${publicPath('/events')}">Events</a> | <a href="${publicPath('/membership')}">Membership</a> | <a href="${publicPath('/contact')}">Contact</a></nav></article></main>`;
+  const content = route.content || legalContent[route.path] || certContent ? `<div>${escapeHtml(String(route.content || legalContent[route.path] || certContent).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim())}</div>` : '';
+  return `<main><article><h1>${escapeHtml(meta.title.replace(/ \| Waste Institute$/, ''))}</h1><p>${escapeHtml(meta.description)}</p>${content}${links}<nav><a href="/">Home</a> | <a href="${publicPath('/courses')}">Courses</a> | <a href="${publicPath('/about')}">About</a> | <a href="${publicPath('/certification')}">Certification</a> | <a href="${publicPath('/contact')}">Contact</a></nav></article></main>`;
 }
 
 function writePrerenderedPages(routes) {

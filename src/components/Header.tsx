@@ -35,19 +35,22 @@ export default function Header() {
     <header className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center">
-            <img src={logo} alt="WasteInstitute" className="h-12" />
-          </Link>
+          {/* Logo + Powered by MediWaste */}
+          <div className="flex items-center gap-3">
+            <Link to="/" className="flex items-center">
+              <img src={logo} alt="WasteInstitute" className="h-12" />
+            </Link>
+            <span className="hidden sm:inline-block text-xs font-medium text-gray-400 border-l border-gray-200 pl-3">
+              Powered by MediWaste
+            </span>
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8" aria-label="Main navigation">
             <NavLink to="/" end className={navLinkClass}>Home</NavLink>
             <NavLink to="/courses" className={navLinkClass}>Courses</NavLink>
-            <NavLink to="/news" className={navLinkClass}>News</NavLink>
-            <NavLink to="/events" className={navLinkClass}>Events</NavLink>
-            <NavLink to="/resources" className={navLinkClass}>Resources</NavLink>
             <NavLink to="/about" className={navLinkClass}>About</NavLink>
+            <NavLink to="/certification" className={navLinkClass}>Certification</NavLink>
             <NavLink to="/contact" className={navLinkClass}>Contact</NavLink>
           </nav>
 
@@ -108,10 +111,8 @@ export default function Header() {
             <nav className="flex flex-col space-y-4" aria-label="Mobile navigation">
               <NavLink to="/" end onClick={closeMobileMenu} className={mobileNavLinkClass}>Home</NavLink>
               <NavLink to="/courses" onClick={closeMobileMenu} className={mobileNavLinkClass}>Courses</NavLink>
-              <NavLink to="/news" onClick={closeMobileMenu} className={mobileNavLinkClass}>News</NavLink>
-              <NavLink to="/events" onClick={closeMobileMenu} className={mobileNavLinkClass}>Events</NavLink>
-              <NavLink to="/resources" onClick={closeMobileMenu} className={mobileNavLinkClass}>Resources</NavLink>
               <NavLink to="/about" onClick={closeMobileMenu} className={mobileNavLinkClass}>About</NavLink>
+              <NavLink to="/certification" onClick={closeMobileMenu} className={mobileNavLinkClass}>Certification</NavLink>
               <NavLink to="/contact" onClick={closeMobileMenu} className={mobileNavLinkClass}>Contact</NavLink>
 
               {/* Mobile Auth Links */}

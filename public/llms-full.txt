@@ -11,276 +11,241 @@ Contact: info@wasteinstitute.org | +44 1322 879087 | 82 James Carter Rd, Mildenh
 
 # COURSES
 
-## Advanced Recycling Operations
+## Best Practice for Tattoo Studio Clinical Waste Setup
 
-URL: https://wasteinstitute.org/courses/advanced-recycling-operations
+URL: https://wasteinstitute.org/courses/best-practice-tattoo-studio-clinical-waste-setup
 
-Description: Comprehensive training on modern recycling technologies, material recovery facilities (MRF), and contamination management. Optimize recycling operations fo
+Description: Set up your tattoo studio waste management from scratch. Learn waste stream classification, waste station setup, and waste carrier record-keeping.
 
-Comprehensive training on modern recycling technologies, material recovery facilities (MRF), and contamination management. Optimize recycling operations for maximum efficiency.
+Tattoo studios produce a unique mix of clinical, offensive, and general waste. This course gives you a complete, practical system for setting up your studio's waste management from scratch or improving what you already have.
 
-Level: Intermediate
-Duration: 12 weeks
-
----
-
-## AI-Powered Waste Sorting Systems
-
-URL: https://wasteinstitute.org/courses/ai-powered-waste-sorting
-
-Description: Learn how artificial intelligence and machine learning are revolutionizing waste sorting processes. This comprehensive course covers computer vision, robot
-
-Learn how artificial intelligence and machine learning are revolutionizing waste sorting processes. This comprehensive course covers computer vision, robotics, and AI algorithms used in modern waste management facilities.
-
-Level: Intermediate
-Duration: 16 weeks
+Level: All Levels
+Duration: 3 modules, approx. 2.5 hours, self-paced
+Target audience: Tattoo studio owners, studio managers, senior artists
 
 ---
 
 ## Certificate in Healthcare Waste Management: Compliance, Auditing, and the HTM 07-01 Framework
 
-URL: https://wasteinstitute.org/courses/certificate-healthcare-waste-management-compliance-auditing-htm-07-01
+URL: https://wasteinstitute.org/courses/certificate-healthcare-waste-management-htm-07-01
 
-Description: This comprehensive certificate course provides a deep dive into the essential regulations governing healthcare waste, with a specific focus on the Health T
+Description: Master healthcare waste compliance with HTM 07-01. Learn auditing techniques, waste hierarchy, and inspection preparation in this certificate course.
 
-This comprehensive certificate course provides a deep dive into the essential regulations governing healthcare waste, with a specific focus on the Health Technical Memorandum 07-01 (HTM 07-01). You will move beyond basic bin selection to understand the legal "Duty of Care," the classification of hazardous and non-hazardous waste, and the principles of the waste hierarchy. The course culminates in practical auditing techniques, empowering you to confidently assess your own practice's compliance, prepare for inspections, and implement a robust waste management policy that protects your staff, your clients, and your business.
+This comprehensive certificate course provides a deep dive into the essential regulations governing healthcare waste, with a specific focus on HTM 07-01. You will learn auditing techniques and how to prepare for inspections.
 
-Level: Intermediate
-Duration: 16 weeks
-Target audience: Practice managers, clinic owners, compliance officers, and senior aestheticians in the UK
-
-### Syllabus
-
-#### Module 1: The Legal Landscape of Healthcare Waste
-- Understanding your "Duty of Care" under the Environmental Protection Act
-- Key legislation: The Hazardous Waste Regulations and The Controlled Waste Regulations
-- The role of the Environment Agency and your local authority
-- Defining your responsibilities as a "waste producer"
-
-#### Module 2: Demystifying HTM 07-01
-- What is HTM 07-01 and why is it the industry bible?
-- The colour-coding system: Decoding waste streams (Orange, Yellow, Purple, etc.)
-- Classification: Identifying infectious, medicinal, and offensive waste in your setting
-- Best practice for packaging, labelling, and storage
-
-#### Module 3: The Waste Hierarchy in Practice
-- Moving beyond disposal: Applying "Reduce, Reuse, Recycle" to clinical settings
-- Identifying opportunities for waste reduction in treatment rooms
-- Safe handling of recyclable materials (e.g., paper, packaging) that may be contaminated
-
-#### Module 4: Mastering the Internal Waste Audit
-- The purpose and benefits of regular self-auditing
-- How to conduct a walk-through audit: A step-by-step guide
-- Using audit findings to identify risks, improve training, and ensure compliance
-- Practical Activity: Complete a sample audit checklist for a treatment room
-
-#### Module 5: Preparing for External Inspection
-- What Environmental Health Officers (EHOs) look for
-- Building a compliant waste management policy for your clinic
-- Maintaining a clear and organised audit trail (waste consignment notes)
-- Assessment: Final multiple-choice quiz to test your knowledge and earn your certificate
+Level: All Levels
+Duration: 5 modules, approx. 4 hours, self-paced
+Target audience: Practice managers, clinic owners, compliance officers, senior practitioners
 
 ---
 
-## Circular Economy Fundamentals
+## Cleaning & Disinfection Protocols for Piercing Aftercare
 
-URL: https://wasteinstitute.org/courses/circular-economy-fundamentals
+URL: https://wasteinstitute.org/courses/cleaning-disinfection-protocols-piercing-aftercare
 
-Description: Understand the principles of circular economy and how to implement sustainable practices in waste management. Learn about resource recovery, product lifecy
+Description: Complete cleaning and disinfection protocols for piercing studios. Learn equipment handling, waste disposal, and maintaining a hygienic environment.
 
-Understand the principles of circular economy and how to implement sustainable practices in waste management. Learn about resource recovery, product lifecycle, and closed-loop systems.
+This course covers the complete cleaning and disinfection protocols for piercing studios, including how to handle contaminated equipment, how to dispose of waste generated during piercing, and how to maintain a hygienic environment.
 
-Level: Beginner
-Duration: 10 weeks
+Level: All Levels
+Duration: 2 modules, approx. 2 hours, self-paced
+Target audience: Piercing professionals, studio owners, body modification practitioners
 
 ---
 
-## Construction Waste Management
+## Clinical Waste Management for Beauty Professionals
 
-URL: https://wasteinstitute.org/courses/construction-waste-management
+URL: https://wasteinstitute.org/courses/clinical-waste-management-beauty-professionals
 
-Description: Learn effective strategies for managing construction and demolition waste. Understand recycling opportunities, cost reduction, and regulatory compliance in
+Description: Learn your legal Duty of Care as a beauty salon or aesthetics clinic. Classify, segregate, store and dispose of clinical waste correctly.
 
-Learn effective strategies for managing construction and demolition waste. Understand recycling opportunities, cost reduction, and regulatory compliance in construction projects.
+If you run a beauty salon or aesthetics clinic, you are legally classified as a waste producer. That means you have a legal Duty of Care to classify, segregate, store, and dispose of your waste correctly. Getting it wrong can result in unlimited fines, closure, or prosecution. This course cuts through the confusion and gives you a clear, practical system for managing clinical waste in your business.
 
-Level: Beginner
-Duration: 10 weeks
+Level: All Levels
+Duration: 3 modules, approx. 2.5 hours, self-paced
+Target audience: Salon owners, clinic managers, aestheticians, beauty therapists, front-of-house staff
+
+---
+
+## Clinical Waste Management for Podiatry Practitioners
+
+URL: https://wasteinstitute.org/courses/clinical-waste-management-podiatry-practitioners
+
+Description: Podiatry is one of the highest-risk professions for clinical waste. This course gives you a complete, practical system for managing clinical waste in your 
+
+Podiatry is one of the highest-risk professions for clinical waste. This course gives you a complete, practical system for managing clinical waste in your podiatry practice, whether you work from a clinic or as a mobile practitioner.
+
+Level: All Levels
+Duration: 3 modules, approx. 2.5 hours, self-paced
+Target audience: Podiatrists, chiropodists, foot health practitioners, clinic owners
 
 ---
 
 ## Data-Driven Sustainability: Optimising Waste Reporting and Resource Efficiency
 
-URL: https://wasteinstitute.org/courses/data-driven-sustainability-waste-reporting-resource-efficiency
+URL: https://wasteinstitute.org/courses/data-driven-sustainability-waste-reporting
 
-Description: Sustainability is no longer just an ethical choice; it's a competitive advantage and a growing client expectation. This strategic course moves beyond compl
+Description: Turn waste data into business value. Learn sustainability metrics, ESG reporting with GreenRegistry.org, and resource efficiency for your practice.
 
-Sustainability is no longer just an ethical choice; it's a competitive advantage and a growing client expectation. This strategic course moves beyond compliance to show you how to turn your waste data into a powerful tool for business improvement. You will learn how to track, analyse, and report on your waste streams to identify cost savings, enhance your resource efficiency, and credibly communicate your green credentials. This course features a practical module on using GreenRegistry.org to automate your reporting and generate professional ESG data, giving you a clear, data-backed story of your environmental impact.
+This strategic course moves beyond compliance to show you how to turn your waste data into a powerful tool for business improvement, cost savings, and credible ESG reporting using GreenRegistry.org.
 
-Level: Advanced
-Duration: 12 weeks
-Target audience: Business owners, practice managers, and sustainability leads in clinics, salons, and studios
-
-### Syllabus
-
-#### Module 1: From Compliance to Strategy: The Business Case for Sustainability
-- Why "green" is good for business: Client attraction, staff retention, and cost reduction
-- Key sustainability concepts for healthcare settings (ESG, Carbon Footprint)
-- Identifying the data you already have (waste invoices, consignment notes)
-
-#### Module 2: Measuring Your Impact: Key Metrics for Waste and Resource Use
-- What to measure: Waste volumes by stream, recycling rates, supplier data
-- Simple methods for tracking your data month-to-month
-- Turning raw data into meaningful insights and performance indicators (KPIs)
-
-#### Module 3: Hands-On with GreenRegistry.org: Automating Your ESG Reporting
-- Introduction to the GreenRegistry platform and its AI-powered tools
-- Practical Tutorial: Step-by-step guide to inputting your waste and resource data
-- Generating and interpreting your first AI-assisted ESG report
-
-#### Module 4: From Data to Action: Identifying Opportunities for Resource Efficiency
-- Analysing your report to find waste "hotspots" and cost-saving opportunities
-- Case studies: How other clinics have reduced waste and saved money
-- Setting realistic sustainability goals and creating an action plan
-
-#### Module 5: Telling Your Sustainability Story
-- Using your GreenRegistry data for marketing and client communication
-- Creating a simple "Sustainability Statement" for your website or waiting area
-- Building long-term value through continuous improvement and re-auditing
-- Assessment: Using the GreenRegistry tool, generate a sample report based on provided data and identify two key areas for improvement
+Level: All Levels
+Duration: 5 modules, approx. 3.5 hours, self-paced
+Target audience: Business owners, practice managers, sustainability leads
 
 ---
 
-## Environmental Regulations and Compliance
+## How to Use GreenRegistry.org to Generate Your First ESG Report
 
-URL: https://wasteinstitute.org/courses/environmental-regulations-compliance
+URL: https://wasteinstitute.org/courses/how-to-use-greenregistry-first-esg-report
 
-Description: Navigate complex environmental regulations including EPA standards, state regulations, and international compliance requirements. Stay updated with changin
+Description: Learn to use GreenRegistry.org to generate your first ESG report. Measure, track and showcase your salon or clinic environmental credentials.
 
-Navigate complex environmental regulations including EPA standards, state regulations, and international compliance requirements. Stay updated with changing regulatory landscapes.
+Clients are increasingly choosing businesses that can demonstrate their environmental credentials. This course shows you how to use GreenRegistry.org, the AI-powered ESG reporting tool, to measure, track, and report your salon or clinic's environmental impact.
 
-Level: Intermediate
-Duration: 16 weeks
-
----
-
-## Hazardous Waste Handling Certification
-
-URL: https://wasteinstitute.org/courses/hazardous-waste-handling
-
-Description: Complete certification program for safe handling, storage, transportation, and disposal of hazardous waste materials. Meet regulatory requirements and ensu
-
-Complete certification program for safe handling, storage, transportation, and disposal of hazardous waste materials. Meet regulatory requirements and ensure workplace safety.
-
-Level: Intermediate
-Duration: 20 weeks
+Level: All Levels
+Duration: 2 modules, approx. 2 hours, self-paced
+Target audience: Salon and clinic owners, practice managers, sustainability leads
 
 ---
 
-## Leadership in Waste Management Organizations
+## Infection Control and Waste Compliance for Salons & Clinics
 
-URL: https://wasteinstitute.org/courses/leadership-waste-management
+URL: https://wasteinstitute.org/courses/infection-control-waste-compliance-salons-clinics
 
-Description: Develop essential leadership skills for managing waste management teams and operations. Learn strategic planning, team management, stakeholder engagement, 
+Description: Combine infection control and waste management into one practical system. Learn cleaning, disinfection, sterilisation and audit-ready hygiene policies.
 
-Develop essential leadership skills for managing waste management teams and operations. Learn strategic planning, team management, stakeholder engagement, and change management in the waste industry.
+Infection control and waste management are two sides of the same coin. This course brings both together into one practical system. You will learn how to clean, disinfect, and sterilise equipment correctly, how to handle contaminated items, and how to link your infection control procedures directly to your waste disposal.
 
-Level: Advanced
-Duration: 12 weeks
-
----
-
-## Modern Landfill Management
-
-URL: https://wasteinstitute.org/courses/modern-landfill-management
-
-Description: Comprehensive course on landfill operations, leachate management, gas collection systems, and closure procedures. Learn sustainable landfill practices and 
-
-Comprehensive course on landfill operations, leachate management, gas collection systems, and closure procedures. Learn sustainable landfill practices and environmental monitoring.
-
-Level: Intermediate
-Duration: 16 weeks
+Level: All Levels
+Duration: 3 modules, approx. 2.5 hours, self-paced
+Target audience: Salon owners, clinic managers, aestheticians, hygiene leads
 
 ---
 
-## Organic Waste Composting and Management
+## Infection Control and Waste Compliance in Podiatry Practice
 
-URL: https://wasteinstitute.org/courses/organic-waste-composting
+URL: https://wasteinstitute.org/courses/infection-control-waste-compliance-podiatry
 
-Description: Master composting techniques, organic waste processing, and sustainable food waste management. Learn about commercial composting operations and soil amendm
+Description: Combine infection control and waste management in podiatry. Learn cleaning, disinfection, sterilisation and audit-ready hygiene policies for your practice.
 
-Master composting techniques, organic waste processing, and sustainable food waste management. Learn about commercial composting operations and soil amendment production.
+Infection control and waste management are inseparable in podiatry. This course brings both together into one practical system, covering cleaning, disinfection, sterilisation, and correct waste disposal.
 
-Level: Beginner
-Duration: 8 weeks
+Level: All Levels
+Duration: 3 modules, approx. 2.5 hours, self-paced
+Target audience: Podiatrists, chiropodists, clinic managers, foot health practitioners
 
 ---
 
-## PFAS Detection and Treatment
+## Managing Hazardous Waste in Tattoo and Piercing Studios
 
-URL: https://wasteinstitute.org/courses/pfas-detection-treatment
+URL: https://wasteinstitute.org/courses/managing-hazardous-waste-tattoo-piercing-studios
 
-Description: Learn about PFAS contamination, testing methods, treatment technologies, and regulatory requirements. Understand the latest research and remediation strate
+Description: Learn to classify, store, and legally dispose of hazardous waste in tattoo and piercing studios. Covers compliance, auditing, and inspection readiness.
 
-Learn about PFAS contamination, testing methods, treatment technologies, and regulatory requirements. Understand the latest research and remediation strategies for forever chemicals.
+Tattoo and piercing studios produce hazardous waste that goes beyond needles and bloodied wipes. This course gives you a complete understanding of hazardous waste in your studio, how to classify it, how to store it, and how to dispose of it legally.
 
-Level: Advanced
-Duration: 12 weeks
+Level: All Levels
+Duration: 3 modules, approx. 3 hours, self-paced
+Target audience: Studio owners, managers, senior artists responsible for compliance
+
+---
+
+## Mobile Podiatry: Managing Waste Safely on the Go
+
+URL: https://wasteinstitute.org/courses/mobile-podiatry-managing-waste-safely
+
+Description: Manage clinical waste as a mobile podiatrist. Learn portable waste systems, safe transport, and compliant disposal for domiciliary practice.
+
+Mobile podiatry brings unique waste management challenges. This course is designed specifically for mobile practitioners, covering portable waste systems, safe transport, and compliant disposal.
+
+Level: All Levels
+Duration: 2 modules, approx. 2 hours, self-paced
+Target audience: Mobile podiatrists, domiciliary foot health practitioners
 
 ---
 
 ## Practical Waste Segregation and Staff Training for Healthcare Environments
 
-URL: https://wasteinstitute.org/courses/practical-waste-segregation-staff-training-healthcare
+URL: https://wasteinstitute.org/courses/practical-waste-segregation-staff-training
 
-Description: Theory is vital, but correct practice happens in the moment. This highly practical course is designed for you to become the in-house expert who trains your
+Description: Become the in-house waste training expert. Learn practical segregation, train-the-trainer techniques, and ongoing monitoring for healthcare teams.
 
-Theory is vital, but correct practice happens in the moment. This highly practical course is designed for you to become the in-house expert who trains your entire team. It focuses on the "how" of waste segregation, turning complex regulations into simple, memorable actions for your staff. You will learn how to build a culture of safety, deliver effective micro-trainings, and use visual aids to eliminate confusion at the point of disposal, ensuring every member of your team, from front desk to treatment room, handles waste correctly and confidently.
+This highly practical course is designed for you to become the in-house expert who trains your entire team. It focuses on the "how" of waste segregation, turning complex regulations into simple, memorable actions.
 
-Level: Intermediate
-Duration: 12 weeks
-Target audience: Lead aestheticians, clinic managers, senior tattoo artists, and anyone responsible for training team members
-
-### Syllabus
-
-#### Module 1: Building a Culture of Safety from the Front Desk to the Treatment Room
-- Why everyone in the business has a role in waste compliance
-- The cost of getting it wrong: Risks to staff, clients, and the business
-- Creating a "safety first" mindset through leadership and communication
-
-#### Module 2: The Art of Waste Segregation: A Visual Guide
-- From regulation to reality: A photo-led guide to common waste items
-- Interactive exercise: "What bin does it go in?" – Categorising items from a typical day
-- Creating simple, effective visual guides for your waste stations
-
-#### Module 3: Train the Trainer: Delivering Effective Waste Safety Sessions
-- How to structure a 15-minute team training
-- Techniques for engaging different learning styles
-- Role-playing common scenarios and handling staff questions
-- Resource: Downloadable template for a short, effective training session
-
-#### Module 4: Managing the Messy Stuff: Sharps, Spills, and Contaminated Items
-- Practical, step-by-step protocols for safe sharps disposal
-- Your spill management kit: What it must contain and how to use it
-- Scenario planning: How to respond to a common waste accident
-
-#### Module 5: Keeping Standards High: Ongoing Monitoring and Refresher Training
-- Simple observation techniques to check for correct segregation
-- Providing positive and corrective feedback to team members
-- Planning for refresher training and updating your guides when regulations change
-- Assessment: Submit a plan for a 15-minute training session you would deliver to your own team
+Level: All Levels
+Duration: 5 modules, approx. 3.5 hours, self-paced
+Target audience: Lead practitioners, clinic managers, senior artists, team trainers
 
 ---
 
-## Waste-to-Energy Technologies
+## Safe Waste Protocols for Injectable Therapies (Botox, Fillers)
 
-URL: https://wasteinstitute.org/courses/waste-to-energy-technologies
+URL: https://wasteinstitute.org/courses/safe-waste-protocols-injectable-therapies
 
-Description: Explore modern waste-to-energy conversion technologies including incineration, gasification, and anaerobic digestion. Learn about energy recovery systems a
+Description: Master injectable waste protocols for Botox and fillers. Learn correct disposal, documentation and inspection readiness for aesthetic practices.
 
-Explore modern waste-to-energy conversion technologies including incineration, gasification, and anaerobic digestion. Learn about energy recovery systems and efficiency optimization.
+Injectable therapies produce a specific and highly regulated waste stream. This course is designed specifically for practitioners offering botulinum toxin, dermal fillers, and other injectables. You will learn the exact protocols for waste generated before, during, and after treatment.
 
-Level: Advanced
-Duration: 14 weeks
+Level: All Levels
+Duration: 3 modules, approx. 3 hours, self-paced
+Target audience: Aesthetic nurses, prescribers, injectable therapists, clinic owners
+
+---
+
+## Sharps Safety and Disposal for Podiatrists
+
+URL: https://wasteinstitute.org/courses/sharps-safety-disposal-podiatrists
+
+Description: Learn safe sharps handling and disposal for podiatry. Covers scalpel blades, needles, nail nippers, and correct sharps container use in practice.
+
+Podiatrists use sharps every day: scalpel blades, needles, nail nippers, and more. This course gives you a complete, practical system for handling, using, and disposing of sharps safely.
+
+Level: All Levels
+Duration: 2 modules, approx. 2 hours, self-paced
+Target audience: Podiatrists, chiropodists, foot health practitioners who use sharps
+
+---
+
+## Sharps Safety and Disposal in Aesthetic Practices
+
+URL: https://wasteinstitute.org/courses/sharps-safety-disposal-aesthetic-practices
+
+Description: Prevent needlestick injuries in your aesthetic practice. Learn safe sharps handling, correct container use, and injury response protocols.
+
+Needlestick injuries are one of the most common and most preventable accidents in aesthetic practice. This course gives you a complete, practical system for handling, using, and disposing of sharps safely. You will learn how to choose the right sharps container, how to use it correctly, what to do if someone gets injured, and how to train your team.
+
+Level: All Levels
+Duration: 2 modules, approx. 2 hours, self-paced
+Target audience: Injectable therapists, microblading artists, laser technicians, phlebotomists
+
+---
+
+## Single-Use Equipment Safety: Needles, Inks, and Barriers
+
+URL: https://wasteinstitute.org/courses/single-use-equipment-safety-needles-inks-barriers
+
+Description: Master single-use equipment safety in tattoo and piercing. Learn correct selection, safe use, and proper disposal of needles, inks, and barriers.
+
+Single-use equipment is the backbone of safe tattoo and piercing practice. This course covers the full lifecycle of single-use equipment: choosing it, using it safely, and disposing of it correctly.
+
+Level: All Levels
+Duration: 2 modules, approx. 2 hours, self-paced
+Target audience: Tattoo artists, piercing professionals, studio owners
+
+---
+
+## The "What Bin Does It Go In?" Guide for Salons & Clinics
+
+URL: https://wasteinstitute.org/courses/what-bin-does-it-go-in-guide-salons-clinics
+
+Description: The quick practical guide answering the most common salon question: what bin does this go in? Real examples for front-of-house and new starters.
+
+This is the quick, practical, no-nonsense guide that answers the single most common question in every salon and clinic: "What bin does this go in?" Using real examples from a typical working day, this course takes you through every common item and tells you exactly where it belongs.
+
+Level: All Levels
+Duration: 1 module, approx. 1 hour, self-paced
+Target audience: Front-of-house staff, salon assistants, junior therapists, new starters
 
 ---
 

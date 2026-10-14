@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Linkedin } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, ExternalLink } from 'lucide-react';
 import logo from '../assets/waste-institute-logo-new-paths-light.svg';
 
 export default function Footer() {
@@ -13,8 +13,17 @@ export default function Footer() {
           <div className="space-y-4">
             <img src={logo} alt="WasteInstitute" className="h-15" width="180" height="60" />
             <p className="text-gray-300 text-sm">
-              Empowering sustainable waste management through education and innovation.
+              Certified clinical waste management training for beauty, aesthetics, tattoo, and podiatry professionals. Powered by MediWaste.
             </p>
+            <a
+              href="https://mediwaste.co.uk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition-colors text-sm font-medium"
+            >
+              Visit mediwaste.co.uk
+              <ExternalLink size={14} />
+            </a>
           </div>
 
           {/* Quick Links */}
@@ -28,7 +37,7 @@ export default function Footer() {
                 <Link to="/courses" className="text-gray-300 hover:text-white transition-colors text-sm">Courses</Link>
               </li>
               <li>
-                <Link to="/news" className="text-gray-300 hover:text-white transition-colors text-sm">News</Link>
+                <Link to="/certification" className="text-gray-300 hover:text-white transition-colors text-sm">Certification</Link>
               </li>
               <li>
                 <Link to="/about" className="text-gray-300 hover:text-white transition-colors text-sm">About Us</Link>
@@ -38,7 +47,7 @@ export default function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Resources</h3>
+            <h3 className="text-lg font-semibold mb-4">Support</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/contact" className="text-gray-300 hover:text-white transition-colors text-sm">Contact Us</Link>
@@ -101,7 +110,7 @@ export default function Footer() {
         <div className="mt-8 pt-8 border-t border-gray-700">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-gray-300 text-sm">
-              Copyright &copy; {currentYear} WasteInstitute.org. All Rights Reserved. Empowering Waste Management Worldwide.
+              &copy; {currentYear} WasteInstitute.org. Powered by MediWaste. All Rights Reserved.
             </p>
             <div className="flex space-x-6">
               <Link to="/privacy" className="text-gray-300 hover:text-white transition-colors text-sm">Privacy</Link>
