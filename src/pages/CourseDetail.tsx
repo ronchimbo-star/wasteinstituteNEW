@@ -95,6 +95,7 @@ export default function CourseDetail() {
   const [certificate, setCertificate] = useState<Certificate | null>(null);
   const [loading, setLoading] = useState(true);
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
+  const [expandedLessons, setExpandedLessons] = useState<Set<string>>(new Set());
   const [processingLesson, setProcessingLesson] = useState<string | null>(null);
   const [generatingCertificate, setGeneratingCertificate] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
@@ -219,10 +220,17 @@ export default function CourseDetail() {
   };
 
   useEffect(() => {
+    if (modules.length > 0 && expandedModules.size === 0) {
+      setExpandedModules(new Set([modules[0].id]));
+    }
+  }, [modules, expandedModules.size]);
+
+  useEffect(() => {
     if (!jumpToLesson || modules.length === 0 || loading) return;
     const parentModule = modules.find(m => m.lessons.some(l => l.id === jumpToLesson));
     if (parentModule) {
       setExpandedModules(prev => new Set([...prev, parentModule.id]));
+      setExpandedLessons(prev => new Set([...prev, jumpToLesson]));
       setTimeout(() => {
         const el = lessonRefs.current[jumpToLesson];
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -237,6 +245,18 @@ export default function CourseDetail() {
         next.delete(moduleId);
       } else {
         next.add(moduleId);
+      }
+      return next;
+    });
+  };
+
+  const toggleLesson = (lessonId: string) => {
+    setExpandedLessons((prev) => {
+      const next = new Set(prev);
+      if (next.has(lessonId)) {
+        next.delete(lessonId);
+      } else {
+        next.add(lessonId);
       }
       return next;
     });
@@ -706,9 +726,14 @@ export default function CourseDetail() {
                                     <div className="flex-1">
                                       <div className="flex items-start justify-between gap-4">
                                         <div className="flex-1">
-                                          <h4 className="font-semibold text-gray-900 mb-1">
-                                            {lessonIndex + 1}. {lesson.title}
-                                          </h4>
+                                          <button
+                                            onClick={() => toggleLesson(lesson.id)}
+                                            className="text-left w-full"
+                                          >
+                                            <h4 className="font-semibold text-gray-900 mb-1 hover:text-emerald-600 transition-colors">
+                                              {lessonIndex + 1}. {lesson.title}
+                                            </h4>
+                                          </button>
                                           {lesson.duration > 0 && (
                                             <div className="flex items-center gap-1 text-sm text-gray-600 mb-2">
                                               <Clock size={14} />
@@ -726,6 +751,18 @@ export default function CourseDetail() {
                                               <FileText size={14} />
                                               {lesson.resources.length} resource(s)
                                             </div>
+                                          )}
+                                          {lesson.content && (
+                                            <button
+                                              onClick={() => toggleLesson(lesson.id)}
+                                              className="mt-2 inline-flex items-center gap-1 text-sm text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+                                            >
+                                              {expandedLessons.has(lesson.id) ? (
+                                                <><ChevronUp size={14} /> Collapse</>
+                                              ) : (
+                                                <><ChevronDown size={14} /> Read lesson</>
+                                              )}
+                                            </button>
                                           )}
                                         </div>
 
@@ -749,6 +786,13 @@ export default function CourseDetail() {
                                           </button>
                                         )}
                                       </div>
+
+                                      {lesson.content && expandedLessons.has(lesson.id) && (
+                                        <div
+                                          className="lesson-content mt-4 p-6 bg-gray-50 rounded-lg border border-gray-200"
+                                          dangerouslySetInnerHTML={{ __html: lesson.content }}
+                                        />
+                                      )}
                                     </div>
                                   </div>
                                 </div>
